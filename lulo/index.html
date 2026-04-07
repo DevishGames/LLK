@@ -2,12 +2,20 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LuLo">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../app_icon_LLK_512x512px.png">
+    <link rel="icon" type="image/png" href="../app_icon_LLK_512x512px.png">
     <title>LuLo - Lustens Loopar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
         
+        html, body { min-height: 100%; overscroll-behavior-y: none; }
         body { background-color: #0a0a0a; color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         /* --- SPELPLANEN --- */
@@ -57,7 +65,7 @@
         .board-nav-btn {
             position: fixed;
             top: max(16px, env(safe-area-inset-top));
-            left: 16px;
+            right: 16px;
             z-index: 130;
             display: inline-flex;
             align-items: center;
@@ -96,7 +104,7 @@
         .text-p2 { color: #ff007f; text-shadow: 0 0 15px rgba(255, 0, 127, 0.8); }
         
         /* --- MODALER --- */
-        .modal { position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.86); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 25px; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        .modal { position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.86); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: flex-start; justify-content: center; padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)); opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
         .modal.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
@@ -109,6 +117,9 @@
             text-align: center;
             max-width: 360px;
             width: 100%;
+            max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 36px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             box-shadow:
                 0 30px 60px -12px rgba(0, 0, 0, 0.9),
                 inset 0 1px 0 rgba(255,255,255,0.06);
@@ -397,6 +408,10 @@
             .challenge-actions {
                 min-width: 0;
             }
+            .modal {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
             .round-choice-grid {
                 grid-template-columns: 1fr;
             }
@@ -527,6 +542,7 @@
         const p1 = { id: 1, name: "Spelare 1", gender: "male", pos: -1, color: "blue", side: -18, class: "text-p1" };
         const p2 = { id: 2, name: "Spelare 2", gender: "female", pos: -1, color: "pink", side: 18, class: "text-p2" };
         const PLAYER_STORAGE_KEY = "luloPlayers";
+        const GAME_STATE_STORAGE_KEY = "luloGameState";
         
         let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null;
         let labelVisitsByPlayer = { 1: {}, 2: {} };
@@ -611,6 +627,66 @@
             } catch {}
         }
 
+        function persistGameState(overlay = null) {
+            const effectiveOverlay = overlay
+                ?? (document.getElementById('challengeModal').classList.contains('active') ? 'challenge'
+                : document.getElementById('roundEndModal').classList.contains('active') ? 'roundEnd'
+                : document.getElementById('levelIntroModal').classList.contains('active') ? 'levelIntro'
+                : 'none');
+
+            const state = {
+                turn,
+                round,
+                p1: { name: p1.name, gender: p1.gender, pos: p1.pos },
+                p2: { name: p2.name, gender: p2.gender, pos: p2.pos },
+                pendingChallengePlayerId: pendingChallengePlayer?.id ?? null,
+                pendingDicePlayerId: pendingDicePlayer?.id ?? null,
+                timerHasStarted,
+                timerExtraUsed,
+                firstFinisherId,
+                currentChallengeState,
+                labelVisitsByPlayer,
+                overlay: effectiveOverlay
+            };
+
+            sessionStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function clearPersistedGameState() {
+            sessionStorage.removeItem(GAME_STATE_STORAGE_KEY);
+        }
+
+        function restoreGameState() {
+            try {
+                const raw = sessionStorage.getItem(GAME_STATE_STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch {
+                return null;
+            }
+        }
+
+        function applyRestoredGameState(state) {
+            if (!state) return false;
+
+            turn = state.turn === 2 ? 2 : 1;
+            round = Number.isInteger(state.round) ? Math.max(0, Math.min(state.round, maxRound)) : 0;
+            p1.name = state.p1?.name || p1.name;
+            p1.gender = state.p1?.gender || p1.gender;
+            p1.pos = Number.isInteger(state.p1?.pos) ? state.p1.pos : -1;
+            p2.name = state.p2?.name || p2.name;
+            p2.gender = state.p2?.gender || p2.gender;
+            p2.pos = Number.isInteger(state.p2?.pos) ? state.p2.pos : -1;
+            pendingChallengePlayer = state.pendingChallengePlayerId === 1 ? p1 : state.pendingChallengePlayerId === 2 ? p2 : null;
+            pendingDicePlayer = state.pendingDicePlayerId === 1 ? p1 : state.pendingDicePlayerId === 2 ? p2 : null;
+            timerHasStarted = Boolean(state.timerHasStarted);
+            timerExtraUsed = Boolean(state.timerExtraUsed);
+            firstFinisherId = state.firstFinisherId === 1 || state.firstFinisherId === 2 ? state.firstFinisherId : null;
+            currentChallengeState = state.currentChallengeState || null;
+            labelVisitsByPlayer = state.labelVisitsByPlayer || { 1: {}, 2: {} };
+            return true;
+        }
+
         function init() {
             loadStoredPlayers();
             const board = document.getElementById('board');
@@ -630,7 +706,39 @@
             });
             createToken(p1); createToken(p2);
             updateStatus();
-            setTimeout(() => { updatePos(p1); updatePos(p2); openWelcomeModal(); }, 600);
+            const restoredState = restoreGameState();
+            const hasRestoredGame = applyRestoredGameState(restoredState);
+            setTimeout(() => {
+                updatePos(p1);
+                updatePos(p2);
+                if (!hasRestoredGame) {
+                    openWelcomeModal();
+                    return;
+                }
+
+                updateStatus();
+                if (restoredState.overlay === 'challenge' && pendingChallengePlayer) {
+                    showChallenge(pendingChallengePlayer);
+                    return;
+                }
+                if (restoredState.overlay === 'roundEnd') {
+                    openRoundEndModal();
+                    return;
+                }
+                if (restoredState.overlay === 'levelIntro') {
+                    openLevelIntroModal();
+                    return;
+                }
+                if (pendingChallengePlayer) {
+                    showChallengeTrigger(pendingChallengePlayer);
+                    return;
+                }
+                if (pendingDicePlayer) {
+                    showTurnTrigger(pendingDicePlayer);
+                    return;
+                }
+                openWelcomeModal();
+            }, 600);
         }
 
         function createToken(p) {
@@ -767,6 +875,7 @@
             p2.pos = -1;
             updatePos(p1);
             updatePos(p2);
+            persistGameState('none');
         }
 
         function beginRound(startingPlayerId = 1) {
@@ -777,22 +886,26 @@
                 openLevelIntroModal();
                 return;
             }
+            persistGameState('none');
             setTimeout(() => showTurnTrigger(pendingDicePlayer), 300);
         }
 
         function openLevelIntroModal() {
             const intro = levelIntroContent[round];
             if (!intro) {
+                persistGameState('none');
                 setTimeout(() => showTurnTrigger(pendingDicePlayer), 300);
                 return;
             }
             document.getElementById('levelIntroTitle').innerText = intro.title;
             document.getElementById('levelIntroText').innerText = intro.text;
             document.getElementById('levelIntroModal').classList.add('active');
+            persistGameState('levelIntro');
         }
 
         function closeLevelIntroModal() {
             document.getElementById('levelIntroModal').classList.remove('active');
+            persistGameState('none');
             if (pendingDicePlayer) {
                 setTimeout(() => showTurnTrigger(pendingDicePlayer), 220);
             }
@@ -808,6 +921,7 @@
                 ? "Gå vidare till nästa runda och få vassare utmaningar."
                 : "Ni är redan på högsta nivån, så härifrån blir det omspel på samma hetta.";
             document.getElementById('roundEndModal').classList.add('active');
+            persistGameState('roundEnd');
         }
 
         function restartCurrentRound() {
@@ -890,6 +1004,7 @@
         }
 
         function goBack() {
+            clearPersistedGameState();
             window.location.href = '../index.html';
         }
 
@@ -942,6 +1057,7 @@
             registerTileVisit(active);
             pendingChallengePlayer = active;
             updateStatus();
+            persistGameState('none');
             setTimeout(() => showChallengeTrigger(active), 300);
         }
 
@@ -950,6 +1066,7 @@
             hideChallengeTrigger();
             if (currentChallengeState && currentChallengeState.playerId === pendingChallengePlayer.id && currentChallengeState.pos === pendingChallengePlayer.pos) {
                 document.getElementById('challengeModal').classList.add('active');
+                persistGameState('challenge');
                 return;
             }
             showChallenge(pendingChallengePlayer);
@@ -958,6 +1075,7 @@
         function showBoardFromChallenge() {
             if (!pendingChallengePlayer) return;
             document.getElementById('challengeModal').classList.remove('active');
+            persistGameState('none');
             setTimeout(() => showChallengeTrigger(pendingChallengePlayer), 180);
         }
 
@@ -973,6 +1091,7 @@
             if (type === "finish" && isPlayerAtFinish(getOtherPlayer(activeP))) {
                 pendingChallengePlayer = null;
                 currentChallengeState = null;
+                persistGameState('roundEnd');
                 openRoundEndModal();
                 return;
             }
@@ -1018,6 +1137,7 @@
             }
             currentChallengeState = { playerId: activeP.id, pos: activeP.pos };
             document.getElementById('challengeModal').classList.add('active');
+            persistGameState('challenge');
         }
 
         function randomizeTimer() {
@@ -1076,11 +1196,13 @@
                     turn = remainingPlayer.id;
                     pendingDicePlayer = remainingPlayer;
                     updateStatus();
+                    persistGameState('none');
                     setTimeout(() => showTurnTrigger(pendingDicePlayer), 500);
                     return;
                 }
 
                 updateStatus();
+                persistGameState('roundEnd');
                 setTimeout(openRoundEndModal, 350);
                 return;
             }
@@ -1090,6 +1212,7 @@
             turn = nextPlayer.id;
             pendingDicePlayer = nextPlayer;
             updateStatus();
+            persistGameState('none');
             setTimeout(() => showTurnTrigger(pendingDicePlayer), 500);
         }
 

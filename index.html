@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LuLo">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./app_icon_LLK_512x512px.png">
+    <link rel="icon" type="image/png" href="./app_icon_LLK_512x512px.png">
     <title>LuLo</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
@@ -363,10 +370,37 @@
             letter-spacing: 0.08em;
         }
 
+        .install-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.025);
+        }
+
+        .install-copy {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .install-copy strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
         @media (max-width: 820px) {
             .games { grid-template-columns: 1fr; }
             .players-grid { grid-template-columns: 1fr; }
             .summary-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .install-banner {
                 flex-direction: column;
                 align-items: stretch;
             }
@@ -422,6 +456,11 @@
                 <button class="card-btn" type="button" disabled>Fyll i spelare först</button>
             </article>
         </section>
+
+        <section class="install-banner">
+            <p class="install-copy"><strong>Bäst i mobilen:</strong> lägg LuLo på hemskärmen så känns det mer som en app och störs mindre av Safaris menyer.</p>
+            <button class="ghost-btn" id="openInstallGuideBtn" type="button">Installera som app</button>
+        </section>
     </div>
 
     <div class="modal" id="playersModal">
@@ -462,6 +501,27 @@
             <div class="modal-actions">
                 <button class="ghost-btn" id="closePlayersBtn" type="button">Stäng</button>
                 <button class="primary-btn" id="savePlayersBtn" type="button">Spara spelare</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="installGuideModal">
+        <div class="modal-card">
+            <p class="kicker">Installera</p>
+            <h2 class="modal-title">Lägg till på hemskärmen</h2>
+            <p class="modal-copy">Om ni öppnar LuLo från hemskärmen får ni en renare, mer applikt känsla i mobilen och mindre strul med Safaris menyer.</p>
+            <div class="player-card" style="margin-bottom:18px; text-align:left;">
+                <h3 style="margin-bottom:10px;">iPhone / iPad</h3>
+                <p class="modal-copy" style="margin:0; font-size:0.95rem;">
+                    1. Öppna sidan i Safari.<br>
+                    2. Tryck på dela-knappen.<br>
+                    3. Välj <strong>Lägg till på hemskärmen</strong>.<br>
+                    4. Starta sedan LuLo från ikonen på hemskärmen.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="ghost-btn" id="closeInstallGuideBtn" type="button">Stäng</button>
+                <button class="primary-btn" id="installGuideDoneBtn" type="button">Vi fattar</button>
             </div>
         </div>
     </div>
@@ -560,6 +620,10 @@
             document.getElementById("playersModal").classList.toggle("active", isOpen);
         }
 
+        function setInstallGuideOpen(isOpen) {
+            document.getElementById("installGuideModal").classList.toggle("active", isOpen);
+        }
+
         let playersState = loadPlayers();
 
         function rerender() {
@@ -574,6 +638,18 @@
 
         document.getElementById("closePlayersBtn").addEventListener("click", () => {
             setModalOpen(false);
+        });
+
+        document.getElementById("openInstallGuideBtn").addEventListener("click", () => {
+            setInstallGuideOpen(true);
+        });
+
+        document.getElementById("closeInstallGuideBtn").addEventListener("click", () => {
+            setInstallGuideOpen(false);
+        });
+
+        document.getElementById("installGuideDoneBtn").addEventListener("click", () => {
+            setInstallGuideOpen(false);
         });
 
         document.getElementById("savePlayersBtn").addEventListener("click", () => {
