@@ -336,10 +336,18 @@
             cursor: pointer;
         }
 
-        .segment input:checked + label {
+        .segment input[value="male"]:checked + label {
+            color: #04111f;
+            border-color: rgba(0,229,255,0.45);
+            background: rgba(0,229,255,0.92);
+            box-shadow: 0 0 22px rgba(0,229,255,0.24);
+        }
+
+        .segment input[value="female"]:checked + label {
             color: #fff;
-            border-color: rgba(255,255,255,0.18);
-            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,0,127,0.4);
+            background: rgba(255,0,127,0.88);
+            box-shadow: 0 0 22px rgba(255,0,127,0.22);
         }
 
         .modal-actions {
@@ -420,8 +428,8 @@
         <div class="modal-card">
             <p class="kicker">Spelare</p>
             <h2 class="modal-title">Vilka spelar?</h2>
-            <p class="modal-copy">Fyll i namn och välj pronomen för båda. Det här används i spelets texter och följer med in i brädspelet.</p>
-            <p class="modal-note">Ni kan ändra det här när som helst från menyn.</p>
+            <p class="modal-copy">Fyll i namn och välj pronomen för bägge spelare.</p>
+            <p class="modal-note">Ni kan ändra namnen när som helst från menyn.</p>
 
             <div class="players-grid">
                 <section class="player-card">

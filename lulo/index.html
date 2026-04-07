@@ -54,6 +54,27 @@
         }
         .challenge-trigger.hidden { display: none; }
         .turn-trigger-board { position: absolute; z-index: 120; pointer-events: auto; }
+        .board-nav-btn {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top));
+            left: 16px;
+            z-index: 130;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.72);
+            color: rgba(255,255,255,0.9);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.24);
+            backdrop-filter: blur(10px);
+        }
         .trigger-name {
             font-size: 10px;
             font-weight: 900;
@@ -395,6 +416,7 @@
 <body>
 
     <div class="game-wrapper" id="board"></div>
+    <button class="board-nav-btn" onclick="goBack()">Tillbaka</button>
     <button id="challengeTrigger" class="challenge-trigger hidden" onclick="openChallengeFromBoard()"></button>
     <button id="turnTriggerBoard" class="challenge-trigger turn-trigger-board hidden" onclick="openDiceFromBoard()"></button>
 
@@ -438,6 +460,9 @@
                     <div class="challenge-actions">
                         <button id="timerBtn" onclick="randomizeTimer()" class="btn-primary" style="background: linear-gradient(180deg, #222 0%, #141414 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: none;">
                             Starta njutningen
+                        </button>
+                        <button id="boardViewBtn" onclick="showBoardFromChallenge()" class="btn-secondary">
+                            Visa spelplanen
                         </button>
                         <button id="doneBtn" onclick="closeModal()" class="btn-secondary">
                             Vi är klara
@@ -499,11 +524,11 @@
     </div>
 
     <script>
-        const p1 = { id: 1, name: "Johan", gender: "male", pos: -1, color: "blue", side: -18, class: "text-p1" };
-        const p2 = { id: 2, name: "Susanne", gender: "female", pos: -1, color: "pink", side: 18, class: "text-p2" };
+        const p1 = { id: 1, name: "Spelare 1", gender: "male", pos: -1, color: "blue", side: -18, class: "text-p1" };
+        const p2 = { id: 2, name: "Spelare 2", gender: "female", pos: -1, color: "pink", side: 18, class: "text-p2" };
         const PLAYER_STORAGE_KEY = "luloPlayers";
         
-        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null;
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null;
         let labelVisitsByPlayer = { 1: {}, 2: {} };
         const maxRound = 3;
         const startAnchor = { x: 220, y: 40 };
@@ -923,7 +948,17 @@
         function openChallengeFromBoard() {
             if (!pendingChallengePlayer || isMoving) return;
             hideChallengeTrigger();
+            if (currentChallengeState && currentChallengeState.playerId === pendingChallengePlayer.id && currentChallengeState.pos === pendingChallengePlayer.pos) {
+                document.getElementById('challengeModal').classList.add('active');
+                return;
+            }
             showChallenge(pendingChallengePlayer);
+        }
+
+        function showBoardFromChallenge() {
+            if (!pendingChallengePlayer) return;
+            document.getElementById('challengeModal').classList.remove('active');
+            setTimeout(() => showChallengeTrigger(pendingChallengePlayer), 180);
         }
 
         function showChallenge(activeP) {
@@ -931,11 +966,13 @@
             let cat = "", key = "";
             const timerPanel = document.querySelector('.timer-panel');
             const timerBtn = document.getElementById('timerBtn');
+            const boardViewBtn = document.getElementById('boardViewBtn');
             const doneBtn = document.getElementById('doneBtn');
             document.getElementById('challengeLevel').innerText = `Nivå ${Math.min(round + 1, maxRound + 1)} av ${maxRound + 1}`;
 
             if (type === "finish" && isPlayerAtFinish(getOtherPlayer(activeP))) {
                 pendingChallengePlayer = null;
+                currentChallengeState = null;
                 openRoundEndModal();
                 return;
             }
@@ -950,6 +987,7 @@
             document.querySelector('.timer-panel').classList.remove('timer-panel-active');
             timerPanel.style.display = '';
             timerBtn.style.display = '';
+            boardViewBtn.style.display = '';
             doneBtn.style.width = '';
             doneBtn.innerText = "Vi är klara";
 
@@ -959,6 +997,7 @@
                 document.getElementById('modalText').innerHTML = decorateChallengeText(`Grattis - Du är först i mål! Luta dig tillbaka och njut av att ${targetP.name} kämpar sig fram till dig genom resterande utmaningar.`, activeP, targetP);
                 timerPanel.style.display = 'none';
                 timerBtn.style.display = 'none';
+                boardViewBtn.style.display = 'none';
                 doneBtn.style.width = '100%';
                 doneBtn.innerText = "Njut...";
             } else {
@@ -977,6 +1016,7 @@
                 document.getElementById('modalCategory').innerText = cat;
                 document.getElementById('modalText').innerHTML = decorateChallengeText(text, activeP, targetP);
             }
+            currentChallengeState = { playerId: activeP.id, pos: activeP.pos };
             document.getElementById('challengeModal').classList.add('active');
         }
 
@@ -1023,6 +1063,7 @@
             timerHasStarted = false;
             timerExtraUsed = false;
             const closingPlayer = pendingChallengePlayer;
+            currentChallengeState = null;
             document.getElementById('challengeModal').classList.remove('active');
             hideChallengeTrigger();
             pendingChallengePlayer = null;
