@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LuLo - Lustens Loopar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        
+        body { background-color: #0a0a0a; color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        
+        /* --- SPELPLANEN --- */
+        .game-wrapper { padding: 40px 0 280px 0; display: flex; flex-direction: column; align-items: center; }
+        .row { display: grid; grid-template-columns: 1fr 80px 1fr; width: 100%; max-width: 320px; margin-bottom: 35px; align-items: center; position: relative; }
+        
+        .tile-container { grid-column: 2; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .tile { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; border-radius: 18px; background-color: #161616; border: 1px solid #222; font-size: 26px; transition: all 0.5s ease; z-index: 5; }
+        .tile-label { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #444; }
+
+        /* Glöd-effekt vid landning */
+        .tile.active-p1 { border-color: #00e5ff; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); background: #001a1d; }
+        .tile.active-p2 { border-color: #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.4); background: #1a000d; }
+        
+        /* --- SPELARPRICKAR --- */
+        .player-token { position: absolute; width: 22px; height: 22px; border-radius: 50%; transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1); z-index: 50; pointer-events: none; border: 2px solid rgba(255,255,255,0.2); }
+        .p-blue { background-color: #00e5ff; box-shadow: 0 0 20px #00e5ff; }
+        .p-pink { background-color: #ff007f; box-shadow: 0 0 20px #ff007f; }
+        
+        /* --- DYNAMISKA FÄRGER (TEXT) --- */
+        .text-p1 { color: #00e5ff; text-shadow: 0 0 15px rgba(0, 229, 255, 0.8); }
+        .text-p2 { color: #ff007f; text-shadow: 0 0 15px rgba(255, 0, 127, 0.8); }
+        
+        /* --- MODALER --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 25px; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content { background-color: #161616; border: 1px solid #333; padding: 45px 30px; border-radius: 40px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9); transform: translateY(60px) scale(0.85); transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal.active .modal-content { transform: translateY(0) scale(1); }
+        
+        /* --- TÄRNING --- */
+        #dice-modal-display { font-size: 7rem; color: #fff; line-height: 1; margin-bottom: 30px; transition: color 0.3s; }
+        .dice-rolling { animation: diceShake 0.1s infinite; color: #800020 !important; }
+        @keyframes diceShake { 0% { transform: rotate(4deg); } 100% { transform: rotate(-4deg); } }
+
+        /* --- TIMER --- */
+        #timer-display { font-variant-numeric: tabular-nums; font-weight: 900; color: #800020; text-shadow: 0 0 15px rgba(128,0,32,0.6); }
+        .timer-inactive { color: #222 !important; text-shadow: none !important; }
+        
+        .btn-primary { background-color: #800020; color: white; font-weight: 700; padding: 16px 0; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.15em; font-size: 11px; transition: all 0.3s; width: 100%; box-shadow: 0 10px 20px rgba(128,0,32,0.3); }
+        .btn-primary:active { scale: 0.95; }
+    </style>
+</head>
+<body>
+
+    <div class="game-wrapper" id="board"></div>
+
+    <div class="fixed bottom-8 left-0 right-0 flex justify-center pointer-events-none z-[100]">
+        <div id="status" class="bg-black/60 backdrop-blur-md border border-white/10 px-6 py-2 rounded-full text-[9px] font-bold uppercase tracking-[0.3em]">
+            Väntar...
+        </div>
+    </div>
+
+    <div id="diceModal" class="modal">
+        <div class="modal-content" id="diceCard">
+            <div id="dice-turn-label" class="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 mb-1">Spelare</div>
+            <div id="dice-player-name" class="text-2xl font-black uppercase tracking-widest mb-6">Namn</div>
+            
+            <div id="dice-modal-display">⚀</div>
+            
+            <div class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 italic">Rulla tärningen...</div>
+            <button onclick="executeRoll()" class="btn-primary">Rulla tärningen</button>
+        </div>
+    </div>
+
+    <div id="challengeModal" class="modal">
+        <div class="modal-content">
+            <div id="modalCategory" class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Kategori</div>
+            <div id="modalText" class="text-xl leading-relaxed mb-10 text-gray-100 font-light italic">...</div>
+            
+            <div class="bg-black/50 rounded-3xl p-6 mb-8 border border-white/5">
+                <div id="timer-display" class="text-4xl mb-1 timer-inactive">--:--</div>
+                <div id="timer-label" class="text-[9px] uppercase tracking-widest text-gray-600">Läs utmaningen, klicka sen för tid</div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <button id="timerBtn" onclick="randomizeTimer()" class="btn-primary" style="background-color: #1a1a1a; border: 1px solid #333;">
+                    Starta njutningen
+                </button>
+                <button onclick="closeModal()" class="text-gray-600 text-[9px] uppercase tracking-[0.3em] mt-4 hover:text-white transition-colors">
+                    Vi är klara
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const p1 = { id: 1, name: "Johan", gender: "man", pos: 0, color: "blue", side: -65, class: "text-p1" };
+        const p2 = { id: 2, name: "Susanne", gender: "kvinna", pos: 0, color: "pink", side: 65, class: "text-p2" };
+        
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0;
+        const diceFaces = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+        const tilesData = [
+            {icon: "👐", label: "Händer"}, {icon: "👄", label: "Mun"}, {icon: "🍒", label: "Bröst"}, {icon: "🍑", label: "Rumpa"},
+            {icon: "👐", label: "Händer"}, {icon: "👄", label: "Mun"}, {icon: "🍒", label: "Bröst"}, {icon: "🍑", label: "Rumpa"},
+            {icon: "👐", label: "Händer"}, {icon: "👄", label: "Mun"}, {icon: "🍒", label: "Bröst"}, {icon: "🍑", label: "Rumpa"},
+            {icon: "👐", label: "Händer"}, {icon: "👄", label: "Mun"}, {icon: "🍒", label: "Bröst"}, {icon: "🍑", label: "Rumpa"},
+            {icon: "👐", label: "Händer"}, {icon: "👄", label: "Mun"}, {icon: "🍒", label: "Bröst"}, {icon: "🏁", label: "Mål"}
+        ];
+
+        const gameContent = {
+            hands_female: ["$ACTOR, smek $TARGETs lår och massera utanpå underkläderna i runda cirklar så det känns igenom ordentligt.", "$ACTOR, använd en vibrator/dildo och reta $TARGETs kön, låt den glida och massera utanpå eller runtom, utan att penetrera.", "$ACTOR, sätt dig mellan $TARGETs lår och massera henne med en vibrator eller dildo, låt den långsamt långsamt glida in, stanna några sekunder innan du långsamt för ut den igen.", "Använd dina händer för att göra det skönt för $TARGET."],
+            hands_male: ["$ACTOR, smek $TARGET utanpå underkläderna och massera hans lem genom tyget med fasta rörelser.", "$ACTOR, använd en vibrator eller dildo och reta $TARGETs kön med. Börja bakom kulorna och vandra långsamt upp till toppen och ner igen.", "Med en stroker eller din hand och mycket glidmedel/saliv, massera hans lem långsamt långsamt upp och ner.", "Använd dina händer för att göra det skönt för $TARGET."],
+            mouth: ["$ACTOR, ge $TARGET mjuka, våta kyssar på halsen och i området bakom öronen.", "$ACTOR, utforska $TARGETs bröstvårtor med en kombination av sug, slick och nafs.", "$ACTOR, ge $TARGET den våtaste orala stimulansen du kan. Låt saliv droppa ner över könet från din mun med jämna mellanrum medans du ber $TARGET att se på.", "$ACTOR, använd en dildo eller vibrator på $TARGET samtidigt som du ger oralsex i en ställning du väljer."],
+            breasts_female: ["$ACTOR, krama och smek $TARGETs bröst med stora, fasta rörelser utanpå underkläderna.", "$ACTOR, använd massageolja och massera $TARGETs bröst och bröstkorg med fokus på njutning.", "$ACTOR, sätt en ögonbindel på $TARGET för att sedan använda massage, nyp och en vibrator till att reta hennes bröstvårtor.", "Använd en dildo eller vibrator på $TARGET medans du suger, slickar och nafsar på hennes bröst."],
+            breasts_male: ["$ACTOR, krama och smek $TARGETs bröst med stora, fasta rörelser utanpå underkläderna.", "$ACTOR, använd massageolja och massera $TARGETs bröst och bröstkorg med fokus på njutning.", "$ACTOR, sätt en ögonbindel på $TARGET för att sedan använda massage, nyp och en vibrator till att reta hans bröstvårtor.", "$ACTOR, massera in dina bröst med olja/glid/saliv och massera $TARGETs lem mellan dina bröst."],
+            butt: ["$ACTOR, ställ dig framför $TARGET, dra dina händer långsamt över skinkorna och klappa till lite lätt.", "$ACTOR, massera $TARGETs rumpa och insida lår ordentligt med massageolja.", "$ACTOR, be $TARGET stå med fötterna på golvet och böja sig fram - Dela ut några bestämda smisk blandat med massage av den bakre öppningen (utan penetration).", "Be $TARGET lägga sig i önskad ställning, massera den bakre öppningen och långsamt för in ett finger samtidigt som du smiskar och ger framsidan kärlek."]
+        };
+
+        function init() {
+            const board = document.getElementById('board');
+            board.innerHTML = "";
+            tilesData.forEach((tile, i) => {
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.innerHTML = `
+                    <div class="tile-container">
+                        <div id="tile-${i}" class="tile"><span class="opacity-30">${tile.icon}</span></div>
+                        <div class="tile-label">${tile.label}</div>
+                    </div>`;
+                board.appendChild(row);
+            });
+            createToken(p1); createToken(p2);
+            updateStatus();
+            setTimeout(() => { updatePos(p1); updatePos(p2); openDiceModal(); }, 600);
+        }
+
+        function createToken(p) {
+            const t = document.createElement('div');
+            t.id = `token-${p.id}`;
+            t.className = `player-token p-${p.color}`;
+            document.body.appendChild(t);
+        }
+
+        function updatePos(player) {
+            const tile = document.getElementById(`tile-${player.pos}`);
+            const token = document.getElementById(`token-${player.id}`);
+            const rect = tile.getBoundingClientRect();
+            token.style.left = `${rect.left + window.scrollX + (rect.width/2) - 11 + player.side}px`;
+            token.style.top = `${rect.top + window.scrollY + (rect.height/2) - 11}px`;
+            tile.classList.remove('active-p1', 'active-p2');
+            if (p1.pos === player.pos) tile.classList.add('active-p1');
+            if (p2.pos === player.pos) tile.classList.add('active-p2');
+        }
+
+        function openDiceModal() {
+            if (isMoving) return;
+            const activeP = turn === 1 ? p1 : p2;
+            const nameEl = document.getElementById('dice-player-name');
+            nameEl.innerText = activeP.name;
+            nameEl.className = `text-2xl font-black uppercase tracking-widest mb-6 ${activeP.class}`;
+            document.getElementById('dice-modal-display').style.color = "#fff";
+            document.getElementById('diceModal').classList.add('active');
+        }
+
+        async function executeRoll() {
+            const diceDisplay = document.getElementById('dice-modal-display');
+            const diceCard = document.getElementById('diceCard');
+            diceCard.classList.add('dice-rolling');
+            for(let i=0; i<15; i++) {
+                diceDisplay.innerText = diceFaces[Math.floor(Math.random()*6)];
+                await new Promise(r => setTimeout(r, 60));
+            }
+            const val = Math.floor(Math.random()*6)+1;
+            diceDisplay.innerText = diceFaces[val-1];
+            diceCard.classList.remove('dice-rolling');
+            diceDisplay.style.color = turn === 1 ? "#00e5ff" : "#ff007f";
+            await new Promise(r => setTimeout(r, 1400));
+            document.getElementById('diceModal').classList.remove('active');
+            setTimeout(() => { isMoving = true; move(val); }, 700);
+        }
+
+        async function move(steps) {
+            const active = turn === 1 ? p1 : p2;
+            const target = Math.min(active.pos + steps, tilesData.length - 1);
+            for(let i = active.pos + 1; i <= target; i++) {
+                active.pos = i;
+                updatePos(active);
+                document.getElementById(`token-${active.id}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await new Promise(r => setTimeout(r, 550)); // Saktat ner farten något
+            }
+            isMoving = false;
+            setTimeout(() => showChallenge(active), 400);
+        }
+
+        function showChallenge(activeP) {
+            const icon = tilesData[activeP.pos].icon;
+            let cat = "", key = "";
+            clearInterval(timerInterval);
+            document.getElementById('timer-display').innerText = "--:--";
+            document.getElementById('timer-display').classList.add('timer-inactive');
+            document.getElementById('timerBtn').innerText = "Starta njutningen";
+
+            if (icon === "🏁") {
+                document.getElementById('modalCategory').innerText = "Mål";
+                document.getElementById('modalText').innerText = "Du har nått slutet för denna runda! Vänta in din partner.";
+            } else {
+                if (icon === "👐") { cat = "Händer"; key = activeP.gender === "man" ? "hands_male" : "hands_female"; }
+                if (icon === "👄") { cat = "Mun"; key = "mouth"; }
+                if (icon === "🍒") { cat = "Bröst"; key = activeP.gender === "man" ? "breasts_male" : "breasts_female"; }
+                if (icon === "🍑") { cat = "Rumpa"; key = "butt"; }
+                const targetP = turn === 1 ? p2 : p1;
+                let text = gameContent[key][round].replace("$ACTOR", activeP.name).replace("$TARGET", targetP.name);
+                document.getElementById('modalCategory').innerText = cat;
+                document.getElementById('modalText').innerText = text;
+            }
+            document.getElementById('challengeModal').classList.add('active');
+        }
+
+        function randomizeTimer() {
+            const newSeconds = Math.floor(Math.random() * (300 - 120 + 1)) + 120;
+            document.getElementById('timer-display').classList.remove('timer-inactive');
+            document.getElementById('timerBtn').innerText = "Slumpa fram mer tid...";
+            startTimer(newSeconds);
+        }
+
+        function startTimer(seconds) {
+            clearInterval(timerInterval);
+            timeLeft = seconds;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function closeModal() {
+            clearInterval(timerInterval);
+            document.getElementById('challengeModal').classList.remove('active');
+            turn = turn === 1 ? 2 : 1;
+            updateStatus();
+            setTimeout(openDiceModal, 800);
+        }
+
+        function updateStatus() {
+            const active = turn === 1 ? p1 : p2;
+            const el = document.getElementById('status');
+            el.innerText = `${active.name.toUpperCase()}:S TUR`;
+            el.style.borderColor = turn === 1 ? "#00e5ff" : "#ff007f";
+        }
+
+        window.onload = init;
+        window.onresize = () => { updatePos(p1); updatePos(p2); };
+    </script>
+</body>
+</html>
