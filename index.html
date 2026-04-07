@@ -27,7 +27,7 @@
         }
 
         * { box-sizing: border-box; }
-        html, body { min-height: 100%; margin: 0; }
+        html, body { min-height: 100%; margin: 0; overscroll-behavior-y: none; }
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text);
@@ -267,21 +267,6 @@
             font-size: 0.95rem;
         }
 
-        .card-tag {
-            display: inline-flex;
-            align-items: center;
-            align-self: flex-start;
-            padding: 8px 10px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.72);
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.22em;
-        }
-
         .card-btn {
             width: 100%;
             padding: 14px 16px;
@@ -318,6 +303,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.25s ease;
+            overflow: hidden;
         }
 
         .modal.active {
@@ -334,6 +320,10 @@
                 linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0)),
                 rgba(20,20,20,0.98);
             box-shadow: 0 28px 60px rgba(0,0,0,0.48);
+            max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
 
         .modal-title {
@@ -505,29 +495,26 @@
         <section class="games" id="gamesGrid">
             <article class="game-card locked" data-game="qa">
                 <div>
-                    <span class="card-tag">Kommer snart</span>
                     <h2>Frågor & Utmaningar</h2>
                     <p>Ett rakare upplägg med frågor, val och snabba utmaningar utan spelplan.</p>
                 </div>
-                <button class="card-btn" type="button" disabled>Mata in spelarnamn</button>
+                <button class="card-btn" type="button" disabled>Kommer snart</button>
             </article>
 
             <article class="game-card locked" data-game="board">
                 <div>
-                    <span class="card-tag">Redo</span>
                     <h2>Lust Loops</h2>
-                    <p>Brädspelet Lust Loops med nivåer, utmaningar, tärning och rundor.</p>
+                    <p>Ett lyxigt brädspel i fyra intensiva nivåer. Slå tärningen och vandra längs den gyllene stigen där varje stopp bjuder på utmaningar för Er att erövra. Inga frågor, inga diskussioner, ingen snack – bara ren, passionerad handling som tar er steg för steg, närmare varandra.</p>
                 </div>
                 <button class="card-btn" id="boardGameBtn" type="button" disabled>Mata in spelarnamn</button>
             </article>
 
             <article class="game-card locked" data-game="dice">
                 <div>
-                    <span class="card-tag">Kommer snart</span>
                     <h2>Vågade tärningar</h2>
                     <p>Kortare, snabbare och mer direkt. Slå tärningen och kasta er rakt in.</p>
                 </div>
-                <button class="card-btn" type="button" disabled>Mata in spelarnamn</button>
+                <button class="card-btn" type="button" disabled>Kommer snart</button>
             </article>
         </section>
 
@@ -682,16 +669,25 @@
         function renderGames(players) {
             const ready = isPlayersComplete(players);
             const cards = document.querySelectorAll(".game-card");
-            const buttons = document.querySelectorAll(".card-btn");
             const boardBtn = document.getElementById("boardGameBtn");
 
-            cards.forEach((card) => card.classList.toggle("locked", !ready));
-            buttons.forEach((btn) => {
-                if (!ready) {
-                    btn.disabled = true;
-                    btn.textContent = "Mata in spelarnamn";
-                    btn.classList.remove("active");
+            cards.forEach((card) => {
+                const game = card.dataset.game;
+                const btn = card.querySelector(".card-btn");
+                if (game === "board") {
+                    card.classList.toggle("locked", !ready);
+                    if (!ready) {
+                        btn.disabled = true;
+                        btn.textContent = "Mata in spelarnamn";
+                        btn.classList.remove("active");
+                    }
+                    return;
                 }
+
+                card.classList.add("locked");
+                btn.disabled = true;
+                btn.textContent = "Kommer snart";
+                btn.classList.remove("active");
             });
 
             if (ready) {
@@ -797,6 +793,12 @@
         window.addEventListener("load", () => {
             rerender();
         });
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+            });
+        }
     </script>
 </body>
 </html>

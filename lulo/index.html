@@ -142,6 +142,7 @@
             width: 100%;
             max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 36px);
             overflow-y: auto;
+            overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
             box-shadow:
                 0 30px 60px -12px rgba(0, 0, 0, 0.9),
@@ -279,6 +280,49 @@
             color: rgba(229,231,235,0.7);
             font-size: 14px;
             line-height: 1.45;
+        }
+        .level-select-grid {
+            display: grid;
+            gap: 12px;
+            margin: 0 0 18px;
+            text-align: left;
+        }
+        .level-option input { display: none; }
+        .level-option label {
+            display: block;
+            padding: 16px 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            transition: border-color 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+            cursor: pointer;
+        }
+        .level-option-title {
+            display: block;
+            margin-bottom: 6px;
+            color: #f5f5f5;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+        .level-option-copy {
+            display: block;
+            color: rgba(229,231,235,0.7);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .level-option input:checked + label {
+            border-color: rgba(128,0,32,0.5);
+            background: linear-gradient(180deg, rgba(143,20,56,0.22), rgba(255,255,255,0.03));
+            box-shadow: 0 18px 32px rgba(128,0,32,0.16);
+        }
+        .welcome-note {
+            margin: 0 0 22px;
+            color: rgba(229,231,235,0.58);
+            font-size: 12px;
+            line-height: 1.6;
+            letter-spacing: 0.04em;
         }
         
         /* --- TÄRNING --- */
@@ -519,7 +563,40 @@
             <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Välkommen</div>
             <div id="welcomePlayers" class="text-2xl font-black uppercase tracking-[0.18em] mb-6"></div>
             <div class="text-xl leading-relaxed mb-6 text-gray-100 font-light italic">
-                Bla bla bla. Uppdateras inom kort...
+                Välj om ni vill njuta av hela resan från den mjukaste start till det mest intensiva slutet, eller om ni vill kasta er direkt in i hetluften. Oavsett vad ni väljer kommer ni att guidas genom en resa där påklädd närhet byts ut mot beröring, nakenhet och intensitet som ökar för varje steg ni tar.
+            </div>
+            <div class="level-select-grid">
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel1" value="0" checked>
+                    <label for="startLevel1">
+                        <span class="level-option-title">Nivå 1 - Mjukstart</span>
+                        <span class="level-option-copy">Standardvalet. En mjuk och sensuell väg in i spelet.</span>
+                    </label>
+                </div>
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel2" value="1">
+                    <label for="startLevel2">
+                        <span class="level-option-title">Nivå 2 - Värmen stiger!</span>
+                        <span class="level-option-copy">Hoppa rakt till en mer avklädd och djupare nivå.</span>
+                    </label>
+                </div>
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel3" value="2">
+                    <label for="startLevel3">
+                        <span class="level-option-title">Nivå 3 - Nu är det hett!</span>
+                        <span class="level-option-copy">För Er som vill öppna kvällen med total närvaro och tryck.</span>
+                    </label>
+                </div>
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel4" value="3">
+                    <label for="startLevel4">
+                        <span class="level-option-title">Nivå 4 - Njutning på er nivå</span>
+                        <span class="level-option-copy">Gå direkt in i den mest intensiva delen av Lust Loops.</span>
+                    </label>
+                </div>
+            </div>
+            <div class="welcome-note">
+                Efter varje runda får ni välja om ni vill spela om samma nivå eller levla upp till nästa.
             </div>
 
             <div class="flex flex-col gap-4">
@@ -536,7 +613,7 @@
             <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Båda i mål</div>
             <div id="roundEndTitle" class="text-2xl font-black uppercase tracking-[0.12em] mb-5">Vad vill ni nu?</div>
             <div id="roundEndText" class="text-lg leading-relaxed mb-8 text-gray-200 font-light">
-                Ni är klara med rundan. Vill ni stanna kvar på samma nivå eller höja temperaturen?
+                Ni är klara med rundan. Välj om ni vill spela om samma nivå eller gå vidare till nästa hetta.
             </div>
             <div class="round-choice-grid">
                 <button onclick="restartCurrentRound()" class="choice-card">
@@ -556,7 +633,7 @@
             <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Ny nivå</div>
             <div id="levelIntroTitle" class="text-2xl font-black uppercase tracking-[0.12em] mb-5">Nivå 2 av 4</div>
             <div id="levelIntroText" class="text-xl leading-relaxed mb-8 text-gray-100 font-light italic">
-                Från och med nu är det helt okej att låta kläder och underkläder falla om de börjar komma i vägen. Det som åker av får också stanna av resten av rundan.
+                En romantisk introduktion med fokus på beröring, smekningar och massage. Lättklätt med underkläderna på som minst. Här bygger vi förväntan...
             </div>
             <div class="flex flex-col gap-4">
                 <button onclick="closeLevelIntroModal()" class="btn-primary">Vi fattar</button>
@@ -637,9 +714,21 @@
             gameContentIntensity4
         ];
         const levelIntroContent = {
+            0: {
+                title: "Nivå 1 av 4",
+                text: "En romantisk introduktion med fokus på beröring, smekningar och massage. Lättklätt med underkläderna på som minst. Här bygger vi förväntan..."
+            },
             1: {
                 title: "Nivå 2 av 4",
-                text: "På den här nivån får plagg gärna tas av om de är i vägen. Det som tas av får förbli av resten av spelet."
+                text: "Intensiteten ökar och beröringen blir djupare. Här är det okej att låta kläderna falla när ni själva känner att de är i vägen för njutningen."
+            },
+            2: {
+                title: "Nivå 3 av 4",
+                text: "Det är dags att låta hud möta hud. Vi tar steget till total nakenhet och öppnar dörren för djupare utforskande av dolda fantasier och maktspel. Finns det klädesplagg kvar så tar ni av dem innan ni startar omgången."
+            },
+            3: {
+                title: "Nivå 4 av 4",
+                text: "Allt fokus ligger på fullständig njutning. Släpp alla spärrar och njut. Det är dags att ge vika för lusten, hängivelsen och mötet mellan Er."
             }
         };
 
@@ -1025,8 +1114,14 @@
             document.getElementById('welcomeModal').classList.add('active');
         }
 
+        function getSelectedStartRound() {
+            const selected = document.querySelector('input[name="startLevel"]:checked');
+            return selected ? Number(selected.value) || 0 : 0;
+        }
+
         function startGame() {
             document.getElementById('welcomeModal').classList.remove('active');
+            round = Math.max(0, Math.min(getSelectedStartRound(), maxRound));
             resetBoardForRound();
             beginRound(1);
         }
@@ -1249,6 +1344,12 @@
 
         window.onload = init;
         window.onresize = () => { updatePos(p1); updatePos(p2); if (pendingChallengePlayer) showChallengeTrigger(pendingChallengePlayer); };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../service-worker.js').catch(() => {});
+            });
+        }
     </script>
 </body>
 </html>
