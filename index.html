@@ -79,6 +79,20 @@
             font-size: 1rem;
             line-height: 1.65;
         }
+        .hero-copy-fade {
+            position: relative;
+            max-width: 620px;
+        }
+        .hero-copy-fade::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 28px;
+            background: linear-gradient(180deg, rgba(14,14,14,0), rgba(14,14,14,0.96));
+            pointer-events: none;
+        }
         .hero-copy + .hero-copy {
             margin-top: 14px;
         }
@@ -470,7 +484,9 @@
         <section class="hero">
             <p class="kicker">Lust, Love & Kinky encounters</p>
             <h1>Lekfullt.<br>Intimt.<br>Ofiltrerat.</h1>
-            <p class="hero-copy">Ett lekfullt universum för par som vill väcka lust, utforska nya roller och låta kvällen glida från mjuk närhet till mer vågade kontraster. Fyll i spelarna och hoppa in när ni är redo.</p>
+            <div class="hero-copy-fade">
+                <p class="hero-copy">Ett lekfullt universum för par som vill väcka lust, utforska nya roller och låta kvällen glida från mjuk närhet till vågade kontraster och samtal. <br>Fyll i spelarnas namn och välj ett spel här nedan när ni är redo.<br><br>Lust, Love & Kink – A Lovers' Game är skapat för par med öppna sinnen som vill få.....</p>
+            </div>
             <div class="hero-actions">
                 <button class="ghost-btn" id="openAboutBtn" type="button">Läs mer</button>
             </div>
@@ -557,6 +573,7 @@
             </div>
 
             <div class="modal-actions">
+                <button class="ghost-btn" id="clearPlayersBtn" type="button">Rensa spelare</button>
                 <button class="ghost-btn" id="closePlayersBtn" type="button">Stäng</button>
                 <button class="primary-btn" id="savePlayersBtn" type="button">Spara spelare</button>
             </div>
@@ -629,6 +646,13 @@
 
         function savePlayers(players) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+        }
+
+        function clearPlayers() {
+            playersState = getDefaultPlayers();
+            localStorage.removeItem(STORAGE_KEY);
+            populateModal(playersState);
+            rerender();
         }
 
         function trimName(value) {
@@ -723,6 +747,10 @@
 
         document.getElementById("closePlayersBtn").addEventListener("click", () => {
             setModalOpen(false);
+        });
+
+        document.getElementById("clearPlayersBtn").addEventListener("click", () => {
+            clearPlayers();
         });
 
         document.getElementById("openInstallGuideBtn").addEventListener("click", () => {
