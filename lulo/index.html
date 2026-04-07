@@ -338,6 +338,38 @@
             line-height: 1.6;
             letter-spacing: 0.04em;
         }
+        .gear-panel {
+            margin: 0 0 18px;
+            padding: 18px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+            text-align: left;
+        }
+        .gear-title {
+            margin: 0 0 8px;
+            color: rgba(255,255,255,0.92);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .gear-copy {
+            margin: 0 0 14px;
+            color: rgba(229,231,235,0.66);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+        .gear-list {
+            margin: 0;
+            padding-left: 18px;
+            color: rgba(255,255,255,0.86);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.9;
+        }
         
         /* --- TÄRNING --- */
         .dice-modal {
@@ -579,6 +611,7 @@
             <div class="text-xl leading-relaxed mb-6 text-gray-100 font-light italic">
                 Välj om ni vill njuta av hela resan från den mjukaste start till det mest intensiva slutet, eller om ni vill kasta er direkt in i hetluften. Oavsett vad ni väljer kommer ni att guidas genom en resa där påklädd närhet byts ut mot beröring, nakenhet och intensitet som ökar för varje steg ni tar.
             </div>
+            
             <div class="level-select-grid">
                 <div class="level-option">
                     <input type="radio" name="startLevel" id="startLevel1" value="0" checked>
@@ -612,12 +645,31 @@
             <div class="welcome-note">
                 Efter varje runda får ni välja om ni vill spela om samma nivå eller levla upp till nästa.
             </div>
-
             <div class="flex flex-col gap-4">
                 <button onclick="startGame()" class="btn-primary">Starta spelet!</button>
                 <button onclick="goBack()" class="text-gray-400 text-[10px] uppercase tracking-[0.3em] hover:text-white transition-colors">
                     Tillbaka
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gearModal" class="modal">
+        <div class="modal-content">
+            <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Förberedelser</div>
+            <div class="text-2xl font-black uppercase tracking-[0.12em] mb-5">Det här behövs</div>
+            <div class="gear-panel">
+                <ul class="gear-list">
+                    <li>Dildo</li>
+                    <li>Vibrerande leksak</li>
+                    <li>Flogger / Piska / Paddel</li>
+                    <li>Ögonbindel</li>
+                    <li>Massageolja / Glidmedel</li>
+                </ul>
+                <p class="gear-copy" style="margin:14px 0 0;">Saknar ni något? Improvisera!</p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <button onclick="closeGearModalAndStartRound()" class="btn-primary">OK</button>
             </div>
         </div>
     </div>
@@ -661,7 +713,7 @@
         const PLAYER_STORAGE_KEY = "luloPlayers";
         const GAME_STATE_STORAGE_KEY = "luloGameState";
         
-        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null;
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false;
         let labelVisitsByPlayer = { 1: {}, 2: {} };
         const maxRound = 3;
         const startAnchor = { x: 220, y: 40 };
@@ -760,6 +812,7 @@
             const effectiveOverlay = overlay
                 ?? (document.getElementById('challengeModal').classList.contains('active') ? 'challenge'
                 : document.getElementById('roundEndModal').classList.contains('active') ? 'roundEnd'
+                : document.getElementById('gearModal').classList.contains('active') ? 'gearIntro'
                 : document.getElementById('levelIntroModal').classList.contains('active') ? 'levelIntro'
                 : 'none');
 
@@ -774,6 +827,7 @@
                 timerExtraUsed,
                 firstFinisherId,
                 currentChallengeState,
+                gearIntroSeen,
                 labelVisitsByPlayer,
                 overlay: effectiveOverlay
             };
@@ -812,6 +866,7 @@
             timerExtraUsed = Boolean(state.timerExtraUsed);
             firstFinisherId = state.firstFinisherId === 1 || state.firstFinisherId === 2 ? state.firstFinisherId : null;
             currentChallengeState = state.currentChallengeState || null;
+            gearIntroSeen = Boolean(state.gearIntroSeen);
             labelVisitsByPlayer = state.labelVisitsByPlayer || { 1: {}, 2: {} };
             return true;
         }
@@ -852,6 +907,10 @@
                 }
                 if (restoredState.overlay === 'roundEnd') {
                     openRoundEndModal();
+                    return;
+                }
+                if (restoredState.overlay === 'gearIntro') {
+                    openGearModal();
                     return;
                 }
                 if (restoredState.overlay === 'levelIntro') {
@@ -1146,6 +1205,17 @@
             document.getElementById('welcomeModal').classList.add('active');
         }
 
+        function openGearModal() {
+            document.getElementById('gearModal').classList.add('active');
+            persistGameState('gearIntro');
+        }
+
+        function closeGearModalAndStartRound() {
+            gearIntroSeen = true;
+            document.getElementById('gearModal').classList.remove('active');
+            beginRound(1);
+        }
+
         function getSelectedStartRound() {
             const selected = document.querySelector('input[name="startLevel"]:checked');
             return selected ? Number(selected.value) || 0 : 0;
@@ -1155,7 +1225,8 @@
             document.getElementById('welcomeModal').classList.remove('active');
             round = Math.max(0, Math.min(getSelectedStartRound(), maxRound));
             resetBoardForRound();
-            beginRound(1);
+            gearIntroSeen = false;
+            openGearModal();
         }
 
         function goBack() {
