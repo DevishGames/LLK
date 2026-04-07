@@ -1,7 +1,7 @@
 {
-  "name": "LuLo",
-  "short_name": "LuLo",
-  "description": "LuLo spelmeny och brädspel i mobilvänligt app-läge.",
+  "name": "Lust, Love & Kinky encounters - A Lovers game...",
+  "short_name": "LLK",
+  "description": "Lust, Love & Kinky encounters - A Lovers game... med brädspelet Lust Loops i mobilvänligt app-läge.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
