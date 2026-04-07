@@ -79,6 +79,61 @@
             font-size: 1rem;
             line-height: 1.65;
         }
+        .hero-copy + .hero-copy {
+            margin-top: 14px;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 22px;
+        }
+        .safety-panel {
+            margin-top: 22px;
+            padding: 20px 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+        }
+        .safety-title {
+            margin: 0 0 10px;
+            color: #fff;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .signal-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .signal-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.82);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .signal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            box-shadow: 0 0 14px currentColor;
+        }
+        .signal-chip.green { color: #56f79a; }
+        .signal-chip.yellow { color: #ffd54d; }
+        .signal-chip.orange { color: #ff9d42; }
+        .signal-chip.red { color: #ff5c6b; }
+        .signal-chip .signal-dot { background: currentColor; }
 
         .summary-bar {
             display: flex;
@@ -414,8 +469,11 @@
     <div class="app">
         <section class="hero">
             <p class="kicker">Lust, Love & Kinky encounters</p>
-            <h1>Välj spel.<br>Ställ in spelare.<br>Kör igång.</h1>
-            <p class="hero-copy">Fyll i båda spelarna först. När ni är klara låses spelen upp och ni kan hoppa rakt in i det format ni vill köra.</p>
+            <h1>Lekfullt.<br>Intimt.<br>Ofiltrerat.</h1>
+            <p class="hero-copy">Ett lekfullt universum för par som vill väcka lust, utforska nya roller och låta kvällen glida från mjuk närhet till mer vågade kontraster. Fyll i spelarna och hoppa in när ni är redo.</p>
+            <div class="hero-actions">
+                <button class="ghost-btn" id="openAboutBtn" type="button">Läs mer</button>
+            </div>
         </section>
 
         <section class="summary-bar">
@@ -425,7 +483,7 @@
                     <span class="player-chip"><span class="player-dot pink"></span>Spelare 2 saknas</span>
                 </div>
             </div>
-            <button class="primary-btn" id="openPlayersBtn" type="button">Spelare</button>
+            <button class="primary-btn" id="openPlayersBtn" type="button">Mata in spelarnamn</button>
         </section>
 
         <section class="games" id="gamesGrid">
@@ -435,7 +493,7 @@
                     <h2>Frågor & Utmaningar</h2>
                     <p>Ett rakare upplägg med frågor, val och snabba utmaningar utan spelplan.</p>
                 </div>
-                <button class="card-btn" type="button" disabled>Fyll i spelare först</button>
+                <button class="card-btn" type="button" disabled>Mata in spelarnamn</button>
             </article>
 
             <article class="game-card locked" data-game="board">
@@ -444,7 +502,7 @@
                     <h2>Lust Loops</h2>
                     <p>Brädspelet Lust Loops med nivåer, utmaningar, tärning och rundor.</p>
                 </div>
-                <button class="card-btn" id="boardGameBtn" type="button" disabled>Fyll i spelare först</button>
+                <button class="card-btn" id="boardGameBtn" type="button" disabled>Mata in spelarnamn</button>
             </article>
 
             <article class="game-card locked" data-game="dice">
@@ -453,7 +511,7 @@
                     <h2>Vågade tärningar</h2>
                     <p>Kortare, snabbare och mer direkt. Slå tärningen och kasta er rakt in.</p>
                 </div>
-                <button class="card-btn" type="button" disabled>Fyll i spelare först</button>
+                <button class="card-btn" type="button" disabled>Mata in spelarnamn</button>
             </article>
         </section>
 
@@ -526,6 +584,29 @@
         </div>
     </div>
 
+    <div class="modal" id="aboutModal">
+        <div class="modal-card">
+            <p class="kicker">Om Appen</p>
+            <h2 class="modal-title">Lust, Love & Kinky encounters</h2>
+            <p class="modal-copy">Lust, Love & Kink – A Lovers' Game är skapat för par med öppna sinnen som vill få inspiration till sängkammaren, eller för de som vill fördjupa sin kontakt med varandra genom lekfullhet och passion mellan lakanen. Vi guidar er genom en natt ni sent kommer att glömma, från den mjukaste massage till pirrande kontraster där fasta grepp möter total hängivelse och upphetsning.</p>
+            <p class="modal-copy">Appen ger utrymme att utforska dolda fantasier och utmana invanda roller. Vi bjuder in till en värld där attraktion inte har några gränser och där alla får uppskatta alla, oavsett han, hon eller hen, där nyfikenheten på varandras oslipade sidor får stå i centrum. Oavsett om ni söker öm bekräftelse eller vill känna adrenalinet stiga i ett balanserat maktspel, är detta er plats för en spännande upptäcktsfärd.</p>
+            <div class="safety-panel" style="margin-top:0;">
+                <p class="safety-title">Säkerhet & Samtycke</p>
+                <p class="modal-copy" style="margin-bottom:0;">För en trygg upplevelse rekommenderar vi att ni använder de klassiska stoppljusen: Grön när allt känns bra, Gul när samma intensitet är okej men inte mer, Orange när tempo och intensitet behöver ner, och Röd när ni avbryter direkt. Trygghet är nyckeln till 100% njutning.</p>
+                <div class="signal-row">
+                    <span class="signal-chip green"><span class="signal-dot"></span>Grön</span>
+                    <span class="signal-chip yellow"><span class="signal-dot"></span>Gul</span>
+                    <span class="signal-chip orange"><span class="signal-dot"></span>Orange</span>
+                    <span class="signal-chip red"><span class="signal-dot"></span>Röd</span>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top:22px;">
+                <button class="ghost-btn" id="closeAboutBtn" type="button">Stäng</button>
+                <button class="primary-btn" id="aboutDoneBtn" type="button">Vi fattar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const STORAGE_KEY = "luloPlayers";
 
@@ -584,14 +665,14 @@
             buttons.forEach((btn) => {
                 if (!ready) {
                     btn.disabled = true;
-                    btn.textContent = "Fyll i spelare först";
+                    btn.textContent = "Mata in spelarnamn";
                     btn.classList.remove("active");
                 }
             });
 
             if (ready) {
                 boardBtn.disabled = false;
-                boardBtn.textContent = "Starta brädspelet";
+                boardBtn.textContent = "Starta Lust Loops";
                 boardBtn.classList.add("active");
             }
         }
@@ -624,6 +705,10 @@
             document.getElementById("installGuideModal").classList.toggle("active", isOpen);
         }
 
+        function setAboutOpen(isOpen) {
+            document.getElementById("aboutModal").classList.toggle("active", isOpen);
+        }
+
         let playersState = loadPlayers();
 
         function rerender() {
@@ -644,12 +729,24 @@
             setInstallGuideOpen(true);
         });
 
+        document.getElementById("openAboutBtn").addEventListener("click", () => {
+            setAboutOpen(true);
+        });
+
         document.getElementById("closeInstallGuideBtn").addEventListener("click", () => {
             setInstallGuideOpen(false);
         });
 
         document.getElementById("installGuideDoneBtn").addEventListener("click", () => {
             setInstallGuideOpen(false);
+        });
+
+        document.getElementById("closeAboutBtn").addEventListener("click", () => {
+            setAboutOpen(false);
+        });
+
+        document.getElementById("aboutDoneBtn").addEventListener("click", () => {
+            setAboutOpen(false);
         });
 
         document.getElementById("savePlayersBtn").addEventListener("click", () => {
@@ -671,10 +768,6 @@
 
         window.addEventListener("load", () => {
             rerender();
-            if (!isPlayersComplete(playersState)) {
-                populateModal(playersState);
-                setModalOpen(true);
-            }
         });
     </script>
 </body>

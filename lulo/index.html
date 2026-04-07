@@ -19,7 +19,29 @@
         body { background-color: #0a0a0a; color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         /* --- SPELPLANEN --- */
-        .game-wrapper { padding: max(16px, env(safe-area-inset-top)) 0 calc(220px + env(safe-area-inset-bottom)) 0; display: flex; justify-content: center; }
+        .board-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 130;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: max(14px, env(safe-area-inset-top)) 16px 14px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.94), rgba(0,0,0,0.8));
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+        }
+        .board-title {
+            color: rgba(255,255,255,0.88);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+        }
+        .game-wrapper { padding: calc(78px + env(safe-area-inset-top)) 0 calc(220px + env(safe-area-inset-bottom)) 0; display: flex; justify-content: center; }
         .board-stage {
             position: relative;
             width: min(96vw, 560px);
@@ -63,10 +85,10 @@
         .challenge-trigger.hidden { display: none; }
         .turn-trigger-board { position: absolute; z-index: 120; pointer-events: auto; }
         .board-nav-btn {
-            position: fixed;
-            top: max(16px, env(safe-area-inset-top));
-            right: 16px;
-            z-index: 130;
+            position: relative;
+            top: auto;
+            right: auto;
+            z-index: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -74,7 +96,7 @@
             padding: 0 16px;
             border-radius: 999px;
             border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.72);
+            background: rgba(10,10,10,0.96);
             color: rgba(255,255,255,0.9);
             font-size: 10px;
             font-weight: 800;
@@ -144,27 +166,26 @@
             justify-content: space-between;
             gap: 16px;
         }
-        .challenge-category {
+        .challenge-lead {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            border: 1px solid rgba(128,0,32,0.28);
-            background: rgba(128,0,32,0.12);
-            color: #d8a8b8;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: rgba(255,255,255,0.76);
             font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.32em;
+            letter-spacing: 0.28em;
         }
-        .challenge-category::before {
-            content: "";
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: #800020;
-            box-shadow: 0 0 16px rgba(128,0,32,0.7);
+        .challenge-lead-name {
+            color: var(--player-accent, #fff);
+            text-shadow: 0 0 16px color-mix(in srgb, var(--player-accent, #fff) 34%, transparent);
+        }
+        .challenge-lead-separator {
+            color: rgba(255,255,255,0.28);
+        }
+        .challenge-lead-label {
+            color: #d8a8b8;
         }
         .challenge-kicker {
             color: rgba(255,255,255,0.36);
@@ -262,6 +283,7 @@
         /* --- TÄRNING --- */
         .dice-modal {
             background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.7);
+            align-items: center;
         }
         .dice-modal-layout {
             display: flex;
@@ -382,7 +404,7 @@
             box-shadow: none !important;
         }
         @media (max-width: 640px) {
-            .game-wrapper { padding-bottom: calc(200px + env(safe-area-inset-bottom)); }
+            .game-wrapper { padding-top: calc(74px + env(safe-area-inset-top)); padding-bottom: calc(200px + env(safe-area-inset-bottom)); }
             .row { width: 72px; height: 72px; }
             .player-token { width: 24px; height: 24px; }
             .challenge-trigger {
@@ -430,8 +452,11 @@
 </head>
 <body>
 
+    <div class="board-header" id="boardHeader">
+        <div class="board-title">Lust Loops</div>
+        <button class="board-nav-btn" onclick="goBack()">Tillbaka</button>
+    </div>
     <div class="game-wrapper" id="board"></div>
-    <button class="board-nav-btn" onclick="goBack()">Tillbaka</button>
     <button id="challengeTrigger" class="challenge-trigger hidden" onclick="openChallengeFromBoard()"></button>
     <button id="turnTriggerBoard" class="challenge-trigger turn-trigger-board hidden" onclick="openDiceFromBoard()"></button>
 
@@ -461,7 +486,7 @@
         <div class="modal-content challenge-modal-content">
             <div class="challenge-shell">
                 <div class="challenge-topline">
-                    <div id="modalCategory" class="challenge-category">Kategori</div>
+                    <div id="modalLead" class="challenge-lead">Spelare - Kategori</div>
                     <div id="challengeLevel" class="challenge-kicker">Nivå 1 av 4</div>
                 </div>
                 <p id="modalText" class="challenge-text">...</p>
@@ -780,13 +805,14 @@
             const buttonWidth = btn.offsetWidth || 170;
             const buttonHeight = btn.offsetHeight || 44;
             const viewportPadding = 16;
+            const headerBottom = document.getElementById('boardHeader')?.getBoundingClientRect().bottom || 0;
             const minLeft = viewportPadding + (buttonWidth / 2);
             const maxLeft = window.innerWidth - viewportPadding - (buttonWidth / 2);
             const preferredLeft = rect.left + window.scrollX + (rect.width / 2);
             const left = Math.min(Math.max(preferredLeft, minLeft), maxLeft);
 
             let top = rect.top + window.scrollY - 12;
-            const minTop = window.scrollY + viewportPadding + buttonHeight;
+            const minTop = window.scrollY + headerBottom + 10 + buttonHeight;
             if (top < minTop) {
                 top = rect.bottom + window.scrollY + buttonHeight + 10;
                 const maxTop = window.scrollY + window.innerHeight - viewportPadding;
@@ -1082,6 +1108,7 @@
         function showChallenge(activeP) {
             const type = tilesData[activeP.pos].type;
             let cat = "", key = "";
+            const targetP = turn === 1 ? p2 : p1;
             const timerPanel = document.querySelector('.timer-panel');
             const timerBtn = document.getElementById('timerBtn');
             const boardViewBtn = document.getElementById('boardViewBtn');
@@ -1111,8 +1138,7 @@
             doneBtn.innerText = "Vi är klara";
 
             if (type === "finish") {
-                const targetP = getOtherPlayer(activeP);
-                document.getElementById('modalCategory').innerText = "Mål";
+                document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">Mål</span>`;
                 document.getElementById('modalText').innerHTML = decorateChallengeText(`Grattis - Du är först i mål! Luta dig tillbaka och njut av att ${targetP.name} kämpar sig fram till dig genom resterande utmaningar.`, activeP, targetP);
                 timerPanel.style.display = 'none';
                 timerBtn.style.display = 'none';
@@ -1129,10 +1155,9 @@
                 if (resolvedType === "mouth") { cat = type === "mystery" ? "Överraskning: Mun" : "Mun"; key = "mouth"; }
                 if (resolvedType === "breasts") { cat = type === "mystery" ? "Överraskning: Bröst" : "Bröst"; key = activeP.gender === "male" ? "breasts_male" : "breasts_female"; }
                 if (resolvedType === "butt") { cat = type === "mystery" ? "Överraskning: Rumpa" : "Rumpa"; key = "butt"; }
-                const targetP = turn === 1 ? p2 : p1;
                 const intensityContent = gameContentByIntensity[round] || gameContentIntensity4;
                 let text = intensityContent[key].replace("$ACTOR", activeP.name).replace("$TARGET", targetP.name);
-                document.getElementById('modalCategory').innerText = cat;
+                document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">${cat}</span>`;
                 document.getElementById('modalText').innerHTML = decorateChallengeText(text, activeP, targetP);
             }
             currentChallengeState = { playerId: activeP.id, pos: activeP.pos };
