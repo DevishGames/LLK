@@ -263,6 +263,218 @@
             gap: 12px;
             min-width: 230px;
         }
+        .slot-modal-content {
+            max-width: 760px;
+            padding: 30px;
+            border-radius: 44px;
+            text-align: left;
+            background:
+                radial-gradient(circle at top, rgba(198,152,61,0.18), transparent 34%),
+                linear-gradient(180deg, rgba(96,12,32,0.94), rgba(22,7,11,0.98));
+            border: 1px solid rgba(212,175,85,0.28);
+            box-shadow:
+                0 30px 70px rgba(0,0,0,0.52),
+                inset 0 1px 0 rgba(255,233,184,0.14);
+        }
+        .slot-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .slot-kicker {
+            color: rgba(255,235,196,0.72);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+        }
+        .slot-title {
+            margin: 0;
+            color: #f7ecd4;
+            font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.02;
+            text-transform: uppercase;
+        }
+        .slot-copy {
+            margin: 0;
+            color: rgba(255,241,219,0.76);
+            font-size: 15px;
+            line-height: 1.65;
+        }
+        .slot-attempts {
+            align-self: center;
+            color: rgba(255,235,196,0.72);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            text-align: center;
+        }
+        .slot-machine-frame {
+            position: relative;
+            padding: 22px;
+            border-radius: 34px;
+            border: 1px solid rgba(225,186,88,0.36);
+            background:
+                linear-gradient(180deg, rgba(255,215,117,0.12), rgba(255,215,117,0.03)),
+                rgba(14,6,8,0.72);
+            box-shadow:
+                inset 0 0 0 1px rgba(255,240,195,0.08),
+                0 18px 36px rgba(0,0,0,0.28);
+        }
+        .slot-machine-frame::before,
+        .slot-machine-frame::after {
+            content: "";
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,226,155,0.52), transparent);
+        }
+        .slot-machine-frame::before { top: 14px; }
+        .slot-machine-frame::after { bottom: 14px; }
+        .slot-reels {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+        }
+        .slot-reel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .slot-reel-label {
+            color: rgba(255,231,183,0.56);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+            text-align: center;
+        }
+        .slot-reel-window {
+            position: relative;
+            overflow: hidden;
+            min-height: 156px;
+            border-radius: 26px;
+            border: 1px solid rgba(255,223,148,0.18);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0)),
+                rgba(10,4,6,0.86);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+        }
+        .slot-reel-window::before,
+        .slot-reel-window::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 26px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .slot-reel-window::before {
+            top: 0;
+            background: linear-gradient(180deg, rgba(10,4,6,0.96), transparent);
+        }
+        .slot-reel-window::after {
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(10,4,6,0.96), transparent);
+        }
+        .slot-reel-track {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 156px;
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+        .slot-reel.is-spinning .slot-reel-track {
+            filter: blur(6px);
+            transform: scale(0.985);
+        }
+        .slot-reel-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            padding: 14px 12px;
+            text-align: center;
+            color: #fff2d5;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.25;
+            opacity: 0.42;
+            filter: blur(2.8px);
+            transition: opacity 0.2s ease, filter 0.2s ease;
+        }
+        .slot-reel-item.active {
+            color: #fff7e6;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            opacity: 1;
+            filter: none;
+            text-shadow: 0 0 18px rgba(255,224,145,0.22);
+            position: relative;
+        }
+        .slot-reel-item.active::before,
+        .slot-reel-item.active::after {
+            color: rgba(255,224,145,0.9);
+            font-weight: 900;
+        }
+        .slot-reel-item.active::before {
+            content: "★★★\00a0\00a0\00a0";
+        }
+        .slot-reel-item.active::after {
+            content: "\00a0\00a0\00a0★★★";
+        }
+        .slot-result {
+            display: none;
+            padding: 20px 22px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,225,155,0.12);
+            background: rgba(8,4,5,0.48);
+        }
+        .slot-result.active { display: block; }
+        .slot-result-label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255,231,183,0.56);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+        }
+        .slot-result-text {
+            margin: 0;
+            color: #fff4de;
+            font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+            line-height: 1.42;
+            font-style: italic;
+        }
+        .slot-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .slot-spin-btn {
+            background: linear-gradient(180deg, #e0b84f 0%, #9e6b11 100%);
+            color: #1b0d05;
+            border: 1px solid rgba(255,238,188,0.34);
+            box-shadow: 0 18px 34px rgba(93,55,0,0.28);
+        }
+        .slot-spin-btn:disabled {
+            background: linear-gradient(180deg, rgba(145,116,49,0.56), rgba(89,64,15,0.56));
+            color: rgba(27,13,5,0.62);
+        }
+        .slot-pick-btn.ready {
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            color: #f0fdf4;
+            border-color: rgba(187,247,208,0.34);
+            box-shadow: 0 18px 34px rgba(21,128,61,0.26);
+        }
         .round-choice-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -521,6 +733,13 @@
             .challenge-actions {
                 min-width: 0;
             }
+            .slot-modal-content {
+                padding: 24px 20px;
+                border-radius: 34px;
+            }
+            .slot-actions {
+                grid-template-columns: 1fr;
+            }
             .modal {
                 padding-left: 12px;
                 padding-right: 12px;
@@ -599,6 +818,41 @@
                             Vi är klara
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="slotModal" class="modal">
+        <div class="modal-content slot-modal-content">
+            <div class="slot-shell">
+                <div>
+                    <div class="slot-kicker">Överraskning</div>
+                    <h2 class="slot-title">Slumpa en utmaning!</h2>
+                </div>
+                <p class="slot-copy">Låt mystery-hjulet slumpa din nästa utmaning. Är du inte nöjd slumpar du fram en ny, du har 3 försök på dig. När du är nöjd klickar du på "Välj utmaning". <br>Om du använder alla 3 försök blir den tredje utmaningen automatiskt den ni får.</p>
+                <div id="slotAttempts" class="slot-attempts">3 försök kvar</div>
+
+                <div class="slot-machine-frame">
+                    <div class="slot-reels">
+                        <div class="slot-reel" id="slotReel">
+                            <div class="slot-reel-label">Överraskningsutmaning</div>
+                            <div class="slot-reel-window">
+                                <div class="slot-reel-track" id="slotTrack"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="slotResult" class="slot-result">
+                    <span class="slot-result-label">Resultat</span>
+                    <p id="slotResultText" class="slot-result-text"></p>
+                </div>
+
+                <div class="slot-actions">
+                    <button id="slotSpinBtn" onclick="spinSlotMachine()" class="btn-primary slot-spin-btn">Slumpa utmaning</button>
+                    <button id="slotRevealBtn" onclick="revealSlotChallenge()" class="btn-secondary slot-pick-btn" disabled>Välj utmaning</button>
+                    <button onclick="showBoardFromSlot()" class="btn-secondary">Till spelplanen</button>
                 </div>
             </div>
         </div>
@@ -713,65 +967,131 @@
         const PLAYER_STORAGE_KEY = "luloPlayers";
         const GAME_STATE_STORAGE_KEY = "luloGameState";
         
-        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false;
-        let labelVisitsByPlayer = { 1: {}, 2: {} };
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null;
+        const SLOT_MACHINE_MAX_SPINS = 3;
         const maxRound = 3;
         const startAnchor = { x: 220, y: 40 };
+        const mysteryChallengesByRound = {
+            0: [
+                { label: " 1A ", text: "Mystery 1A" },
+                { label: " 1B ", text: "Mystery 1B" },
+                { label: " 1C ", text: "Mystery 1C" },
+                { label: " 1D ", text: "Mystery 1D" }
+            ],
+            1: [
+                { label: "2A", text: "Mystery 2A" },
+                { label: "2B", text: "Mystery 2B" },
+                { label: "2C", text: "Mystery 2C" },
+                { label: "2D", text: "Mystery 2D" }
+            ],
+            2: [
+                { label: "3A", text: "Mystery 3A" },
+                { label: "3B", text: "Mystery 3B" },
+                { label: "3C", text: "Mystery 3C" },
+                { label: "3D", text: "Mystery 3D" }
+            ],
+            3: [
+                { label: "4A", text: "Mystery 4A" },
+                { label: "4B", text: "Mystery 4B" },
+                { label: "4C", text: "Mystery 4C" },
+                { label: "4D", text: "Mystery 4D" }
+            ]
+        };
         const tilesData = [
-            { type: "hands", label: "Händer", x: 270, y: 330 },
-            { type: "mouth", label: "Mun", x: 600, y: 330 },
-            { type: "breasts", label: "Bröst", x: 930, y: 330 },
-            { type: "butt", label: "Rumpa", x: 1280, y: 330 },
-            { type: "mystery", label: "?!?", x: 1280, y: 585 },
-            { type: "hands", label: "Händer", x: 1280, y: 850 },
-            { type: "mouth", label: "Mun", x: 930, y: 850 },
-            { type: "breasts", label: "Bröst", x: 600, y: 850 },
-            { type: "butt", label: "Rumpa", x: 270, y: 850 },
-            { type: "mystery", label: "?!?", x: 270, y: 1100 },
-            { type: "hands", label: "Händer", x: 270, y: 1390 },
-            { type: "mouth", label: "Mun", x: 600, y: 1390 },
-            { type: "breasts", label: "Bröst", x: 930, y: 1390 },
-            { type: "butt", label: "Rumpa", x: 1280, y: 1390 },
-            { type: "mystery", label: "?!?", x: 1280, y: 1650 },
-            { type: "hands", label: "Händer", x: 1280, y: 1925 },
-            { type: "mouth", label: "Mun", x: 930, y: 1925 },
-            { type: "breasts", label: "Bröst", x: 600, y: 1925 },
-            { type: "butt", label: "Rumpa", x: 270, y: 1925 },
-            { type: "mystery", label: "?!?", x: 270, y: 2180 },
+            { type: "hands", label: "Händer", variant: "a", x: 270, y: 330 },
+            { type: "mouth", label: "Mun", variant: "a", x: 600, y: 330 },
+            { type: "breasts", label: "Bröst", variant: "a", x: 930, y: 330 },
+            { type: "butt", label: "Rumpa", variant: "a", x: 1280, y: 330 },
+            { type: "mystery", label: "?!?", variant: "a", x: 1280, y: 585 },
+            { type: "hands", label: "Händer", variant: "a", x: 1280, y: 850 },
+            { type: "mouth", label: "Mun", variant: "a", x: 930, y: 850 },
+            { type: "breasts", label: "Bröst", variant: "a", x: 600, y: 850 },
+            { type: "butt", label: "Rumpa", variant: "a", x: 270, y: 850 },
+            { type: "mystery", label: "?!?", variant: "a", x: 270, y: 1100 },
+            { type: "hands", label: "Händer", variant: "b", x: 270, y: 1390 },
+            { type: "mouth", label: "Mun", variant: "b", x: 600, y: 1390 },
+            { type: "breasts", label: "Bröst", variant: "b", x: 930, y: 1390 },
+            { type: "butt", label: "Rumpa", variant: "b", x: 1280, y: 1390 },
+            { type: "mystery", label: "?!?", variant: "b", x: 1280, y: 1650 },
+            { type: "hands", label: "Händer", variant: "b", x: 1280, y: 1925 },
+            { type: "mouth", label: "Mun", variant: "b", x: 930, y: 1925 },
+            { type: "breasts", label: "Bröst", variant: "b", x: 600, y: 1925 },
+            { type: "butt", label: "Rumpa", variant: "b", x: 270, y: 1925 },
+            { type: "mystery", label: "?!?", variant: "b", x: 270, y: 2180 },
             { type: "finish", label: "Mål", x: 760, y: 2440 }
         ];
 
         const gameContentIntensity1 = {
-            hands_male: "$ACTOR, smek $TARGETs lår och massera utanpå underkläderna i runda cirklar så det känns igenom ordentligt.",
-            hands_female: "$ACTOR, smek $TARGET utanpå underkläderna och massera hans lem genom tyget med fasta rörelser.",
-            mouth: "$ACTOR, ge $TARGET mjuka, våta kyssar på halsen och i området bakom öronen.",
-            breasts_male: "$ACTOR, krama och smek $TARGETs bröst med stora, fasta rörelser utanpå underkläderna.",
-            breasts_female: "$ACTOR, krama och smek $TARGETs bröst med stora, fasta rörelser utanpå underkläderna.",
-            butt: "$ACTOR, ställ dig framför $TARGET, dra dina händer långsamt över skinkorna och klappa till lite lätt."
+            a: {
+                hands_male: `$ACTOR, låt dina händer massera $TARGETs lår. Smek henne med en lekfull hand utanpå underkläderna då och då för att markera din närvaro.`,
+                hands_female: `$ACTOR, låt dina händer massera $TARGETs lår. Smek honom med en lekfull hand utanpå underkläderna då och då för att markera din närvaro.`,
+                mouth: `$ACTOR, sök upp de känsliga punkterna på $TARGETs hals och bakom öronen med mjuka, våta kyssar.`,
+                breasts_male: `$ACTOR, stå bakom en sittande $TARGET och massera hennes axlar och fortsätt sen ner mot hennes bröst för att krama dom med mjuka händer utanpå underkläderna.`,
+                breasts_female: `$ACTOR, ställ dig bakom en sittande $TARGET. Massera hans axlar och låt händerna glida ner över bröstkorgen för att krama hans bröstmuskler med fasta, trygga grepp.`,
+                butt: `$ACTOR, ställ er på knä ansikte mot ansikte, tätt intill varandra. Omslut $TARGETs rumpa med dina händer och massera den mjukt. Avsluta med en lekfull klapp som markerar din närvaro när klockan ringer.`
+            },
+            b: {
+                hands_male: `$ACTOR, använd baksidan av dina händer för att smeka $TARGET från brösten upp mot halsen och ner igen. Låt beröringen vara fjäderlätt och retsam.`,
+                hands_female: `$ACTOR, använd baksidan av dina händer för att smeka $TARGET från magen upp mot halsen och ner igen. Låt beröringen vara fjäderlätt och retsam över hans bröstkorg och bröstvårtor.`,
+                mouth: `$ACTOR, be $TARGET sitta helt still med stängd mun. Använd dina egna läppar och tunga för att fjäderlätt smeka $TARGETs läppar. När klockan ringer, avslutar du med en djup kyss som belöning.`,
+                breasts_male: `$ACTOR, låt dina fingertoppar rita fjäderlätta cirklar runt hennes bröstvårtor utanpå kläderna. Se hur dom reagerar på din beröring.`,
+                breasts_female: `$ACTOR, låt dina naglar vandra fjäderlätt över hans bröst. Vågar du öka intensiteten och riva tag lite extra för att lämna små, vita märken i hans hud? Fokusera helt på $TARGETs reaktion när du tar i.`,
+                butt: `$ACTOR, ställ dig bakom $TARGET när hen böjer sig fram över sängen. Låt dina händer smeka över skinkorna och rispa långsamt med naglarna i långa, mjuka drag som lämnar små vita ränder.`
+            }
         };
         const gameContentIntensity2 = {
-            hands_male: "$ACTOR, använd en vibrator/dildo och reta $TARGETs kön, låt den glida och massera utanpå eller runtom, utan att penetrera.",
-            hands_female: "$ACTOR, använd en vibrator eller dildo och reta $TARGETs kön med. Börja bakom kulorna och vandra långsamt upp till toppen och ner igen.",
-            mouth: "$ACTOR, utforska $TARGETs bröstvårtor med en kombination av sug, slick och nafs.",
-            breasts_male: "$ACTOR, använd massageolja och massera $TARGETs bröst och bröstkorg med fokus på njutning.",
-            breasts_female: "$ACTOR, använd massageolja och massera $TARGETs bröst och bröstkorg med fokus på njutning.",
-            butt: "$ACTOR, massera $TARGETs rumpa och insida lår ordentligt med massageolja."
+            a: {
+                hands_male: `$ACTOR, väck $TARGETs lust med en vibrator. Låt vibrationerna dansa över huden runtom hennes kön – fokusera helt på de yttre, känsliga delarna, utan penetration.`,
+                hands_female: `$ACTOR, använd en vibrator för att testa $TARGETs erogena zoner. Börja vid toppen på hans lem och rör dig långsamt, långsamt ner mellan benen. Lyssna på varje andetag och känn varje muskelryckning för att avgöra om du ska stanna vid hans lem eller om du kan fortsätta utforska längre söderöver. Låt vibratorn och signalerna från hans kropp styra vart utmaningen tar dig.`,
+                mouth: `$ACTOR, låt dina läppar utforska $TARGETs bröstvårtor. Håll munnen stängd och använd bara läpparna – växla mellan heta andetag och mjuka smekningar.`,
+                breasts_male: `$ACTOR, ställ er på knä mitt emot varandra. Klä av $TARGET på överkroppen och ta in åsynen av henne. Massera hennes bröst och bröstvårtor med en blandning av mjuka handflator och retsamma fingertoppar. Lyft, nyp och smek brösten medan ni håller oavbruten ögonkontakt.`,
+                breasts_female: `$ACTOR, ställ er på knä mitt emot varandra. Klä av $TARGET på överkroppen och ta in åsynen av honom. Massera hans bröstkorg med en blandning av mjuka handflator och retsamma fingertoppar blandat med nyp och rispande naglar. Håll oavbruten ögonkontakt och läs av hans reaktioner.`,
+                butt: `$ACTOR, använd varm olja för att massera $TARGETs rumpa och insida lår. Fokusera på att bygga upp en elektrisk spänning genom att variera trycket i dina handflator och vandra högt upp på låren.`
+            },
+            b: {
+                hands_male: `$ACTOR, använd en dildo och rikligt med glidmedel för att smeka henne runtom hennes öppning, men kom ihåg: ingen penetration är tillåten än.`,
+                hands_female: `$ACTOR, be $TARGET stå på golvet medan du sitter framför honom i sängen, använd en stroker eller dina händer och rikligt med glidmedel för att smeka hans lem. Smek fram och tillbaka längs hela hans längd, men kom ihåg: håll tempot lugnt, långsamt och retsamt.`,
+                mouth: `$ACTOR, lägg dig mellan $TARGETs ben och håll din mun så nära du kan utan att nudda. Blås och andas tungt för att stimulera utan beröring. När klockan ringer, ger du en blöt kyss direkt på $TARGETs kön.`,
+                breasts_male: `$ACTOR, ställ dig bakom en sittande $TARGET. Använd massageolja och låt dina händer omsluta hennes bröst i sin helhet. Fokusera på långa, njutningsfulla drag och beröring. Massera över bröstvårtorna utan att nypa, dra eller ge dom direkt uppvaktning.`,
+                breasts_female: `$ACTOR, ställ dig bakom en sittande $TARGET. Använd massageolja och låt dina händer omsluta hans bröstmuskler. Fokusera på långa, njutningsfulla drag och tyngd. Undvik direkt kontakt med bröstvårtorna – låt förväntan bygga upp spänningen.`,
+                butt: `$ACTOR, be $TARGET ligga helt stilla på mage med särade ben. Använd en generös mängd olja eller glidmedel för att utforska området mellan skinkorna. Massera retsamt nära den bakre öppningen utan att vidröra den direkt – om $TARGET har svårt att ligga still, påminn med lätta, snabba, smisk.`
+            }
         };
         const gameContentIntensity3 = {
-            hands_male: "$ACTOR, sätt dig mellan $TARGETs lår och massera henne med en vibrator eller dildo, låt den långsamt långsamt glida in, stanna några sekunder innan du långsamt för ut den igen.",
-            hands_female: "Med en stroker eller din hand och mycket glidmedel/saliv, massera $TARGETs lem långsamt långsamt upp och ner.",
-            mouth: "$ACTOR, ge $TARGET den våtaste orala stimulansen du kan. Låt saliv droppa ner över könet från din mun med jämna mellanrum medans du ber $TARGET att se på.",
-            breasts_male: "$ACTOR, sätt en ögonbindel på $TARGET för att sedan använda massage, nyp och en vibrator till att reta hennes bröstvårtor.",
-            breasts_female: "$ACTOR, sätt en ögonbindel på $TARGET för att sedan använda massage, nyp och en vibrator till att reta hans bröstvårtor.",
-            butt: "$ACTOR, be $TARGET stå med fötterna på golvet och böja sig fram - Dela ut några bestämda smisk blandat med massage av den bakre öppningen (utan penetration)."
+            a: {
+                hands_male: `$ACTOR, placera dig mellan $TARGETs lår. Reta henne genom att långsamt föra in en leksak, pausa, och njut av hennes reaktion innan du långsamt drar ut den igen.`,
+                hands_female: `$ACTOR, sätt dig mellan $TARGETs ben och massera det retsamma området bakom hans lem med mjuka, cirkulära rörelser. Be om ögonkontakt och lyssna på hans andning för att känna in hans önskan.`,
+                mouth: `$ACTOR, ge $TARGET den våtaste orala njutning du kan frambringa. Växla mellan att låta saliv droppa ner över könet från din mun och intensiv oral stimulans. Kräv oavbruten ögonkontakt med $TARGET så att du ser varje reaktion.`,
+                breasts_male: `$ACTOR, be $TARGET ta på sig en ögonbindel och lägga sig ner. Använd dina händer och en vibrator för att reta hennes bröstvårtor. Kan du få dem att styvna innan klockan ringer?`,
+                breasts_female: `$ACTOR, be $TARGET ta på sig en ögonbindel och lägga sig ner. Använd dina händer och en vibrator för att reta hans bröstvårtor. Kan du få dem att styvna innan klockan ringer?`,
+                butt: `$ACTOR, be $TARGET böja sig fram över sängen. Inled med lätta smisk som gradvis ökar i intensitet. Växla mellan att massera huden du smiskat och att retsamt cirkulera ett finger runt den bakre öppningen.`
+            },
+            b: {
+                hands_male: `$ACTOR, använd glidmedel och dina fingrar för att utforska $TARGETs innersta från en ny vinkel. Be henne stå på alla fyra i sängen och sära ordentligt – låt dina fingrar vandra retsamt mellan hennes öppningar.`,
+                hands_female: `$ACTOR, använd glidmedel och dina fingrar och händer för att utforska $TARGETs känsligaste delar från en ny vinkel. Be honom stå på alla fyra i sängen – låt dina fingrar vandra retsamt från hans lem och bakåt.`,
+                mouth: `$ACTOR, ge $TARGET en intensiv oral upplevelse. Ge ditt allt med kyssar, slick, sug och nafs – men se till att $TARGET stannar precis vid gränsen utan att nå klimax.`,
+                breasts_male: `$ACTOR, fixera $TARGETs händer över hennes huvud med din ena hand. Nyp i hennes bröstvårtor och dra lätt i dem med andra handen medan ni har ögonkontakt. Börja försiktig och öka intensiteten allt eftersom.`,
+                breasts_female: `$ACTOR, fixera $TARGETs händer över hans huvud med din ena hand. Använd dina naglar och fingrar för att nypa och dra i hans bröstvårtor medan ni har intensiv ögonkontakt. Öka intensiteten i takt med hans tunga andhämtning.`,
+                butt: `$ACTOR, be $TARGET stå på alla fyra. Använd en leksak för att massera den bakre öppningen och låt den glida retsamt mellan skinkorna, utan penetration. Samtidigt drar du lätt i $TARGETs hår eller placerar handen under hakan för att luta hens huvud bakåt.`
+            }
         };
         const gameContentIntensity4 = {
-            hands_male: "Använd dina händer för att göra det skönt för $TARGET.",
-            hands_female: "Använd dina händer för att göra det skönt för $TARGET.",
-            mouth: "$ACTOR, använd en dildo eller vibrator på $TARGET samtidigt som du ger oralsex i en ställning du väljer.",
-            breasts_male: "Använd en dildo eller vibrator på $TARGET medans du suger, slickar och nafsar på hennes bröst.",
-            breasts_female: "$ACTOR, massera in dina bröst med olja/glid/saliv och massera $TARGETs lem mellan dina bröst.",
-            butt: "Be $TARGET lägga sig i önskad ställning, massera den bakre öppningen och långsamt för in ett finger samtidigt som du smiskar och ger framsidan kärlek."
+            a: {
+                hands_male: `$ACTOR, använd dina händer för att leda $TARGET så nära gränsen till klimax du bara kan, utan att låta henne gå över den. Lek med hennes frustration och njutning.`,
+                hands_female: `$ACTOR, använd dina händer för att leda $TARGET så nära gränsen till klimax du bara kan, utan att låta honom gå över den. Lek med hans frustration och njutning.`,
+                mouth: `$ACTOR, använd en leksak på $TARGET samtidigt som du ger oralsex. Välj själv om leksaken ska reta eller penetrera, i den ställning du anser ger mest njutning.`,
+                breasts_male: `$ACTOR, använd en dildo eller vibrator där nere på $TARGET medan du ligger bredvid henne i sängen och samtidigt suger, slickar och nafsar på hennes bröst.`,
+                breasts_female: `$ACTOR, använd en dildo eller vibrator för att smeka $TARGETs lem medan du ligger tätt intill honom i sängen. Sug, slicka och nafsa samtidigt intensivt på hans bröstvårtor.`,
+                butt: `$TARGET väljer ställning. $ACTOR, massera den bakre öppningen och arbeta långsamt in ett finger med hjälp av rikligt med glidmedel. För ut det långsamt och upprepa rörelsen rytmiskt tills klockan ringer.`
+            },
+            b: {
+                hands_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet vid kanten och ögonbindel på. Ställ dig vid hennes huvud och massera hennes bröst med en generös mängd massageolja och lyssna på hennes andhämtning.`,
+                hands_female: `$ACTOR, be $TARGET lägga sig på rygg med ögonbindel. Ställ dig på golvet vid hans huvud och massera honom från bröstkorg ner mot hans lem med en generös mängd olja. Låt dina bröst nudda hans ansikte och reta hans mun medan du lyssnar på hans tunga andhämtning.`,
+                mouth: `$ACTOR, ta total kontroll. Ge oralsex men växla med att försiktigt nafsa och dra i $TARGETs kön med dina tänder och händer. Lyssna på flämtningarna för att veta om du ska öka eller sänka intensiteten.`,
+                breasts_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet nära kanten. Ställ dig vid hennes huvud och be henne pressa ihop brösten med sina händer. Använd en dildo och rikligt med glidmedel för att simulera ett intensivt bröstknull.`,
+                breasts_female: `$ACTOR, massera $TARGETs lem med dina bröst. Smörj in dem med rikligt med olja eller saliv och kläm hans lem hårt mellan dem. För dina bröst rytmiskt upp och ner utan att han tappar kontrollen.`,
+                butt: `$ACTOR, använd rikligt med glidmedel. För in ett finger eller en dildo i $TARGETs bakre öppning och penetrera långsamt. Samtidigt ska du lätt och retsamt smiska över könet med din hand eller en flogger.`
+            }
         };
         const gameContentByIntensity = [
             gameContentIntensity1,
@@ -811,6 +1131,7 @@
         function persistGameState(overlay = null) {
             const effectiveOverlay = overlay
                 ?? (document.getElementById('challengeModal').classList.contains('active') ? 'challenge'
+                : document.getElementById('slotModal').classList.contains('active') ? 'slot'
                 : document.getElementById('roundEndModal').classList.contains('active') ? 'roundEnd'
                 : document.getElementById('gearModal').classList.contains('active') ? 'gearIntro'
                 : document.getElementById('levelIntroModal').classList.contains('active') ? 'levelIntro'
@@ -828,7 +1149,7 @@
                 firstFinisherId,
                 currentChallengeState,
                 gearIntroSeen,
-                labelVisitsByPlayer,
+                slotMachineState,
                 overlay: effectiveOverlay
             };
 
@@ -849,6 +1170,16 @@
             }
         }
 
+        function getSlotDebugConfig() {
+            const params = new URLSearchParams(window.location.search);
+            const wantsSlot = window.location.hash === '#slot' || params.get('slot') === '1';
+            if (!wantsSlot) return null;
+
+            const requestedRound = Number(params.get('round'));
+            const safeRound = Number.isInteger(requestedRound) ? Math.max(0, Math.min(requestedRound, maxRound)) : 0;
+            return { round: safeRound };
+        }
+
         function applyRestoredGameState(state) {
             if (!state) return false;
 
@@ -867,7 +1198,7 @@
             firstFinisherId = state.firstFinisherId === 1 || state.firstFinisherId === 2 ? state.firstFinisherId : null;
             currentChallengeState = state.currentChallengeState || null;
             gearIntroSeen = Boolean(state.gearIntroSeen);
-            labelVisitsByPlayer = state.labelVisitsByPlayer || { 1: {}, 2: {} };
+            slotMachineState = state.slotMachineState || null;
             return true;
         }
 
@@ -890,6 +1221,20 @@
             });
             createToken(p1); createToken(p2);
             updateStatus();
+            const slotDebugConfig = getSlotDebugConfig();
+            if (slotDebugConfig) {
+                round = slotDebugConfig.round;
+                pendingChallengePlayer = p1;
+                pendingDicePlayer = null;
+                currentChallengeState = null;
+                slotMachineState = null;
+                setTimeout(() => {
+                    updatePos(p1);
+                    updatePos(p2);
+                    openSlotMachine(p1);
+                }, 600);
+                return;
+            }
             const restoredState = restoreGameState();
             const hasRestoredGame = applyRestoredGameState(restoredState);
             setTimeout(() => {
@@ -903,6 +1248,10 @@
                 updateStatus();
                 if (restoredState.overlay === 'challenge' && pendingChallengePlayer) {
                     showChallenge(pendingChallengePlayer);
+                    return;
+                }
+                if (restoredState.overlay === 'slot' && pendingChallengePlayer) {
+                    openSlotMachine(pendingChallengePlayer, true);
                     return;
                 }
                 if (restoredState.overlay === 'roundEnd') {
@@ -1026,30 +1375,6 @@
             return null;
         }
 
-        function getTileForRoll(player, steps) {
-            const targetIndex = Math.min(player.pos + steps, tilesData.length - 1);
-            return tilesData[targetIndex];
-        }
-
-        function getAdjustedRoll(player, initialRoll) {
-            const candidates = [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5];
-            for (const offset of candidates) {
-                const roll = initialRoll + offset;
-                if (roll < 1 || roll > 6) continue;
-                const tile = getTileForRoll(player, roll);
-                if (!tile || tile.type === "finish") return roll;
-                const visitCount = labelVisitsByPlayer[player.id][tile.label] || 0;
-                if (visitCount < 2) return roll;
-            }
-            return initialRoll;
-        }
-
-        function registerTileVisit(player) {
-            const tile = tilesData[player.pos];
-            if (!tile || tile.type === "finish") return;
-            labelVisitsByPlayer[player.id][tile.label] = (labelVisitsByPlayer[player.id][tile.label] || 0) + 1;
-        }
-
         function resetBoardForRound() {
             hideChallengeTrigger();
             hideTurnTrigger();
@@ -1060,7 +1385,7 @@
             pendingDicePlayer = null;
             isMoving = false;
             firstFinisherId = null;
-            labelVisitsByPlayer = { 1: {}, 2: {} };
+            slotMachineState = null;
             p1.pos = -1;
             p2.pos = -1;
             updatePos(p1);
@@ -1114,6 +1439,35 @@
             persistGameState('roundEnd');
         }
 
+        function openChallengeContent(activeP, category, text) {
+            const timerPanel = document.querySelector('.timer-panel');
+            const timerBtn = document.getElementById('timerBtn');
+            const boardViewBtn = document.getElementById('boardViewBtn');
+            const doneBtn = document.getElementById('doneBtn');
+            const targetP = turn === 1 ? p2 : p1;
+
+            clearInterval(timerInterval);
+            timerHasStarted = false;
+            timerExtraUsed = false;
+            applyChallengeAccent(activeP);
+            document.getElementById('challengeLevel').innerText = `Nivå ${Math.min(round + 1, maxRound + 1)} av ${maxRound + 1}`;
+            document.getElementById('timer-display').innerText = "--:--";
+            document.getElementById('timer-display').classList.add('timer-inactive');
+            setTimerButtonState({ text: "Starta njutningen", disabled: false });
+            document.querySelector('.timer-panel').classList.remove('timer-panel-active');
+            timerPanel.style.display = '';
+            timerBtn.style.display = '';
+            boardViewBtn.style.display = '';
+            doneBtn.style.width = '';
+            doneBtn.innerText = "Vi är klara";
+            document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">${category}</span>`;
+            applyChallengeTextSizing(text);
+            document.getElementById('modalText').innerHTML = decorateChallengeText(text, activeP, targetP);
+            currentChallengeState = { playerId: activeP.id, pos: activeP.pos, category, text };
+            document.getElementById('challengeModal').classList.add('active');
+            persistGameState('challenge');
+        }
+
         function restartCurrentRound() {
             document.getElementById('roundEndModal').classList.remove('active');
             resetBoardForRound();
@@ -1153,6 +1507,158 @@
             if (length >= 105) {
                 modalText.classList.add('size-medium');
             }
+        }
+
+        function normalizeMysteryChallenge(entry, roundIndex, challengeIndex) {
+            if (typeof entry === 'string') {
+                const fallbackLabel = `${roundIndex + 1}${String.fromCharCode(65 + challengeIndex)}`;
+                return { label: fallbackLabel, text: entry };
+            }
+            return {
+                label: entry?.label || `${roundIndex + 1}${String.fromCharCode(65 + challengeIndex)}`,
+                text: entry?.text || entry?.label || ''
+            };
+        }
+
+        function renderMysteryReel(challenges, selectedIndex) {
+            const track = document.getElementById('slotTrack');
+            const total = challenges.length;
+            const previousIndex = (selectedIndex - 1 + total) % total;
+            const nextIndex = (selectedIndex + 1) % total;
+            const previous = normalizeMysteryChallenge(challenges[previousIndex], round, previousIndex);
+            const current = normalizeMysteryChallenge(challenges[selectedIndex], round, selectedIndex);
+            const next = normalizeMysteryChallenge(challenges[nextIndex], round, nextIndex);
+            track.innerHTML = `
+                <div class="slot-reel-item">${previous.label}</div>
+                <div class="slot-reel-item active">${current.label}</div>
+                <div class="slot-reel-item">${next.label}</div>
+            `;
+        }
+
+        function renderSlotResultText(text) {
+            const actor = pendingChallengePlayer || (turn === 1 ? p1 : p2);
+            const target = actor.id === 1 ? p2 : p1;
+            document.getElementById('slotResultText').innerHTML = decorateChallengeText(text, actor, target);
+            document.getElementById('slotResult').classList.add('active');
+        }
+
+        function getAvailableMysteryIndexes(challenges, usedIndexes = []) {
+            return challenges.map((_, index) => index).filter(index => !usedIndexes.includes(index));
+        }
+
+        function updateSlotAttemptsText(attemptsUsed, attemptsMax, canSpin) {
+            const attemptsEl = document.getElementById('slotAttempts');
+            const attemptsLeft = Math.max(0, attemptsMax - attemptsUsed);
+            attemptsEl.innerText = canSpin
+                ? `${attemptsLeft} försök kvar`
+                : `Alla ${attemptsMax} försök använda`;
+        }
+
+        function setSlotButtonState({ spinning, ready, attemptsUsed = 0, attemptsMax = SLOT_MACHINE_MAX_SPINS, canSpin = true }) {
+            const spinBtn = document.getElementById('slotSpinBtn');
+            const revealBtn = document.getElementById('slotRevealBtn');
+            spinBtn.disabled = spinning || !canSpin;
+            spinBtn.innerText = spinning ? "Slumpar..." : canSpin ? "Slumpa utmaning" : "Inga försök kvar";
+            revealBtn.disabled = !ready;
+            revealBtn.classList.toggle('ready', ready);
+            updateSlotAttemptsText(attemptsUsed, attemptsMax, canSpin);
+        }
+
+        function randomChoice(options) {
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function openSlotMachine(activeP, restore = false) {
+            const challenges = mysteryChallengesByRound[round] || mysteryChallengesByRound[0];
+            const targetP = activeP.id === 1 ? p2 : p1;
+            const matchingSavedState = slotMachineState && slotMachineState.playerId === activeP.id && slotMachineState.pos === activeP.pos && slotMachineState.round === round;
+            const hasSavedResult = matchingSavedState && slotMachineState.challengeText;
+            const selectedIndex = hasSavedResult ? slotMachineState.challengeIndex : 0;
+            const usedChallengeIndexes = matchingSavedState && Array.isArray(slotMachineState.usedChallengeIndexes)
+                ? slotMachineState.usedChallengeIndexes
+                : [];
+            const canSpin = usedChallengeIndexes.length < SLOT_MACHINE_MAX_SPINS
+                && getAvailableMysteryIndexes(challenges, usedChallengeIndexes).length > 0;
+
+            document.getElementById('slotReel').classList.remove('is-spinning');
+            renderMysteryReel(challenges, selectedIndex);
+            document.getElementById('slotResult').classList.remove('active');
+
+            slotMachineState = {
+                playerId: activeP.id,
+                pos: activeP.pos,
+                round,
+                targetId: targetP.id,
+                challengeLabel: hasSavedResult ? slotMachineState.challengeLabel : null,
+                challengeText: hasSavedResult ? slotMachineState.challengeText : null,
+                challengeIndex: hasSavedResult ? slotMachineState.challengeIndex : null,
+                usedChallengeIndexes
+            };
+
+            if (hasSavedResult) {
+                renderSlotResultText(slotMachineState.challengeText);
+                setSlotButtonState({ spinning: false, ready: true, attemptsUsed: usedChallengeIndexes.length, canSpin });
+            } else {
+                setSlotButtonState({ spinning: false, ready: false, attemptsUsed: usedChallengeIndexes.length, canSpin });
+            }
+
+            document.getElementById('slotModal').classList.add('active');
+            persistGameState('slot');
+        }
+
+        function spinSlotMachine() {
+            if (!pendingChallengePlayer || !slotMachineState) return;
+            const challenges = mysteryChallengesByRound[round] || mysteryChallengesByRound[0];
+            const reelEl = document.getElementById('slotReel');
+            const usedChallengeIndexes = Array.isArray(slotMachineState.usedChallengeIndexes) ? slotMachineState.usedChallengeIndexes : [];
+            const availableIndexes = getAvailableMysteryIndexes(challenges, usedChallengeIndexes);
+
+            if (usedChallengeIndexes.length >= SLOT_MACHINE_MAX_SPINS || availableIndexes.length === 0) {
+                setSlotButtonState({ spinning: false, ready: Boolean(slotMachineState.challengeText), attemptsUsed: usedChallengeIndexes.length, canSpin: false });
+                return;
+            }
+
+            document.getElementById('slotResult').classList.remove('active');
+            setSlotButtonState({ spinning: true, ready: false, attemptsUsed: usedChallengeIndexes.length, canSpin: true });
+
+            reelEl.classList.add('is-spinning');
+            const intervalId = setInterval(() => {
+                const previewIndex = randomChoice(availableIndexes);
+                renderMysteryReel(challenges, previewIndex);
+            }, 90);
+            reelEl.dataset.intervalId = String(intervalId);
+
+            setTimeout(() => {
+                clearInterval(Number(reelEl.dataset.intervalId));
+                reelEl.classList.remove('is-spinning');
+                const selectedIndex = randomChoice(availableIndexes);
+                const selectedChallenge = normalizeMysteryChallenge(challenges[selectedIndex], round, selectedIndex);
+                const nextUsedChallengeIndexes = [...usedChallengeIndexes, selectedIndex];
+                const canSpinAgain = nextUsedChallengeIndexes.length < SLOT_MACHINE_MAX_SPINS
+                    && getAvailableMysteryIndexes(challenges, nextUsedChallengeIndexes).length > 0;
+                slotMachineState.challengeIndex = selectedIndex;
+                slotMachineState.challengeLabel = selectedChallenge.label;
+                slotMachineState.challengeText = selectedChallenge.text;
+                slotMachineState.usedChallengeIndexes = nextUsedChallengeIndexes;
+                renderMysteryReel(challenges, selectedIndex);
+                renderSlotResultText(slotMachineState.challengeText);
+                setSlotButtonState({ spinning: false, ready: true, attemptsUsed: nextUsedChallengeIndexes.length, canSpin: canSpinAgain });
+                persistGameState('slot');
+            }, 2000);
+        }
+
+        function revealSlotChallenge() {
+            if (!pendingChallengePlayer || !slotMachineState?.challengeText) return;
+            const text = slotMachineState.challengeText;
+            document.getElementById('slotModal').classList.remove('active');
+            openChallengeContent(pendingChallengePlayer, slotMachineState.challengeLabel || "Överraskning", text);
+        }
+
+        function showBoardFromSlot() {
+            if (!pendingChallengePlayer) return;
+            document.getElementById('slotModal').classList.remove('active');
+            persistGameState('none');
+            setTimeout(() => showChallengeTrigger(pendingChallengePlayer), 180);
         }
 
         function applyChallengeAccent(player) {
@@ -1245,7 +1751,6 @@
             hideTurnTrigger();
             pendingChallengePlayer = null;
             pendingDicePlayer = null;
-            const activePlayer = turn === 1 ? p1 : p2;
             const diceDisplay = document.getElementById('dice-modal-display');
             const diceResult = document.getElementById('dice-modal-result');
             diceDisplay.classList.remove('hidden');
@@ -1257,7 +1762,7 @@
                 await new Promise(r => setTimeout(r, 110));
             }
             const rawVal = Math.floor(Math.random()*6)+1;
-            const val = getAdjustedRoll(activePlayer, rawVal);
+            const val = rawVal;
             diceDisplay.classList.remove('dice-rolling');
             diceDisplay.classList.add('hidden');
             diceDisplay.style.transform = 'none';
@@ -1280,7 +1785,6 @@
                 await new Promise(r => setTimeout(r, 550));
             }
             isMoving = false;
-            registerTileVisit(active);
             pendingChallengePlayer = active;
             updateStatus();
             persistGameState('none');
@@ -1306,7 +1810,9 @@
         }
 
         function showChallenge(activeP) {
-            const type = tilesData[activeP.pos].type;
+            const tile = tilesData[activeP.pos];
+            const type = tile.type;
+            const variant = tile.variant || "a";
             let cat = "", key = "";
             const targetP = turn === 1 ? p2 : p1;
             const timerPanel = document.querySelector('.timer-panel');
@@ -1323,21 +1829,30 @@
                 return;
             }
 
-            clearInterval(timerInterval);
-            timerHasStarted = false;
-            timerExtraUsed = false;
-            applyChallengeAccent(activeP);
-            document.getElementById('timer-display').innerText = "--:--";
-            document.getElementById('timer-display').classList.add('timer-inactive');
-            setTimerButtonState({ text: "Starta njutningen", disabled: false });
-            document.querySelector('.timer-panel').classList.remove('timer-panel-active');
-            timerPanel.style.display = '';
-            timerBtn.style.display = '';
-            boardViewBtn.style.display = '';
-            doneBtn.style.width = '';
-            doneBtn.innerText = "Vi är klara";
+            if (
+                currentChallengeState
+                && currentChallengeState.playerId === activeP.id
+                && currentChallengeState.pos === activeP.pos
+                && currentChallengeState.text
+            ) {
+                openChallengeContent(activeP, currentChallengeState.category || "Överraskning", currentChallengeState.text);
+                return;
+            }
 
             if (type === "finish") {
+                clearInterval(timerInterval);
+                timerHasStarted = false;
+                timerExtraUsed = false;
+                applyChallengeAccent(activeP);
+                document.getElementById('timer-display').innerText = "--:--";
+                document.getElementById('timer-display').classList.add('timer-inactive');
+                setTimerButtonState({ text: "Starta njutningen", disabled: false });
+                document.querySelector('.timer-panel').classList.remove('timer-panel-active');
+                timerPanel.style.display = '';
+                timerBtn.style.display = '';
+                boardViewBtn.style.display = '';
+                doneBtn.style.width = '';
+                doneBtn.innerText = "Vi är klara";
                 const finishText = `Grattis - Du är först i mål! Luta dig tillbaka och njut av att ${targetP.name} kämpar sig fram till dig genom resterande utmaningar.`;
                 document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">Mål</span>`;
                 applyChallengeTextSizing(finishText);
@@ -1348,20 +1863,20 @@
                 doneBtn.style.width = '100%';
                 doneBtn.innerText = "Njut...";
             } else {
-                const randomPlayableType = () => {
-                    const pool = ["hands", "mouth", "breasts", "butt"];
-                    return pool[Math.floor(Math.random() * pool.length)];
-                };
-                const resolvedType = type === "mystery" ? randomPlayableType() : type;
+                if (type === "mystery") {
+                    openSlotMachine(activeP);
+                    return;
+                }
+                const resolvedType = type;
                 if (resolvedType === "hands") { cat = type === "mystery" ? "Överraskning: Händer" : "Händer"; key = activeP.gender === "male" ? "hands_male" : "hands_female"; }
                 if (resolvedType === "mouth") { cat = type === "mystery" ? "Överraskning: Mun" : "Mun"; key = "mouth"; }
                 if (resolvedType === "breasts") { cat = type === "mystery" ? "Överraskning: Bröst" : "Bröst"; key = activeP.gender === "male" ? "breasts_male" : "breasts_female"; }
                 if (resolvedType === "butt") { cat = type === "mystery" ? "Överraskning: Rumpa" : "Rumpa"; key = "butt"; }
                 const intensityContent = gameContentByIntensity[round] || gameContentIntensity4;
-                let text = intensityContent[key].replace("$ACTOR", activeP.name).replace("$TARGET", targetP.name);
-                document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">${cat}</span>`;
-                applyChallengeTextSizing(text);
-                document.getElementById('modalText').innerHTML = decorateChallengeText(text, activeP, targetP);
+                const variantContent = intensityContent[variant] || intensityContent.a;
+                let text = (variantContent[key] || intensityContent.a[key]).replace("$ACTOR", activeP.name).replace("$TARGET", targetP.name);
+                openChallengeContent(activeP, cat, text);
+                return;
             }
             currentChallengeState = { playerId: activeP.id, pos: activeP.pos };
             document.getElementById('challengeModal').classList.add('active');
@@ -1411,6 +1926,7 @@
             timerHasStarted = false;
             timerExtraUsed = false;
             const closingPlayer = pendingChallengePlayer;
+            slotMachineState = null;
             currentChallengeState = null;
             document.getElementById('challengeModal').classList.remove('active');
             hideChallengeTrigger();
