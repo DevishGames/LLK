@@ -111,6 +111,7 @@
             text-transform: uppercase;
             letter-spacing: 0.2em;
             line-height: 1;
+            color: rgba(255,255,255,0.92);
         }
         .trigger-action {
             font-size: 10px;
@@ -126,7 +127,7 @@
         .text-p2 { color: #ff007f; text-shadow: 0 0 15px rgba(255, 0, 127, 0.8); }
         
         /* --- MODALER --- */
-        .modal { position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.86); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: flex-start; justify-content: center; padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)); opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .modal { position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.86); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)); opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
         .modal.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
@@ -522,7 +523,7 @@
             </div>
 
             <div class="flex flex-col gap-4">
-                <button onclick="startGame()" class="btn-primary">Börja spelet</button>
+                <button onclick="startGame()" class="btn-primary">Starta spelet!</button>
                 <button onclick="goBack()" class="text-gray-400 text-[10px] uppercase tracking-[0.3em] hover:text-white transition-colors">
                     Tillbaka
                 </button>
@@ -795,7 +796,8 @@
             const token = document.getElementById(`token-${player.id}`);
             const btn = document.getElementById('challengeTrigger');
             const rect = token.getBoundingClientRect();
-            btn.innerHTML = `<span class="trigger-name" style="color:${player.id === 1 ? '#00e5ff' : '#ff007f'}">${player.name}</span><span class="trigger-action">VISA UTMANING</span>`;
+            const tileLabel = tilesData[player.pos]?.label || 'Utmaning';
+            btn.innerHTML = `<span class="trigger-name"><span style="color:${player.id === 1 ? '#00e5ff' : '#ff007f'}">${player.name}</span> - ${tileLabel}</span><span class="trigger-action">VISA UTMANING</span>`;
             btn.style.borderColor = player.id === 1 ? 'rgba(0,229,255,0.35)' : 'rgba(255,0,127,0.35)';
             positionFloatingButton(btn, rect);
             btn.classList.remove('hidden');
