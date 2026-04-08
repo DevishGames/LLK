@@ -1059,6 +1059,9 @@
         const GAME_STATE_STORAGE_KEY = "luloGameState";
         const VISITOR_COUNTER_SITE = "";
         const VISITOR_COUNTER_PATH = "/lulo/index.html";
+        const diceDropAudio = new Audio('./dicedrop.wav');
+        const slotSpinStartAudio = new Audio('./spinwheelstart.wav');
+        const slotSpinStopAudio = new Audio('./spinwheelstop.wav');
         
         let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null, visitedTileLabelsByPlayer = null;
         const SLOT_MACHINE_MAX_SPINS = 3;
@@ -1227,6 +1230,25 @@
                 if (stored.player1?.gender) p1.gender = stored.player1.gender;
                 if (stored.player2?.name) p2.name = stored.player2.name.trim() || p2.name;
                 if (stored.player2?.gender) p2.gender = stored.player2.gender;
+            } catch {}
+        }
+
+        function playUiSound(audio, { restart = true } = {}) {
+            if (!audio) return;
+            try {
+                if (restart) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+                audio.play().catch(() => {});
+            } catch {}
+        }
+
+        function stopUiSound(audio) {
+            if (!audio) return;
+            try {
+                audio.pause();
+                audio.currentTime = 0;
             } catch {}
         }
 
@@ -1856,6 +1878,7 @@
 
             document.getElementById('slotResult').classList.remove('active');
             setSlotButtonState({ spinning: true, ready: false, attemptsUsed: usedChallengeIndexes.length, canSpin: true });
+            playUiSound(slotSpinStartAudio);
 
             reelEl.classList.add('is-spinning');
             const intervalId = setInterval(() => {
@@ -1867,6 +1890,7 @@
             setTimeout(() => {
                 clearInterval(Number(reelEl.dataset.intervalId));
                 reelEl.classList.remove('is-spinning');
+                playUiSound(slotSpinStopAudio);
                 const selectedIndex = randomChoice(availableIndexes);
                 const selectedChallenge = normalizeMysteryChallenge(challenges[selectedIndex], round, selectedIndex);
                 const nextUsedChallengeIndexes = [...usedChallengeIndexes, selectedIndex];
@@ -1982,6 +2006,7 @@
         function openDiceFromBoard() {
             if (!pendingDicePlayer || isMoving || pendingChallengePlayer) return;
             hideTurnTrigger();
+            playUiSound(diceDropAudio);
             openDiceModal();
         }
 
@@ -2005,6 +2030,7 @@
             const adjustedMove = getAdjustedMove(active, rawVal);
             const val = adjustedMove.steps;
             diceDisplay.classList.remove('dice-rolling');
+            stopUiSound(diceDropAudio);
             diceDisplay.classList.add('hidden');
             diceDisplay.style.transform = 'none';
             setDiceFace(diceResult, val);
