@@ -64,23 +64,34 @@
         .p-blue { background-color: #00e5ff; box-shadow: 0 0 20px #00e5ff; }
         .p-pink { background-color: #ff007f; box-shadow: 0 0 20px #ff007f; }
         .challenge-trigger {
+            --trigger-accent: rgba(255,255,255,0.14);
+            --trigger-glow: rgba(255,255,255,0.16);
             position: absolute;
             z-index: 120;
             pointer-events: auto;
-            background: rgba(0, 0, 0, 0.88);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 24px;
-            padding: 14px 18px 13px;
-            min-height: 44px;
-            min-width: 240px;
-            transform: translate(-50%, -100%);
-            box-shadow: 0 14px 28px rgba(0,0,0,0.38);
+            min-width: 232px;
+            max-width: 272px;
+            padding: 18px 18px 20px;
+            border-radius: 30px;
+            border: 1px solid color-mix(in srgb, var(--trigger-accent) 72%, rgba(255,255,255,0.08));
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+                rgba(8,8,8,0.78);
+            backdrop-filter: blur(18px);
+            transform: translate(-50%, -50%);
+            box-shadow:
+                0 24px 44px rgba(0,0,0,0.42),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 0 0 1px color-mix(in srgb, var(--trigger-accent) 28%, rgba(255,255,255,0.03)),
+                0 0 26px var(--trigger-glow);
             touch-action: manipulation;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 10px;
+            text-align: center;
+            overflow: visible;
         }
         .challenge-trigger.hidden { display: none; }
         .turn-trigger-board { position: absolute; z-index: 120; pointer-events: auto; }
@@ -105,21 +116,81 @@
             box-shadow: 0 14px 28px rgba(0,0,0,0.24);
             backdrop-filter: blur(10px);
         }
-        .trigger-name {
-            font-size: 10px;
+        .trigger-player {
+            max-width: 240px;
+            font-size: 23px;
             font-weight: 900;
             text-transform: uppercase;
+            letter-spacing: 0.12em;
+            line-height: 1.1;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        .trigger-name {
+            max-width: 240px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
             letter-spacing: 0.2em;
-            line-height: 1;
-            color: rgba(255,255,255,0.92);
+            line-height: 1.2;
+            opacity: 0.92;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.5);
         }
         .trigger-action {
-            font-size: 10px;
+            max-width: 152px;
+            font-size: 11px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: #f5f5f5;
-            line-height: 1;
+            letter-spacing: 0.18em;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .trigger-core {
+            min-width: 168px;
+            min-height: 58px;
+            padding: 0 24px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 30% 25%, rgba(255,255,255,0.18), rgba(255,255,255,0) 34%),
+                linear-gradient(180deg, color-mix(in srgb, var(--trigger-accent) 34%, rgba(24,24,24,0.98)), rgba(10,10,10,0.98));
+            border: 1px solid color-mix(in srgb, var(--trigger-accent) 72%, rgba(255,255,255,0.12));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 16px 28px rgba(0,0,0,0.34),
+                0 0 26px var(--trigger-glow);
+        }
+        .visitor-counter {
+            position: fixed;
+            right: 14px;
+            bottom: max(14px, calc(env(safe-area-inset-bottom) + 8px));
+            z-index: 110;
+            opacity: 0.14;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .visitor-counter:hover,
+        .visitor-counter:focus-within {
+            opacity: 0.45;
+        }
+        .visitor-counter-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            min-height: 22px;
+            padding: 0 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(10,10,10,0.88);
+            color: rgba(255,255,255,0.72);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+            backdrop-filter: blur(10px);
         }
         
         /* --- DYNAMISKA FÄRGER (TEXT) --- */
@@ -152,10 +223,18 @@
         }
         .modal.active .modal-content { transform: translateY(0) scale(1); }
         .challenge-modal-content {
+            --challenge-accent: rgba(255,255,255,0.14);
+            --challenge-accent-glow: rgba(255,255,255,0.12);
             max-width: 720px;
             padding: 32px;
             border-radius: 44px;
             text-align: left;
+            border-color: color-mix(in srgb, var(--challenge-accent) 72%, rgba(255,255,255,0.1));
+            box-shadow:
+                0 30px 60px -12px rgba(0, 0, 0, 0.9),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 0 0 1px color-mix(in srgb, var(--challenge-accent) 34%, rgba(255,255,255,0.02)),
+                0 0 34px var(--challenge-accent-glow);
         }
         .challenge-shell {
             display: flex;
@@ -753,6 +832,16 @@
             .dice-body {
                 border-radius: 32px;
             }
+            .challenge-trigger {
+                min-width: 212px;
+                max-width: 236px;
+                padding: 16px 16px 18px;
+            }
+            .trigger-core {
+                min-width: 152px;
+                min-height: 54px;
+                padding: 0 20px;
+            }
         }
 
         @media (min-width: 900px) {
@@ -856,7 +945,9 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>
+
+    <div id="visitorCounter" class="visitor-counter" aria-hidden="true"></div>
 
     <div id="welcomeModal" class="modal">
         <div class="modal-content">
@@ -966,8 +1057,10 @@
         const p2 = { id: 2, name: "Spelare 2", gender: "female", pos: -1, color: "pink", side: 18, class: "text-p2" };
         const PLAYER_STORAGE_KEY = "luloPlayers";
         const GAME_STATE_STORAGE_KEY = "luloGameState";
+        const VISITOR_COUNTER_SITE = "";
+        const VISITOR_COUNTER_PATH = "/lulo/index.html";
         
-        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null;
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null, visitedTileLabelsByPlayer = null;
         const SLOT_MACHINE_MAX_SPINS = 3;
         const maxRound = 3;
         const startAnchor = { x: 220, y: 40 };
@@ -1137,6 +1230,13 @@
             } catch {}
         }
 
+        function createEmptyVisitedTileLabels() {
+            return {
+                1: { a: [], b: [] },
+                2: { a: [], b: [] }
+            };
+        }
+
         function persistGameState(overlay = null) {
             const effectiveOverlay = overlay
                 ?? (document.getElementById('challengeModal').classList.contains('active') ? 'challenge'
@@ -1159,6 +1259,7 @@
                 currentChallengeState,
                 gearIntroSeen,
                 slotMachineState,
+                visitedTileLabelsByPlayer,
                 overlay: effectiveOverlay
             };
 
@@ -1181,6 +1282,63 @@
 
         function getMysteryTileIndex() {
             return tilesData.findIndex(tile => tile.type === 'mystery');
+        }
+
+        function getTileHalf(tile) {
+            if (!tile || (tile.variant !== 'a' && tile.variant !== 'b')) return null;
+            return tile.variant;
+        }
+
+        function shouldTrackTileLabel(tile) {
+            return Boolean(tile && tile.type !== 'mystery' && tile.type !== 'finish' && getTileHalf(tile));
+        }
+
+        function hasVisitedTileLabel(player, pos) {
+            const tile = tilesData[pos];
+            const half = getTileHalf(tile);
+            if (!shouldTrackTileLabel(tile) || !half || !visitedTileLabelsByPlayer?.[player.id]?.[half]) return false;
+            return visitedTileLabelsByPlayer[player.id][half].includes(tile.label);
+        }
+
+        function markVisitedTileLabel(player, pos) {
+            const tile = tilesData[pos];
+            const half = getTileHalf(tile);
+            if (!shouldTrackTileLabel(tile) || !half) return;
+            const labels = visitedTileLabelsByPlayer[player.id][half];
+            if (!labels.includes(tile.label)) {
+                labels.push(tile.label);
+            }
+        }
+
+        function getAdjustedMove(player, steps) {
+            const maxPos = tilesData.length - 1;
+            const intendedPos = Math.min(player.pos + steps, maxPos);
+            const intendedTile = tilesData[intendedPos];
+            const intendedSteps = intendedPos - player.pos;
+
+            if (!shouldTrackTileLabel(intendedTile) || !hasVisitedTileLabel(player, intendedPos)) {
+                return { steps: intendedSteps, targetPos: intendedPos };
+            }
+
+            for (let delta = 1; delta <= 6; delta++) {
+                const backwardPos = Math.max(player.pos + steps - delta, player.pos + 1);
+                if (backwardPos > player.pos) {
+                    const backwardTile = tilesData[backwardPos];
+                    if (!shouldTrackTileLabel(backwardTile) || !hasVisitedTileLabel(player, backwardPos)) {
+                        return { steps: backwardPos - player.pos, targetPos: backwardPos };
+                    }
+                }
+
+                const forwardPos = Math.min(player.pos + steps + delta, maxPos);
+                if (forwardPos > player.pos) {
+                    const forwardTile = tilesData[forwardPos];
+                    if (!shouldTrackTileLabel(forwardTile) || !hasVisitedTileLabel(player, forwardPos)) {
+                        return { steps: forwardPos - player.pos, targetPos: forwardPos };
+                    }
+                }
+            }
+
+            return { steps: intendedSteps, targetPos: intendedPos };
         }
 
         function getSlotDebugConfig() {
@@ -1222,10 +1380,50 @@
             currentChallengeState = state.currentChallengeState || null;
             gearIntroSeen = Boolean(state.gearIntroSeen);
             slotMachineState = state.slotMachineState || null;
+            visitedTileLabelsByPlayer = state.visitedTileLabelsByPlayer || createEmptyVisitedTileLabels();
             return true;
         }
 
+        function initVisitorCounter() {
+            if (!VISITOR_COUNTER_SITE) return;
+
+            window.goatcounter = {
+                path: () => VISITOR_COUNTER_PATH || window.location.pathname
+            };
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://gc.zgo.at/count.js';
+            script.dataset.goatcounter = `https://${VISITOR_COUNTER_SITE}.goatcounter.com/count`;
+            script.onload = () => {
+                if (!window.goatcounter?.visit_count) return;
+                window.goatcounter.visit_count({
+                    append: '#visitorCounter',
+                    path: VISITOR_COUNTER_PATH || window.location.pathname,
+                    no_branding: true,
+                    attr: {
+                        class: 'visitor-counter-badge',
+                        title: 'Besok totalt for appen'
+                    },
+                    style: `
+                        div {
+                            border: 0;
+                            background: transparent;
+                            color: inherit;
+                            box-shadow: none;
+                            padding: 0;
+                            margin: 0;
+                            font: inherit;
+                        }
+                    `
+                });
+            };
+            document.head.appendChild(script);
+        }
+
         function init() {
+            visitedTileLabelsByPlayer = createEmptyVisitedTileLabels();
+            initVisitorCounter();
             loadStoredPlayers();
             const board = document.getElementById('board');
             board.innerHTML = '<div class="board-stage" id="board-stage"></div>';
@@ -1322,8 +1520,12 @@
             const token = document.getElementById(`token-${player.id}`);
             const btn = document.getElementById('turnTriggerBoard');
             const rect = token.getBoundingClientRect();
-            btn.innerHTML = `<span class="trigger-name" style="color:${player.id === 1 ? '#00e5ff' : '#ff007f'}">${player.name}</span><span class="trigger-action">RULLA TÄRNINGEN</span>`;
-            btn.style.borderColor = player.id === 1 ? 'rgba(0,229,255,0.35)' : 'rgba(255,0,127,0.35)';
+            const accent = player.id === 1 ? '#00e5ff' : '#ff007f';
+            const accentSoft = player.id === 1 ? 'rgba(0,229,255,0.30)' : 'rgba(255,0,127,0.30)';
+            const accentGlow = player.id === 1 ? 'rgba(0,229,255,0.42)' : 'rgba(255,0,127,0.42)';
+            btn.innerHTML = `<span class="trigger-player" style="color:${accent}">${player.name}</span><span class="trigger-name" style="color:transparent">.</span><span class="trigger-core"><span class="trigger-action">Rulla tärning</span></span>`;
+            btn.style.setProperty('--trigger-accent', accentSoft);
+            btn.style.setProperty('--trigger-glow', accentGlow);
             positionFloatingButton(btn, rect);
             btn.classList.remove('hidden');
         }
@@ -1333,34 +1535,25 @@
             const btn = document.getElementById('challengeTrigger');
             const rect = token.getBoundingClientRect();
             const tileLabel = tilesData[player.pos]?.label || 'Utmaning';
-            btn.innerHTML = `<span class="trigger-name"><span style="color:${player.id === 1 ? '#00e5ff' : '#ff007f'}">${player.name}</span> - ${tileLabel}</span><span class="trigger-action">VISA UTMANING</span>`;
-            btn.style.borderColor = player.id === 1 ? 'rgba(0,229,255,0.35)' : 'rgba(255,0,127,0.35)';
+            const accent = player.id === 1 ? '#00e5ff' : '#ff007f';
+            const accentSoft = player.id === 1 ? 'rgba(0,229,255,0.30)' : 'rgba(255,0,127,0.30)';
+            const accentGlow = player.id === 1 ? 'rgba(0,229,255,0.42)' : 'rgba(255,0,127,0.42)';
+            btn.innerHTML = `<span class="trigger-player" style="color:${accent}">${player.name}</span><span class="trigger-name" style="color:${accent}">${tileLabel}</span><span class="trigger-core"><span class="trigger-action">Visa utmaning</span></span>`;
+            btn.style.setProperty('--trigger-accent', accentSoft);
+            btn.style.setProperty('--trigger-glow', accentGlow);
             positionFloatingButton(btn, rect);
             btn.classList.remove('hidden');
         }
 
         function positionFloatingButton(btn, rect) {
-            const buttonWidth = btn.offsetWidth || 170;
-            const buttonHeight = btn.offsetHeight || 44;
-            const viewportPadding = 16;
             const headerBottom = document.getElementById('boardHeader')?.getBoundingClientRect().bottom || 0;
-            const minLeft = viewportPadding + (buttonWidth / 2);
-            const maxLeft = window.innerWidth - viewportPadding - (buttonWidth / 2);
-            const preferredLeft = rect.left + window.scrollX + (rect.width / 2);
-            const left = Math.min(Math.max(preferredLeft, minLeft), maxLeft);
+            const centerX = window.scrollX + (window.innerWidth / 2);
+            const minTop = window.scrollY + headerBottom + 96;
+            const preferredTop = window.scrollY + (window.innerHeight * 0.52);
+            const top = Math.max(preferredTop, minTop);
 
-            let top = rect.top + window.scrollY - 12;
-            const minTop = window.scrollY + headerBottom + 10 + buttonHeight;
-            if (top < minTop) {
-                top = rect.bottom + window.scrollY + buttonHeight + 10;
-                const maxTop = window.scrollY + window.innerHeight - viewportPadding;
-                top = Math.min(top, maxTop);
-                btn.style.transform = 'translate(-50%, 0)';
-            } else {
-                btn.style.transform = 'translate(-50%, -100%)';
-            }
-
-            btn.style.left = `${left}px`;
+            btn.style.transform = 'translate(-50%, -50%)';
+            btn.style.left = `${centerX}px`;
             btn.style.top = `${top}px`;
         }
 
@@ -1411,6 +1604,7 @@
             isMoving = false;
             firstFinisherId = null;
             slotMachineState = null;
+            visitedTileLabelsByPlayer = createEmptyVisitedTileLabels();
             p1.pos = -1;
             p2.pos = -1;
             updatePos(p1);
@@ -1515,15 +1709,22 @@
         }
 
         function decorateChallengeText(text, actor, target) {
+            const actorPossessiveMarkup = getChallengePlayerMarkup(actor, 's');
+            const targetPossessiveMarkup = getChallengePlayerMarkup(target, 's');
+            const actorMarkup = getChallengePlayerMarkup(actor);
+            const targetMarkup = getChallengePlayerMarkup(target);
+
             return text
-                .replace(/\$ACTOR_POSSESSIVE/g, getChallengePlayerMarkup(actor, 's'))
-                .replace(/\$TARGET_POSSESSIVE/g, getChallengePlayerMarkup(target, 's'))
-                .replace(/\$ACTORs/g, getChallengePlayerMarkup(actor, 's'))
-                .replace(/\$TARGETs/g, getChallengePlayerMarkup(target, 's'))
-                .replace(/\$ACTOR/g, getChallengePlayerMarkup(actor))
-                .replace(/\$TARGET/g, getChallengePlayerMarkup(target))
-                .replace(new RegExp(escapeRegExp(actor.name), 'g'), getChallengePlayerMarkup(actor))
-                .replace(new RegExp(escapeRegExp(target.name), 'g'), getChallengePlayerMarkup(target));
+                .replace(/\$ACTOR_POSSESSIVE/g, actorPossessiveMarkup)
+                .replace(/\$TARGET_POSSESSIVE/g, targetPossessiveMarkup)
+                .replace(/\$ACTORs/g, actorPossessiveMarkup)
+                .replace(/\$TARGETs/g, targetPossessiveMarkup)
+                .replace(new RegExp(`${escapeRegExp(actor.name)}s`, 'g'), actorPossessiveMarkup)
+                .replace(new RegExp(`${escapeRegExp(target.name)}s`, 'g'), targetPossessiveMarkup)
+                .replace(/\$ACTOR/g, actorMarkup)
+                .replace(/\$TARGET/g, targetMarkup)
+                .replace(new RegExp(escapeRegExp(actor.name), 'g'), actorMarkup)
+                .replace(new RegExp(escapeRegExp(target.name), 'g'), targetMarkup);
         }
 
         function applyChallengeTextSizing(text) {
@@ -1704,6 +1905,7 @@
             const timerPanel = document.querySelector('.timer-panel');
             const timerBtn = document.getElementById('timerBtn');
             const doneBtn = document.getElementById('doneBtn');
+            const challengeCard = document.querySelector('.challenge-modal-content');
 
             timerDisplay.style.color = accent;
             timerDisplay.style.textShadow = `0 0 18px ${accentGlow}`;
@@ -1711,6 +1913,8 @@
             timerBtn.style.borderColor = accentSoft;
             timerBtn.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.02), 0 18px 32px -18px ${accentGlow}`;
             doneBtn.style.borderColor = accentSoft;
+            challengeCard.style.setProperty('--challenge-accent', accentSoft);
+            challengeCard.style.setProperty('--challenge-accent-glow', accentGlow);
         }
 
         function setTimerButtonState({ text, disabled }) {
@@ -1796,8 +2000,10 @@
                 setDiceFace(diceDisplay, Math.floor(Math.random()*6)+1);
                 await new Promise(r => setTimeout(r, 110));
             }
+            const active = turn === 1 ? p1 : p2;
             const rawVal = Math.floor(Math.random()*6)+1;
-            const val = rawVal;
+            const adjustedMove = getAdjustedMove(active, rawVal);
+            const val = adjustedMove.steps;
             diceDisplay.classList.remove('dice-rolling');
             diceDisplay.classList.add('hidden');
             diceDisplay.style.transform = 'none';
@@ -1812,7 +2018,7 @@
 
         async function move(steps) {
             const active = turn === 1 ? p1 : p2;
-            const target = Math.min(active.pos + steps, tilesData.length - 1);
+            const { targetPos: target } = getAdjustedMove(active, steps);
             for(let i = active.pos + 1; i <= target; i++) {
                 active.pos = i;
                 updatePos(active);
@@ -1820,6 +2026,7 @@
                 await new Promise(r => setTimeout(r, 550));
             }
             isMoving = false;
+            markVisitedTileLabel(active, active.pos);
             pendingChallengePlayer = active;
             updateStatus();
             persistGameState('none');
