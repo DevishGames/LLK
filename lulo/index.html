@@ -2,801 +2,2281 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Lust, Love & Kinky encounters">
-    <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="./app_icon_LLK_512x512px.png">
-    <link rel="icon" type="image/png" href="./app_icon_LLK_512x512px.png">
-    <title>Lust, Love & Kinky encounters - A Lovers game...</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../app_icon_LLK_512x512px.png">
+    <link rel="icon" type="image/png" href="../app_icon_LLK_512x512px.png">
+    <title>Lust Loops - Lust, Love & Kinky encounters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-
-        :root {
-            --bg: #090909;
-            --panel: rgba(22, 22, 22, 0.92);
-            --panel-soft: rgba(255,255,255,0.04);
-            --border: rgba(255,255,255,0.1);
-            --text: #f3f4f6;
-            --muted: rgba(229,231,235,0.58);
-            --cyan: #00e5ff;
-            --pink: #ff007f;
-            --wine: #8f1438;
-        }
-
-        * { box-sizing: border-box; }
-        html, body { min-height: 100%; margin: 0; overscroll-behavior-y: none; }
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top, rgba(143,20,56,0.2), transparent 30%),
-                radial-gradient(circle at bottom, rgba(143,20,56,0.12), transparent 28%),
-                #080808;
-            padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
-        }
-
-        .app {
-            width: min(100%, 980px);
-            margin: 0 auto;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        
+        html, body { min-height: 100%; overscroll-behavior-y: none; }
+        body { background-color: #0a0a0a; color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        
+        /* --- SPELPLANEN --- */
+        .board-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 130;
             display: flex;
-            flex-direction: column;
-            gap: 24px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: max(14px, env(safe-area-inset-top)) 16px 14px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.94), rgba(0,0,0,0.8));
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
         }
-
-        .hero {
-            padding: 28px;
-            border-radius: 32px;
-            border: 1px solid var(--border);
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 22%),
-                linear-gradient(180deg, rgba(24,24,24,0.96), rgba(14,14,14,0.96));
-            box-shadow: 0 28px 60px rgba(0,0,0,0.42);
-        }
-
-        .kicker {
-            margin: 0 0 10px;
-            color: #d8a8b8;
+        .board-title {
+            color: rgba(255,255,255,0.88);
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 0.28em;
             text-transform: uppercase;
         }
-
-        h1 {
-            margin: 0;
-            font-size: clamp(2.3rem, 7vw, 4.6rem);
-            line-height: 0.96;
-            letter-spacing: -0.06em;
+        .game-wrapper { padding: calc(78px + env(safe-area-inset-top)) 0 calc(220px + env(safe-area-inset-bottom)) 0; display: flex; justify-content: center; }
+        .board-stage {
+            position: relative;
+            width: min(96vw, 560px);
+            aspect-ratio: 1536 / 2752;
+            background: url('./LuLo_board.png') center / contain no-repeat;
         }
-
-        .hero-copy {
-            margin: 18px 0 0;
-            max-width: 620px;
-            color: var(--muted);
-            font-size: 1rem;
+        .row { position: absolute; width: 66px; height: 66px; transform: translate(-50%, -50%); }
+        
+        .tile-container { width: 100%; height: 100%; position: relative; }
+        .tile {
+            width: 100%;
+            height: 100%;
+            border-radius: 18px;
+            z-index: 5;
+            position: relative;
+        }
+        .tile-label { display: none; }
+        /* --- SPELARPRICKAR --- */
+        .player-token { position: absolute; width: 22px; height: 22px; border-radius: 50%; transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1); z-index: 50; pointer-events: none; }
+        .p-blue { background-color: #00e5ff; box-shadow: 0 0 20px #00e5ff; }
+        .p-pink { background-color: #ff007f; box-shadow: 0 0 20px #ff007f; }
+        .challenge-trigger {
+            --trigger-accent: rgba(255,255,255,0.14);
+            --trigger-glow: rgba(255,255,255,0.16);
+            position: absolute;
+            z-index: 120;
+            pointer-events: auto;
+            min-width: 232px;
+            max-width: 272px;
+            padding: 18px 18px 20px;
+            border-radius: 30px;
+            border: 1px solid color-mix(in srgb, var(--trigger-accent) 72%, rgba(255,255,255,0.08));
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+                rgba(8,8,8,0.78);
+            backdrop-filter: blur(18px);
+            transform: translate(-50%, -50%);
+            box-shadow:
+                0 24px 44px rgba(0,0,0,0.42),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 0 0 1px color-mix(in srgb, var(--trigger-accent) 28%, rgba(255,255,255,0.03)),
+                0 0 26px var(--trigger-glow);
+            touch-action: manipulation;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+            overflow: visible;
+        }
+        .challenge-trigger.hidden { display: none; }
+        .turn-trigger-board { position: absolute; z-index: 120; pointer-events: auto; }
+        .board-nav-btn {
+            position: relative;
+            top: auto;
+            right: auto;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(10,10,10,0.96);
+            color: rgba(255,255,255,0.9);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.24);
+            backdrop-filter: blur(10px);
+        }
+        .trigger-player {
+            max-width: 240px;
+            font-size: 23px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            line-height: 1.1;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        .trigger-name {
+            max-width: 240px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            line-height: 1.2;
+            opacity: 0.92;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        .trigger-action {
+            max-width: 152px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .trigger-core {
+            min-width: 168px;
+            min-height: 58px;
+            padding: 0 24px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 30% 25%, rgba(255,255,255,0.18), rgba(255,255,255,0) 34%),
+                linear-gradient(180deg, color-mix(in srgb, var(--trigger-accent) 34%, rgba(24,24,24,0.98)), rgba(10,10,10,0.98));
+            border: 1px solid color-mix(in srgb, var(--trigger-accent) 72%, rgba(255,255,255,0.12));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 16px 28px rgba(0,0,0,0.34),
+                0 0 26px var(--trigger-glow);
+        }
+        .visitor-counter {
+            position: fixed;
+            right: 14px;
+            bottom: max(14px, calc(env(safe-area-inset-bottom) + 8px));
+            z-index: 110;
+            opacity: 0.14;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .visitor-counter:hover,
+        .visitor-counter:focus-within {
+            opacity: 0.45;
+        }
+        .visitor-counter-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            min-height: 22px;
+            padding: 0 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(10,10,10,0.88);
+            color: rgba(255,255,255,0.72);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* --- DYNAMISKA FÄRGER (TEXT) --- */
+        .text-p1 { color: #00e5ff; text-shadow: 0 0 15px rgba(0, 229, 255, 0.8); }
+        .text-p2 { color: #ff007f; text-shadow: 0 0 15px rgba(255, 0, 127, 0.8); }
+        
+        /* --- MODALER --- */
+        .modal { position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.86); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)); opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 18%),
+                linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 45px 30px;
+            border-radius: 40px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 36px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            box-shadow:
+                0 30px 60px -12px rgba(0, 0, 0, 0.9),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            transform: translateY(60px) scale(0.85);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal.active .modal-content { transform: translateY(0) scale(1); }
+        .challenge-modal-content {
+            --challenge-accent: rgba(255,255,255,0.14);
+            --challenge-accent-glow: rgba(255,255,255,0.12);
+            max-width: 720px;
+            padding: 32px;
+            border-radius: 44px;
+            text-align: left;
+            border-color: color-mix(in srgb, var(--challenge-accent) 72%, rgba(255,255,255,0.1));
+            box-shadow:
+                0 30px 60px -12px rgba(0, 0, 0, 0.9),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 0 0 1px color-mix(in srgb, var(--challenge-accent) 34%, rgba(255,255,255,0.02)),
+                0 0 34px var(--challenge-accent-glow);
+        }
+        .challenge-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .challenge-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .challenge-lead {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: rgba(255,255,255,0.76);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+        }
+        .challenge-lead-name {
+            color: var(--player-accent, #fff);
+            text-shadow: 0 0 16px color-mix(in srgb, var(--player-accent, #fff) 34%, transparent);
+        }
+        .challenge-lead-separator {
+            color: rgba(255,255,255,0.28);
+        }
+        .challenge-lead-label {
+            color: #d8a8b8;
+        }
+        .challenge-kicker {
+            color: rgba(255,255,255,0.36);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            white-space: nowrap;
+        }
+        .challenge-text {
+            font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+            line-height: 1.16;
+            color: #f5f5f5;
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: -0.04em;
+            margin: 0;
+            text-wrap: balance;
+        }
+        .challenge-text.size-medium {
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            line-height: 1.18;
+        }
+        .challenge-text.size-small {
+            font-size: clamp(1.28rem, 2.45vw, 1.72rem);
+            line-height: 1.24;
+            letter-spacing: -0.03em;
+        }
+        .challenge-text.size-xsmall {
+            font-size: clamp(1.12rem, 2.1vw, 1.42rem);
+            line-height: 1.28;
+            letter-spacing: -0.02em;
+        }
+        .challenge-player-name {
+            font: inherit;
+            color: var(--player-accent, #f5f5f5);
+            text-shadow: 0 0 16px color-mix(in srgb, var(--player-accent, #fff) 28%, transparent);
+        }
+        .challenge-footer {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: stretch;
+        }
+        .timer-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            min-height: 120px;
+            padding: 24px 26px;
+            border-radius: 28px;
+            border: 1px solid var(--timer-accent-soft, rgba(255,255,255,0.08));
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+                rgba(0,0,0,0.46);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 0 0 1px rgba(255,255,255,0.02);
+        }
+        .timer-label {
+            color: rgba(203,213,225,0.48);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+        }
+        .timer-panel-active .timer-label {
+            color: var(--timer-accent-soft, rgba(203,213,225,0.48));
+        }
+        .challenge-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 12px;
+            min-width: 230px;
+        }
+        .slot-modal-content {
+            max-width: 760px;
+            padding: 30px;
+            border-radius: 44px;
+            text-align: left;
+            background:
+                radial-gradient(circle at top, rgba(198,152,61,0.18), transparent 34%),
+                linear-gradient(180deg, rgba(96,12,32,0.94), rgba(22,7,11,0.98));
+            border: 1px solid rgba(212,175,85,0.28);
+            box-shadow:
+                0 30px 70px rgba(0,0,0,0.52),
+                inset 0 1px 0 rgba(255,233,184,0.14);
+        }
+        .slot-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .slot-kicker {
+            color: rgba(255,235,196,0.72);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+        }
+        .slot-title {
+            margin: 0;
+            color: #f7ecd4;
+            font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.02;
+            text-transform: uppercase;
+        }
+        .slot-copy {
+            margin: 0;
+            color: rgba(255,241,219,0.76);
+            font-size: 15px;
             line-height: 1.65;
         }
-        .hero-copy-fade {
-            position: relative;
-            max-width: 620px;
+        .slot-attempts {
+            align-self: center;
+            color: rgba(255,235,196,0.72);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            text-align: center;
         }
-        .hero-copy-fade::after {
+        .slot-machine-frame {
+            position: relative;
+            padding: 22px;
+            border-radius: 34px;
+            border: 1px solid rgba(225,186,88,0.36);
+            background:
+                linear-gradient(180deg, rgba(255,215,117,0.12), rgba(255,215,117,0.03)),
+                rgba(14,6,8,0.72);
+            box-shadow:
+                inset 0 0 0 1px rgba(255,240,195,0.08),
+                0 18px 36px rgba(0,0,0,0.28);
+        }
+        .slot-machine-frame::before,
+        .slot-machine-frame::after {
+            content: "";
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,226,155,0.52), transparent);
+        }
+        .slot-machine-frame::before { top: 14px; }
+        .slot-machine-frame::after { bottom: 14px; }
+        .slot-reels {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+        }
+        .slot-reel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .slot-reel-label {
+            color: rgba(255,231,183,0.56);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+            text-align: center;
+        }
+        .slot-reel-window {
+            position: relative;
+            overflow: hidden;
+            min-height: 156px;
+            border-radius: 26px;
+            border: 1px solid rgba(255,223,148,0.18);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0)),
+                rgba(10,4,6,0.86);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+        }
+        .slot-reel-window::before,
+        .slot-reel-window::after {
             content: "";
             position: absolute;
             left: 0;
             right: 0;
-            bottom: -2px;
-            height: 28px;
-            background: linear-gradient(180deg, rgba(14,14,14,0), rgba(14,14,14,0.96));
+            height: 26px;
+            z-index: 2;
             pointer-events: none;
         }
-        .hero-copy + .hero-copy {
-            margin-top: 14px;
+        .slot-reel-window::before {
+            top: 0;
+            background: linear-gradient(180deg, rgba(10,4,6,0.96), transparent);
         }
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 22px;
+        .slot-reel-window::after {
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(10,4,6,0.96), transparent);
         }
-        .safety-panel {
-            margin-top: 22px;
-            padding: 20px 22px;
-            border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-        }
-        .safety-title {
-            margin: 0 0 10px;
-            color: #fff;
-            font-size: 0.92rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-        .signal-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 14px;
-        }
-        .signal-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03);
-            color: rgba(255,255,255,0.82);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-        .signal-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 999px;
-            box-shadow: 0 0 14px currentColor;
-        }
-        .signal-chip.green { color: #56f79a; }
-        .signal-chip.yellow { color: #ffd54d; }
-        .signal-chip.orange { color: #ff9d42; }
-        .signal-chip.red { color: #ff5c6b; }
-        .signal-chip .signal-dot { background: currentColor; }
-
-        .summary-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            padding: 18px 20px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,0.03);
-        }
-
-        .summary-text {
-            color: var(--muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .player-line {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .player-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 12px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.16em;
-        }
-
-        .player-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-        }
-
-        .player-dot.cyan { background: var(--cyan); box-shadow: 0 0 14px rgba(0,229,255,0.8); }
-        .player-dot.pink { background: var(--pink); box-shadow: 0 0 14px rgba(255,0,127,0.8); }
-
-        .primary-btn,
-        .ghost-btn,
-        .card-btn {
-            font: inherit;
-            border: 0;
-            cursor: pointer;
-        }
-
-        .primary-btn,
-        .ghost-btn {
-            padding: 14px 18px;
-            border-radius: 18px;
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .primary-btn {
-            color: #fff;
-            background: linear-gradient(180deg, #8f1438 0%, #6a0019 100%);
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 16px 30px rgba(143,20,56,0.28);
-        }
-
-        .ghost-btn {
-            color: #fff;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .games {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .game-card {
-            min-height: 230px;
-            padding: 22px;
-            border-radius: 28px;
-            border: 1px solid var(--border);
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
-                rgba(18,18,18,0.96);
+        .slot-reel-track {
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            gap: 18px;
-            transition: transform 0.24s ease, border-color 0.24s ease, opacity 0.24s ease;
+            justify-content: center;
+            min-height: 156px;
+            transition: filter 0.2s ease, transform 0.2s ease;
         }
-
-        .game-card.locked {
-            opacity: 0.38;
-            filter: grayscale(1);
+        .slot-reel.is-spinning .slot-reel-track {
+            filter: blur(6px);
+            transform: scale(0.985);
         }
-
-        .game-card h2 {
-            margin: 0 0 8px;
-            font-size: 1.55rem;
-            line-height: 1.02;
-            letter-spacing: -0.05em;
-        }
-
-        .game-card p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.55;
-            font-size: 0.95rem;
-        }
-
-        .card-btn {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 18px;
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.08);
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .card-btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .card-btn.active {
-            background: linear-gradient(180deg, #8f1438 0%, #6a0019 100%);
-            box-shadow: 0 16px 30px rgba(143,20,56,0.24);
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
+        .slot-reel-item {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            background: rgba(0,0,0,0.78);
-            backdrop-filter: blur(12px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-            overflow: hidden;
+            min-height: 52px;
+            padding: 14px 12px;
+            text-align: center;
+            color: #fff2d5;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.25;
+            opacity: 0.42;
+            filter: blur(2.8px);
+            transition: opacity 0.2s ease, filter 0.2s ease;
         }
-
-        .modal.active {
+        .slot-reel-item.active {
+            color: #fff7e6;
+            font-weight: 900;
+            letter-spacing: 0.08em;
             opacity: 1;
-            pointer-events: auto;
+            filter: none;
+            text-shadow: 0 0 18px rgba(255,224,145,0.22);
+            position: relative;
         }
-
-        .modal-card {
-            width: min(100%, 640px);
-            padding: 28px;
-            border-radius: 32px;
-            border: 1px solid var(--border);
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0)),
-                rgba(20,20,20,0.98);
-            box-shadow: 0 28px 60px rgba(0,0,0,0.48);
-            max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            -webkit-overflow-scrolling: touch;
+        .slot-reel-item.active::before,
+        .slot-reel-item.active::after {
+            color: rgba(255,224,145,0.9);
+            font-weight: 900;
         }
-
-        .modal-title {
-            margin: 0 0 8px;
-            font-size: 2rem;
-            letter-spacing: -0.05em;
+        .slot-reel-item.active::before {
+            content: "★★★\00a0\00a0\00a0";
         }
-
-        .modal-copy {
-            margin: 0 0 22px;
-            color: var(--muted);
-            line-height: 1.6;
+        .slot-reel-item.active::after {
+            content: "\00a0\00a0\00a0★★★";
         }
-
-        .players-grid {
+        .slot-result {
+            display: none;
+            padding: 20px 22px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,225,155,0.12);
+            background: rgba(8,4,5,0.48);
+        }
+        .slot-result.active { display: block; }
+        .slot-result-label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255,231,183,0.56);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+        }
+        .slot-result-text {
+            margin: 0;
+            color: #fff4de;
+            font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+            line-height: 1.42;
+            font-style: italic;
+        }
+        .slot-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .slot-spin-btn {
+            background: linear-gradient(180deg, #e0b84f 0%, #9e6b11 100%);
+            color: #1b0d05;
+            border: 1px solid rgba(255,238,188,0.34);
+            box-shadow: 0 18px 34px rgba(93,55,0,0.28);
+        }
+        .slot-spin-btn:disabled {
+            background: linear-gradient(180deg, rgba(145,116,49,0.56), rgba(89,64,15,0.56));
+            color: rgba(27,13,5,0.62);
+        }
+        .slot-pick-btn.ready {
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            color: #f0fdf4;
+            border-color: rgba(187,247,208,0.34);
+            box-shadow: 0 18px 34px rgba(21,128,61,0.26);
+        }
+        .round-choice-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 22px;
+            gap: 14px;
         }
-
-        .player-card {
+        .choice-card {
+            text-align: left;
+            padding: 20px 18px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            transition: all 0.25s ease;
+        }
+        .choice-card:disabled {
+            opacity: 0.42;
+            cursor: not-allowed;
+        }
+        .choice-title {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: #f5f5f5;
+        }
+        .choice-copy {
+            display: block;
+            color: rgba(229,231,235,0.7);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .level-select-grid {
+            display: grid;
+            gap: 12px;
+            margin: 0 0 18px;
+            text-align: left;
+        }
+        .level-option input { display: none; }
+        .level-option label {
+            display: block;
+            padding: 16px 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            transition: border-color 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+            cursor: pointer;
+        }
+        .level-option-title {
+            display: block;
+            margin-bottom: 6px;
+            color: #f5f5f5;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+        .level-option-copy {
+            display: block;
+            color: rgba(229,231,235,0.7);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .level-option input:checked + label {
+            border-color: rgba(128,0,32,0.5);
+            background: linear-gradient(180deg, rgba(143,20,56,0.22), rgba(255,255,255,0.03));
+            box-shadow: 0 18px 32px rgba(128,0,32,0.16);
+        }
+        .welcome-note {
+            margin: 0 0 22px;
+            color: rgba(229,231,235,0.58);
+            font-size: 12px;
+            line-height: 1.6;
+            letter-spacing: 0.04em;
+        }
+        .gear-panel {
+            margin: 0 0 18px;
             padding: 18px;
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03);
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+            text-align: left;
         }
-
-        .player-card h3 {
-            margin: 0 0 14px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-        }
-
-        .field-label {
-            display: block;
-            margin-bottom: 8px;
-            color: rgba(255,255,255,0.7);
+        .gear-title {
+            margin: 0 0 8px;
+            color: rgba(255,255,255,0.92);
             font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.14em;
+            font-weight: 800;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
         }
-
-        .text-input {
-            width: 100%;
-            padding: 14px 15px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.28);
-            color: #fff;
-            font: inherit;
-            margin-bottom: 14px;
+        .gear-copy {
+            margin: 0 0 14px;
+            color: rgba(229,231,235,0.66);
+            font-size: 13px;
+            line-height: 1.55;
         }
-
-        .segment {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 8px;
-        }
-
-        .segment input { display: none; }
-
-        .segment label {
-            padding: 12px 14px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.04);
-            color: rgba(255,255,255,0.72);
-            text-align: center;
+        .gear-list {
+            margin: 0;
+            padding-left: 18px;
+            color: rgba(255,255,255,0.86);
             font-size: 12px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            cursor: pointer;
-        }
-
-        .segment input[value="male"]:checked + label {
-            color: #04111f;
-            border-color: rgba(0,229,255,0.45);
-            background: rgba(0,229,255,0.92);
-            box-shadow: 0 0 22px rgba(0,229,255,0.24);
-        }
-
-        .segment input[value="female"]:checked + label {
-            color: #fff;
-            border-color: rgba(255,0,127,0.4);
-            background: rgba(255,0,127,0.88);
-            box-shadow: 0 0 22px rgba(255,0,127,0.22);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .modal-note {
-            margin: 0 0 18px;
-            color: rgba(255,255,255,0.54);
-            font-size: 12px;
             letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.9;
         }
-
-        .install-banner {
+        
+        /* --- TÄRNING --- */
+        .dice-modal {
+            background: radial-gradient(circle at top, rgba(128,0,32,0.18), transparent 42%), rgba(0,0,0,0.7);
+            align-items: center;
+        }
+        .dice-modal-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+        .dice-display-wrap {
+            position: relative;
+            width: 168px;
+            aspect-ratio: 1;
+        }
+        .dice-face {
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            padding: 18px 20px;
-            border-radius: 24px;
+            justify-content: center;
+            transition: opacity 0.24s ease;
+            will-change: transform, opacity;
+            transform-origin: 50% 50%;
+            --dice-accent: rgba(255,255,255,0.18);
+        }
+        .dice-face.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .dice-body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 38px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.025);
+            background:
+                radial-gradient(circle at 30% 25%, rgba(255,255,255,0.14), transparent 38%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0)),
+                #111111;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                0 24px 40px rgba(0,0,0,0.42);
+        }
+        .dice-face.result-win .dice-body {
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                0 0 0 1px rgba(255,255,255,0.03),
+                0 24px 40px rgba(0,0,0,0.42),
+                0 0 28px var(--dice-accent);
+        }
+        .dice-pip {
+            position: absolute;
+            width: 16%;
+            aspect-ratio: 1;
+            border-radius: 999px;
+            background: #f4f4f5;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.18s ease;
+            box-shadow: 0 0 14px rgba(255,255,255,0.14);
+        }
+        .dice-pip.p1 { left: 28%; top: 28%; }
+        .dice-pip.p2 { left: 50%; top: 28%; }
+        .dice-pip.p3 { left: 72%; top: 28%; }
+        .dice-pip.p4 { left: 28%; top: 50%; }
+        .dice-pip.p5 { left: 50%; top: 50%; }
+        .dice-pip.p6 { left: 72%; top: 50%; }
+        .dice-pip.p7 { left: 28%; top: 72%; }
+        .dice-pip.p8 { left: 50%; top: 72%; }
+        .dice-pip.p9 { left: 72%; top: 72%; }
+        .dice-face[data-face="1"] .p5,
+        .dice-face[data-face="2"] .p1,
+        .dice-face[data-face="2"] .p9,
+        .dice-face[data-face="3"] .p1,
+        .dice-face[data-face="3"] .p5,
+        .dice-face[data-face="3"] .p9,
+        .dice-face[data-face="4"] .p1,
+        .dice-face[data-face="4"] .p3,
+        .dice-face[data-face="4"] .p7,
+        .dice-face[data-face="4"] .p9,
+        .dice-face[data-face="5"] .p1,
+        .dice-face[data-face="5"] .p3,
+        .dice-face[data-face="5"] .p5,
+        .dice-face[data-face="5"] .p7,
+        .dice-face[data-face="5"] .p9,
+        .dice-face[data-face="6"] .p1,
+        .dice-face[data-face="6"] .p3,
+        .dice-face[data-face="6"] .p4,
+        .dice-face[data-face="6"] .p6,
+        .dice-face[data-face="6"] .p7,
+        .dice-face[data-face="6"] .p9 {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .dice-rolling {
+            animation: diceSpinLoop 0.58s linear infinite;
+        }
+        @keyframes diceSpinLoop {
+            0% { transform: rotate(0deg) scale(0.9); }
+            50% { transform: rotate(180deg) scale(1.06); }
+            100% { transform: rotate(360deg) scale(0.9); }
         }
 
-        .install-copy {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-            font-size: 0.95rem;
+        /* --- TIMER --- */
+        #timer-display { font-variant-numeric: tabular-nums; font-weight: 900; color: #800020; text-shadow: 0 0 15px rgba(128,0,32,0.6); }
+        .timer-inactive { color: #222 !important; text-shadow: none !important; }
+        
+        .btn-primary { background: linear-gradient(180deg, #8f1438 0%, #6a0019 100%); color: white; font-weight: 700; padding: 16px 0; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.15em; font-size: 11px; transition: all 0.3s; width: 100%; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 14px 28px rgba(128,0,32,0.28); }
+        .btn-secondary { background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); color: rgba(255,255,255,0.88); font-weight: 700; padding: 16px 0; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.15em; font-size: 11px; transition: all 0.3s; width: 100%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 12px 24px rgba(0,0,0,0.18); }
+        .btn-primary:active { scale: 0.95; }
+        .btn-secondary:active { scale: 0.95; }
+        .btn-primary:disabled,
+        .btn-secondary:disabled {
+            opacity: 0.42;
+            cursor: not-allowed;
+            box-shadow: none !important;
         }
-
-        .install-copy strong {
-            color: #fff;
-            font-weight: 700;
-        }
-
-        @media (max-width: 820px) {
-            .games { grid-template-columns: 1fr; }
-            .players-grid { grid-template-columns: 1fr; }
-            .summary-bar {
+        @media (max-width: 640px) {
+            .game-wrapper { padding-top: calc(74px + env(safe-area-inset-top)); padding-bottom: calc(200px + env(safe-area-inset-bottom)); }
+            .row { width: 72px; height: 72px; }
+            .player-token { width: 24px; height: 24px; }
+            .challenge-trigger {
+                padding: 14px 18px;
+                min-width: 220px;
+            }
+            .challenge-modal-content {
+                padding: 26px 22px;
+                border-radius: 34px;
+            }
+            .challenge-shell { gap: 22px; }
+            .challenge-topline {
+                align-items: flex-start;
                 flex-direction: column;
-                align-items: stretch;
             }
-            .install-banner {
-                flex-direction: column;
-                align-items: stretch;
+            .challenge-text {
+                font-size: clamp(1.7rem, 9vw, 2.35rem);
+                line-height: 1.12;
             }
-            .modal-actions {
-                flex-direction: column-reverse;
+            .challenge-footer {
+                grid-template-columns: 1fr;
             }
+            .challenge-actions {
+                min-width: 0;
+            }
+            .slot-modal-content {
+                padding: 24px 20px;
+                border-radius: 34px;
+            }
+            .slot-actions {
+                grid-template-columns: 1fr;
+            }
+            .modal {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            .round-choice-grid {
+                grid-template-columns: 1fr;
+            }
+            .dice-display-wrap {
+                width: 148px;
+            }
+            .dice-body {
+                border-radius: 32px;
+            }
+            .challenge-trigger {
+                min-width: 212px;
+                max-width: 236px;
+                padding: 16px 16px 18px;
+            }
+            .trigger-core {
+                min-width: 152px;
+                min-height: 54px;
+                padding: 0 20px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .board-stage { width: min(72vw, 520px); }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <section class="hero">
-            <p class="kicker">Lust, Love & Kinky encounters</p>
-            <h1>Lekfullt.<br>Intimt.<br>Ofiltrerat.</h1>
-            <div class="hero-copy-fade">
-                <p class="hero-copy">Ett lekfullt universum för par som vill väcka lust, utforska nya roller och låta kvällen glida från mjuk närhet till vågade kontraster och samtal. <br>Fyll i spelarnas namn och välj ett spel här nedan när ni är redo.<br><br>Lust, Love & Kink – A Lovers' Game är skapat för par med öppna sinnen som vill få.....</p>
-            </div>
-            <div class="hero-actions">
-                <button class="ghost-btn" id="openAboutBtn" type="button">Läs mer</button>
-            </div>
-        </section>
 
-        <section class="summary-bar">
-            <div class="summary-text">
-                <div class="player-line" id="playerSummary">
-                    <span class="player-chip"><span class="player-dot cyan"></span>Spelare 1 saknas</span>
-                    <span class="player-chip"><span class="player-dot pink"></span>Spelare 2 saknas</span>
-                </div>
-            </div>
-            <button class="primary-btn" id="openPlayersBtn" type="button">Mata in spelarnamn</button>
-        </section>
-
-        <section class="games" id="gamesGrid">
-            <article class="game-card locked" data-game="qa">
-                <div>
-                    <h2>Frågor & Utmaningar</h2>
-                    <p>Ett rakare upplägg med frågor, val och snabba utmaningar utan spelplan.</p>
-                </div>
-                <button class="card-btn" type="button" disabled>Kommer snart</button>
-            </article>
-
-            <article class="game-card locked" data-game="board">
-                <div>
-                    <h2>Lust Loops</h2>
-                    <p>Ett lyxigt brädspel i fyra intensiva nivåer. Slå tärningen och vandra längs den gyllene stigen där varje stopp bjuder på utmaningar för Er att erövra. Inga frågor, inga diskussioner, ingen snack – bara ren, passionerad handling som tar er steg för steg, närmare varandra.</p>
-                </div>
-                <button class="card-btn" id="boardGameBtn" type="button" disabled>Mata in spelarnamn</button>
-            </article>
-
-            <article class="game-card locked" data-game="dice">
-                <div>
-                    <h2>Vågade tärningar</h2>
-                    <p>Kortare, snabbare och mer direkt. Slå tärningen och kasta er rakt in.</p>
-                </div>
-                <button class="card-btn" type="button" disabled>Kommer snart</button>
-            </article>
-        </section>
-
-        <section class="install-banner">
-            <p class="install-copy"><strong>Bäst i mobilen:</strong> lägg Lust, Love & Kinky encounters på hemskärmen så känns det mer som en app och störs mindre av Safaris menyer.</p>
-            <button class="ghost-btn" id="openInstallGuideBtn" type="button">Installera som app</button>
-        </section>
+    <div class="board-header" id="boardHeader">
+        <div class="board-title">Lust Loops</div>
+        <button class="board-nav-btn" onclick="goBack()">Tillbaka</button>
     </div>
+    <div class="game-wrapper" id="board"></div>
+    <button id="challengeTrigger" class="challenge-trigger hidden" onclick="openChallengeFromBoard()"></button>
+    <button id="turnTriggerBoard" class="challenge-trigger turn-trigger-board hidden" onclick="openDiceFromBoard()"></button>
 
-    <div class="modal" id="playersModal">
-        <div class="modal-card">
-            <p class="kicker">Spelare</p>
-            <h2 class="modal-title">Vilka spelar?</h2>
-            <p class="modal-copy">Fyll i namn och välj pronomen för bägge spelare.</p>
-            <p class="modal-note">Ni kan ändra namnen när som helst från menyn.</p>
-
-            <div class="players-grid">
-                <section class="player-card">
-                    <h3>Spelare 1</h3>
-                    <label class="field-label" for="player1Name">Namn</label>
-                    <input class="text-input" id="player1Name" type="text" maxlength="20" placeholder="Skriv namn">
-                    <span class="field-label">Pronomen</span>
-                    <div class="segment">
-                        <input type="radio" name="player1Gender" id="player1Male" value="male">
-                        <label for="player1Male">Han</label>
-                        <input type="radio" name="player1Gender" id="player1Female" value="female">
-                        <label for="player1Female">Hon</label>
+    <div id="diceModal" class="modal dice-modal">
+        <div class="dice-modal-layout" id="diceCard">
+            <div id="dice-player-name" class="text-2xl font-black uppercase tracking-widest mb-6">Namn</div>
+            <div class="dice-display-wrap">
+                <div id="dice-modal-display" class="dice-face" data-face="1">
+                    <div class="dice-body">
+                        <span class="dice-pip p1"></span><span class="dice-pip p2"></span><span class="dice-pip p3"></span>
+                        <span class="dice-pip p4"></span><span class="dice-pip p5"></span><span class="dice-pip p6"></span>
+                        <span class="dice-pip p7"></span><span class="dice-pip p8"></span><span class="dice-pip p9"></span>
                     </div>
-                </section>
-
-                <section class="player-card">
-                    <h3>Spelare 2</h3>
-                    <label class="field-label" for="player2Name">Namn</label>
-                    <input class="text-input" id="player2Name" type="text" maxlength="20" placeholder="Skriv namn">
-                    <span class="field-label">Pronomen</span>
-                    <div class="segment">
-                        <input type="radio" name="player2Gender" id="player2Male" value="male">
-                        <label for="player2Male">Han</label>
-                        <input type="radio" name="player2Gender" id="player2Female" value="female">
-                        <label for="player2Female">Hon</label>
+                </div>
+                <div id="dice-modal-result" class="dice-face hidden" data-face="1">
+                    <div class="dice-body">
+                        <span class="dice-pip p1"></span><span class="dice-pip p2"></span><span class="dice-pip p3"></span>
+                        <span class="dice-pip p4"></span><span class="dice-pip p5"></span><span class="dice-pip p6"></span>
+                        <span class="dice-pip p7"></span><span class="dice-pip p8"></span><span class="dice-pip p9"></span>
                     </div>
-                </section>
+                </div>
             </div>
+        </div>
+    </div>
+    
+    <div id="challengeModal" class="modal">
+        <div class="modal-content challenge-modal-content">
+            <div class="challenge-shell">
+                <div class="challenge-topline">
+                    <div id="modalLead" class="challenge-lead">Spelare - Kategori</div>
+                    <div id="challengeLevel" class="challenge-kicker">Nivå 1 av 4</div>
+                </div>
+                <p id="modalText" class="challenge-text">...</p>
+                
+                <div class="challenge-footer">
+                    <div class="timer-panel">
+                        <div id="timer-display" class="text-4xl mb-1 timer-inactive">--:--</div>
+                        <div id="timer-label" class="timer-label">Läs utmaningen, klicka sen för tid</div>
+                    </div>
 
-            <div class="modal-actions">
-                <button class="ghost-btn" id="clearPlayersBtn" type="button">Rensa spelare</button>
-                <button class="ghost-btn" id="closePlayersBtn" type="button">Stäng</button>
-                <button class="primary-btn" id="savePlayersBtn" type="button">Spara spelare</button>
+                    <div class="challenge-actions">
+                        <button id="timerBtn" onclick="randomizeTimer()" class="btn-primary" style="background: linear-gradient(180deg, #222 0%, #141414 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: none;">
+                            Starta njutningen
+                        </button>
+                        <button id="boardViewBtn" onclick="showBoardFromChallenge()" class="btn-secondary">
+                            Visa spelplanen
+                        </button>
+                        <button id="doneBtn" onclick="closeModal()" class="btn-secondary">
+                            Vi är klara
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="installGuideModal">
-        <div class="modal-card">
-            <p class="kicker">Installera</p>
-            <h2 class="modal-title">Lägg till på hemskärmen</h2>
-            <p class="modal-copy">Om ni öppnar Lust, Love & Kinky encounters från hemskärmen får ni en renare, mer applikt känsla i mobilen och mindre strul med Safaris menyer.</p>
-            <div class="player-card" style="margin-bottom:18px; text-align:left;">
-                <h3 style="margin-bottom:10px;">iPhone / iPad</h3>
-                <p class="modal-copy" style="margin:0; font-size:0.95rem;">
-                    1. Öppna sidan i Safari.<br>
-                    2. Tryck på dela-knappen.<br>
-                    3. Välj <strong>Lägg till på hemskärmen</strong>.<br>
-                    4. Starta sedan Lust, Love & Kinky encounters från ikonen på hemskärmen.
-                </p>
+    <div id="slotModal" class="modal">
+        <div class="modal-content slot-modal-content">
+            <div class="slot-shell">
+                <div>
+                    <div class="slot-kicker">Överraskning</div>
+                    <h2 class="slot-title">Slumpa en utmaning!</h2>
+                </div>
+                <p class="slot-copy">Låt mystery-hjulet slumpa din nästa utmaning. Är du inte nöjd slumpar du fram en ny, du har 3 försök på dig. När du är nöjd klickar du på "Välj utmaning". <br>Om du använder alla 3 försök blir den tredje utmaningen automatiskt den ni får.</p>
+                <div id="slotAttempts" class="slot-attempts">3 försök kvar</div>
+
+                <div class="slot-machine-frame">
+                    <div class="slot-reels">
+                        <div class="slot-reel" id="slotReel">
+                            <div class="slot-reel-label">Överraskningsutmaning</div>
+                            <div class="slot-reel-window">
+                                <div class="slot-reel-track" id="slotTrack"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="slotResult" class="slot-result">
+                    <span class="slot-result-label">Resultat</span>
+                    <p id="slotResultText" class="slot-result-text"></p>
+                </div>
+
+                <div class="slot-actions">
+                    <button id="slotSpinBtn" onclick="spinSlotMachine()" class="btn-primary slot-spin-btn">Slumpa utmaning</button>
+                    <button id="slotRevealBtn" onclick="revealSlotChallenge()" class="btn-secondary slot-pick-btn" disabled>Välj utmaning</button>
+                    <button onclick="showBoardFromSlot()" class="btn-secondary">Till spelplanen</button>
+                </div>
             </div>
-            <div class="modal-actions">
-                <button class="ghost-btn" id="closeInstallGuideBtn" type="button">Stäng</button>
-                <button class="primary-btn" id="installGuideDoneBtn" type="button">Vi fattar</button>
+        </div>
+</div>
+
+    <div id="visitorCounter" class="visitor-counter" aria-hidden="true"></div>
+
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content">
+            <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Välkommen</div>
+            <div id="welcomePlayers" class="text-2xl font-black uppercase tracking-[0.18em] mb-6"></div>
+            <div class="text-xl leading-relaxed mb-6 text-gray-100 font-light italic">
+                Välj om ni vill njuta av hela resan från den mjukaste start till det mest intensiva slutet, eller om ni vill kasta er direkt in i hetluften. Oavsett vad ni väljer kommer ni att guidas genom en resa där påklädd närhet byts ut mot beröring, nakenhet och intensitet som ökar för varje steg ni tar.
+            </div>
+            
+            <div class="level-select-grid">
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel1" value="0" checked>
+                    <label for="startLevel1">
+                        <span class="level-option-title">Nivå 1 - Mjukstart</span>
+                        <span class="level-option-copy">Standardvalet. En mjuk och sensuell väg in i spelet.</span>
+                    </label>
+                </div>
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel2" value="1">
+                    <label for="startLevel2">
+                        <span class="level-option-title">Nivå 2 - Värmen stiger!</span>
+                        <span class="level-option-copy">Hoppa rakt till en mer avklädd och djupare nivå.</span>
+                    </label>
+                </div>
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel3" value="2">
+                    <label for="startLevel3">
+                        <span class="level-option-title">Nivå 3 - Nu är det hett!</span>
+                        <span class="level-option-copy">För Er som vill öppna kvällen med total närvaro och tryck.</span>
+                    </label>
+                </div>
+                <div class="level-option">
+                    <input type="radio" name="startLevel" id="startLevel4" value="3">
+                    <label for="startLevel4">
+                        <span class="level-option-title">Nivå 4 - Njutning på er nivå</span>
+                        <span class="level-option-copy">Gå direkt in i den mest intensiva delen av Lust Loops.</span>
+                    </label>
+                </div>
+            </div>
+            <div class="welcome-note">
+                Efter varje runda får ni välja om ni vill spela om samma nivå eller levla upp till nästa.
+            </div>
+            <div class="flex flex-col gap-4">
+                <button onclick="startGame()" class="btn-primary">Starta spelet!</button>
+                <button onclick="goBack()" class="text-gray-400 text-[10px] uppercase tracking-[0.3em] hover:text-white transition-colors">
+                    Tillbaka
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="aboutModal">
-        <div class="modal-card">
-            <p class="kicker">Om Appen</p>
-            <h2 class="modal-title">Lust, Love & Kinky encounters</h2>
-            <p class="modal-copy">Lust, Love & Kink – A Lovers' Game är skapat för par med öppna sinnen som vill få inspiration till sängkammaren, eller för de som vill fördjupa sin kontakt med varandra genom lekfullhet och passion mellan lakanen. Vi guidar er genom en natt ni sent kommer att glömma, från den mjukaste massage till pirrande kontraster där fasta grepp möter total hängivelse och upphetsning.</p>
-            <p class="modal-copy">Appen ger utrymme att utforska dolda fantasier och utmana invanda roller. Vi bjuder in till en värld där attraktion inte har några gränser och där alla får uppskatta alla, oavsett han, hon eller hen, där nyfikenheten på varandras oslipade sidor får stå i centrum. Oavsett om ni söker öm bekräftelse eller vill känna adrenalinet stiga i ett balanserat maktspel, är detta er plats för en spännande upptäcktsfärd.</p>
-            <div class="safety-panel" style="margin-top:0;">
-                <p class="safety-title">Säkerhet & Samtycke</p>
-                <p class="modal-copy" style="margin-bottom:0;">För en trygg upplevelse rekommenderar vi att ni använder de klassiska stoppljusen: Grön när allt känns bra, Gul när samma intensitet är okej men inte mer, Orange när tempo och intensitet behöver ner, och Röd när ni avbryter direkt. Trygghet är nyckeln till 100% njutning.</p>
-                <div class="signal-row">
-                    <span class="signal-chip green"><span class="signal-dot"></span>Grön</span>
-                    <span class="signal-chip yellow"><span class="signal-dot"></span>Gul</span>
-                    <span class="signal-chip orange"><span class="signal-dot"></span>Orange</span>
-                    <span class="signal-chip red"><span class="signal-dot"></span>Röd</span>
-                </div>
+    <div id="gearModal" class="modal">
+        <div class="modal-content">
+            <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Förberedelser</div>
+            <div class="text-2xl font-black uppercase tracking-[0.12em] mb-5">Det här behövs</div>
+            <div class="gear-panel">
+                <ul class="gear-list">
+                    <li>Dildo</li>
+                    <li>Vibrerande leksak</li>
+                    <li>Flogger / Piska / Paddel</li>
+                    <li>Ögonbindel</li>
+                    <li>Massageolja / Glidmedel</li>
+                </ul>
+                <p class="gear-copy" style="margin:14px 0 0;">Saknar ni något? Improvisera!</p>
             </div>
-            <div class="modal-actions" style="margin-top:22px;">
-                <button class="ghost-btn" id="closeAboutBtn" type="button">Stäng</button>
-                <button class="primary-btn" id="aboutDoneBtn" type="button">Vi fattar</button>
+            <div class="flex flex-col gap-4">
+                <button onclick="closeGearModalAndStartRound()" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="roundEndModal" class="modal">
+        <div class="modal-content">
+            <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Båda i mål</div>
+            <div id="roundEndTitle" class="text-2xl font-black uppercase tracking-[0.12em] mb-5">Vad vill ni nu?</div>
+            <div id="roundEndText" class="text-lg leading-relaxed mb-8 text-gray-200 font-light">
+                Ni är klara med rundan. Välj om ni vill spela om samma nivå eller gå vidare till nästa hetta.
+            </div>
+            <div class="round-choice-grid">
+                <button onclick="restartCurrentRound()" class="choice-card">
+                    <span class="choice-title">Samma nivå igen</span>
+                    <span class="choice-copy">Spela om samma runda från start med samma intensitet.</span>
+                </button>
+                <button id="nextRoundBtn" onclick="advanceToNextRound()" class="choice-card">
+                    <span class="choice-title">Hetare nivå</span>
+                    <span id="nextRoundCopy" class="choice-copy">Gå vidare till nästa runda och få vassare utmaningar.</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="levelIntroModal" class="modal">
+        <div class="modal-content">
+            <div class="text-[#800020] text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Ny nivå</div>
+            <div id="levelIntroTitle" class="text-2xl font-black uppercase tracking-[0.12em] mb-5">Nivå 2 av 4</div>
+            <div id="levelIntroText" class="text-xl leading-relaxed mb-8 text-gray-100 font-light italic">
+                En romantisk introduktion med fokus på beröring, smekningar och massage. Lättklätt med underkläderna på som minst. Här bygger vi förväntan...
+            </div>
+            <div class="flex flex-col gap-4">
+                <button onclick="closeLevelIntroModal()" class="btn-primary">Vi fattar</button>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = "luloPlayers";
+        const p1 = { id: 1, name: "Spelare 1", gender: "male", pos: -1, color: "blue", side: -18, class: "text-p1" };
+        const p2 = { id: 2, name: "Spelare 2", gender: "female", pos: -1, color: "pink", side: 18, class: "text-p2" };
+        const PLAYER_STORAGE_KEY = "luloPlayers";
+        const GAME_STATE_STORAGE_KEY = "luloGameState";
+        const VISITOR_COUNTER_SITE = "";
+        const VISITOR_COUNTER_PATH = "/lulo/index.html";
+        const diceDropAudio = new Audio('./dicedrop.wav');
+        const slotSpinStartAudio = new Audio('./spinwheelstart.wav');
+        const slotSpinStopAudio = new Audio('./spinwheelstop.wav');
+        const timerStopAudio = new Audio('./timerstop.wav');
+        
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, timerEndsAt = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null, visitedTileLabelsByPlayer = null, wakeLockSentinel = null;
+        const SLOT_MACHINE_MAX_SPINS = 3;
+        const maxRound = 3;
+        const startAnchor = { x: 220, y: 40 };
+        const mysteryChallengesByRound = {
+    0: [ // Nivå 1: Mjuk Start
+        { label: "Spegling", text: "$ACTOR, be $TARGET utföra en smekning dig där hen behagar. Efter 30 sekunder ska du spegla rörelsen exakt på $TARGET." },
+        { label: "Värmevåg", text: "$ACTOR, gnugga dina händer mot varandra tills de blir riktigt varma. Placera dem sedan på valfri bar hud på $TARGET och håll dem kvar tills klockan ringer." },
+        { label: "Viskningen", text: "$ACTOR, ställ dig bakom $TARGET och viska tre saker du vill göra ikväll. Avsluta med att kyssa $TARGET bakom örat eller på halsen efter varje viskning." },
+        { label: "Lätt beröring", text: "$ACTOR, använd dina fingertoppar eller ett lätt klädesplagg för att smeka $TARGET över hela ryggen. Rörelsen ska vara så lätt att det nästan kittlas." },
+        { label: "Värme och närhet", text: "$ACTOR, ställ dig tätt bakom $TARGET så att ni känner varandras kroppsvärme. Massera nacke och axlar med dina händer utan att säga ett ord förrän klockan ringer." },
+        { label: "Vibration", text: "$ACTOR, använd en vibrator mot $TARGETs kön utanpå underkläderna. Öka intensiteten gradvis och be $TARGET beskriva hur det känns." },
+        { label: "Fjäderlätt", text: "$ACTOR, använd dina läppar för att vandra från $TARGETs axel, längs med halsen och upp mot örat - Ingen kyss, bara smekande läppar mot bar hud." }
+    ],
+    1: [ // Nivå 2: Värmen Stiger
+        { label: "Sammetsmjukt", text: "$ACTOR, smek $TARGETs kön och insida lår med ett mjukt tygstycke eller en flogger som du drar fram och tillbaka. Visa att du har kontrollen genom att då och då stanna upp helt och bara låta tyget vila lätt mot huden." },
+        { label: "Utlämnad", text: "$TARGET ska blunda och hålla händerna bakom ryggen. $ACTOR, utforska $TARGETs ansikte och hals med dina fingertoppar och din mun medan $TARGET är helt passiv." },
+        { label: "Fingertoppar", text: "$ACTOR, smörj in dina fingertoppar med massageolja. Massera $TARGETs bröstvårtor i cirklar medan du ser hen djupt i ögonen utan att säga ett ord." },
+        { label: "Vibration", text: "$ACTOR, använd en vibrator på och runt $TARGETs kön. Öka intensiteten gradvis och be $TARGET beskriva hur det känns." },
+        { label: "Baksak", text: "$ACTOR, massera $TARGETs bakdel med massageolja. Be $TARGET uppmärksamma om något i massagen känns extra skönt." },
+        { label: "Oljelek", text: "$ACTOR, häll en sträng olja på $TARGETs lår. Använd din egen underarm för att sprida ut den med långa, tryckande drag som rör sig närmare könet för varje gång." }
+    ],
+    2: [ // Nivå 3: Djup Hängivelse
+        { label: "Tystnad!", text: "$ACTOR tar kontrollen - Lägg dig mellan $TARGETs särade lår. Med dina läppar och dina andetag smeker du varsamt där du själv önskar. Varje gång $TARGET ger ifrån sig ett ljud, ger du ett lätt nyp i bröstvårtan." },
+        { label: "Se på mig", text: "Ligg på sidan i en öppen 69:a. Håll ett lätt avstånd mellan er, så ni ser varandras härlighet perfekt. Ge er själva njutning medan ni tar in synen av vad er partner gör." },
+        { label: "Bunden Lust", text: "$ACTOR, ställ $TARGET vänd mot väggen, nära utan att nudda. håll $TARGETs händer bakom ryggen eller över huvudet samtidigt som du delar ut lekfulla smisk på bakdelen." },
+        { label: "Onanera mera", text: "Ligg på sidan i en öppen 69:a. Håll ett lätt avstånd mellan er, så ni ser varandras härlighet perfekt. Ge varandra njutning med händerna eller en valfri leksak." },
+        { label: "Smakprov", text: "$ACTOR, smörj in ditt finger med glidmedel, ätbar massageolja, ditt eget saliv eller något annat smakfullt från din eller $ACTORS kropp. Låt $TARGET smaka, slicka och suga på fingret och berätta hur det smakar." },
+        { label: "Se men inte röra...", text: "$TARGET ligger på rygg med händerna under sig, $ACTOR smek $TARGET över ansikte och kropp med valfria delar av din egen kropp, förutom dina händer." }
+    ],
+    3: [ // Nivå 4: Extatisk Final
+        { label: "Ansiktslek", text: "$ACTOR, sätt dig grensle över, eller brevid $TARGETs ansikte. Använd en vibrator på dig själv precis framför hens ögon. Låt $TARGET smaka på dig men jämna mellanrum." },
+        { label: "Gemensam massage", text: "$ACTOR, massera $TARGETs kön med ditt eget, utan att penetrera. I en ställning du själv bestämmer." },
+        { label: "Heta droppar", text: "$ACTOR, fyll munnen med dricka eller använd din egen saliv och låt det rinna från din tunga ner över $TARGETs bröst för att sen leka med mun och tunga över det blöta. " },
+        { label: "Het mun", text: "$ACTOR, smek $TARGETs läppar med ditt kön, munnen förblir stängd tills du ger tillåtelse. Använd korta meningar som - Öppna munnen, tunga ut, tunga in, stäng munnen, slicka, sug - för att styra din egen njutning." },
+        { label: "Tyst massage", text: "$ACTOR, använd valfri kroppsdel eller sexleksak för att massera $TARGET mellan skinkorna och reta den bakre öppningen. I en ställning du väljer. Om $TARGET ger ifrån sig ljud påminner du med ett lekfullt rapp på skinkan." },
+        { label: "Glid, Glid, Glid", text: "$ACTOR, använd rikligt med glidmedel och en dildo eller dina fingrar i $TARGETs bakre öppning. Samtidigt smeker du $TARGETs kön mot dina läppar och delar ut ömma kyssar samtidigt som du långsamt arbetar dig in och ut där bak." }
+    ]
+};
+        const tilesData = [
+            { type: "hands", label: "Händer", variant: "a", x: 270, y: 330 },
+            { type: "mouth", label: "Mun", variant: "a", x: 600, y: 330 },
+            { type: "breasts", label: "Bröst", variant: "a", x: 930, y: 330 },
+            { type: "butt", label: "Rumpa", variant: "a", x: 1280, y: 330 },
+            { type: "mystery", label: "?!?", variant: "a", x: 1280, y: 585 },
+            { type: "hands", label: "Händer", variant: "a", x: 1280, y: 850 },
+            { type: "mouth", label: "Mun", variant: "a", x: 930, y: 850 },
+            { type: "breasts", label: "Bröst", variant: "a", x: 600, y: 850 },
+            { type: "butt", label: "Rumpa", variant: "a", x: 270, y: 850 },
+            { type: "mystery", label: "?!?", variant: "a", x: 270, y: 1100 },
+            { type: "hands", label: "Händer", variant: "b", x: 270, y: 1390 },
+            { type: "mouth", label: "Mun", variant: "b", x: 600, y: 1390 },
+            { type: "breasts", label: "Bröst", variant: "b", x: 930, y: 1390 },
+            { type: "butt", label: "Rumpa", variant: "b", x: 1280, y: 1390 },
+            { type: "mystery", label: "?!?", variant: "b", x: 1280, y: 1650 },
+            { type: "hands", label: "Händer", variant: "b", x: 1280, y: 1925 },
+            { type: "mouth", label: "Mun", variant: "b", x: 930, y: 1925 },
+            { type: "breasts", label: "Bröst", variant: "b", x: 600, y: 1925 },
+            { type: "butt", label: "Rumpa", variant: "b", x: 270, y: 1925 },
+            { type: "mystery", label: "?!?", variant: "b", x: 270, y: 2180 },
+            { type: "finish", label: "Mål", x: 760, y: 2440 }
+        ];
 
-        function getDefaultPlayers() {
+        const gameContentIntensity1 = {
+            a: {
+                hands_male: `$ACTOR, låt dina händer massera $TARGETs lår. Smek henne med en lekfull hand utanpå underkläderna då och då för att markera din närvaro.`,
+                hands_female: `$ACTOR, låt dina händer massera $TARGETs lår. Smek honom med en lekfull hand utanpå underkläderna då och då för att markera din närvaro.`,
+                mouth: `$ACTOR, sök upp de känsliga punkterna på $TARGETs hals och bakom öronen med mjuka, våta kyssar.`,
+                breasts_male: `$ACTOR, stå bakom en sittande $TARGET och massera hennes axlar och fortsätt sen ner mot hennes bröst för att krama dom med mjuka händer utanpå underkläderna.`,
+                breasts_female: `$ACTOR, ställ dig bakom en sittande $TARGET. Massera hans axlar och låt händerna glida ner över bröstkorgen för att krama hans bröstmuskler med fasta, trygga grepp.`,
+                butt: `$ACTOR, ställ er på knä ansikte mot ansikte, tätt intill varandra. Omslut $TARGETs rumpa med dina händer och massera den mjukt. Avsluta med en lekfull klapp som markerar din närvaro när klockan ringer.`
+            },
+            b: {
+                hands_male: `$ACTOR, använd baksidan av dina händer för att smeka $TARGET från brösten upp mot halsen och ner igen. Låt beröringen vara fjäderlätt och retsam.`,
+                hands_female: `$ACTOR, använd baksidan av dina händer för att smeka $TARGET från magen upp mot halsen och ner igen. Låt beröringen vara fjäderlätt och retsam över hans bröstkorg och bröstvårtor.`,
+                mouth: `$ACTOR, be $TARGET sitta helt still med stängd mun. Använd dina egna läppar och tunga för att fjäderlätt smeka $TARGETs läppar. När klockan ringer, avslutar du med en djup kyss som belöning.`,
+                breasts_male: `$ACTOR, låt dina fingertoppar rita fjäderlätta cirklar runt hennes bröstvårtor utanpå kläderna. Se hur dom reagerar på din beröring.`,
+                breasts_female: `$ACTOR, låt dina naglar vandra fjäderlätt över hans bröst. Vågar du öka intensiteten och riva tag lite extra för att lämna små, vita märken i hans hud? Fokusera helt på $TARGETs reaktion när du tar i.`,
+                butt: `$ACTOR, ställ dig bakom $TARGET när hen böjer sig fram över sängen. Låt dina händer smeka över skinkorna och rispa långsamt med naglarna i långa, mjuka drag som lämnar små vita ränder.`
+            }
+        };
+        const gameContentIntensity2 = {
+            a: {
+                hands_male: `$ACTOR, väck $TARGETs lust med en vibrator. Låt vibrationerna dansa över huden runtom hennes kön – fokusera helt på de yttre, känsliga delarna, utan penetration.`,
+                hands_female: `$ACTOR, använd en vibrator för att testa $TARGETs erogena zoner. Börja vid toppen på hans lem och rör dig långsamt, långsamt ner mellan benen. Lyssna på varje andetag och känn varje muskelryckning för att avgöra om du ska stanna vid hans lem eller om du kan fortsätta utforska längre söderöver. Låt vibratorn och signalerna från hans kropp styra vart utmaningen tar dig.`,
+                mouth: `$ACTOR, låt dina läppar utforska $TARGETs bröstvårtor. Håll munnen stängd och använd bara läpparna – växla mellan heta andetag och mjuka smekningar.`,
+                breasts_male: `$ACTOR, ställ er på knä mitt emot varandra. Klä av $TARGET på överkroppen och ta in åsynen av henne. Massera hennes bröst och bröstvårtor med en blandning av mjuka handflator och retsamma fingertoppar. Lyft, nyp och smek brösten medan ni håller oavbruten ögonkontakt.`,
+                breasts_female: `$ACTOR, ställ er på knä mitt emot varandra. Klä av $TARGET på överkroppen och ta in åsynen av honom. Massera hans bröstkorg med en blandning av mjuka handflator och retsamma fingertoppar blandat med nyp och rispande naglar. Håll oavbruten ögonkontakt och läs av hans reaktioner.`,
+                butt: `$ACTOR, använd varm olja för att massera $TARGETs rumpa och insida lår. Fokusera på att bygga upp en elektrisk spänning genom att variera trycket i dina handflator och vandra högt upp på låren.`
+            },
+            b: {
+                hands_male: `$ACTOR, använd en dildo och rikligt med glidmedel för att smeka henne runtom hennes öppning, men kom ihåg: ingen penetration är tillåten än.`,
+                hands_female: `$ACTOR, be $TARGET stå på golvet medan du sitter framför honom i sängen, använd en stroker eller dina händer och rikligt med glidmedel för att smeka hans lem. Smek fram och tillbaka längs hela hans längd, men kom ihåg: håll tempot lugnt, långsamt och retsamt.`,
+                mouth: `$ACTOR, lägg dig mellan $TARGETs ben och håll din mun så nära du kan utan att nudda. Blås och andas tungt för att stimulera utan beröring. När klockan ringer, ger du en blöt kyss direkt på $TARGETs kön.`,
+                breasts_male: `$ACTOR, ställ dig bakom en sittande $TARGET. Använd massageolja och låt dina händer omsluta hennes bröst i sin helhet. Fokusera på långa, njutningsfulla drag och beröring. Massera över bröstvårtorna utan att nypa, dra eller ge dom direkt uppvaktning.`,
+                breasts_female: `$ACTOR, ställ dig bakom en sittande $TARGET. Använd massageolja och låt dina händer omsluta hans bröstmuskler. Fokusera på långa, njutningsfulla drag och tyngd. Undvik direkt kontakt med bröstvårtorna – låt förväntan bygga upp spänningen.`,
+                butt: `$ACTOR, be $TARGET ligga helt stilla på mage med särade ben. Använd en generös mängd olja eller glidmedel för att utforska området mellan skinkorna. Massera retsamt nära den bakre öppningen utan att vidröra den direkt – om $TARGET har svårt att ligga still, påminn med lätta, snabba, smisk.`
+            }
+        };
+        const gameContentIntensity3 = {
+            a: {
+                hands_male: `$ACTOR, placera dig mellan $TARGETs lår. Reta henne genom att långsamt föra in en leksak, pausa, och njut av hennes reaktion innan du långsamt drar ut den igen.`,
+                hands_female: `$ACTOR, sätt dig mellan $TARGETs ben och massera det retsamma området bakom hans lem med mjuka, cirkulära rörelser. Be om ögonkontakt och lyssna på hans andning för att känna in hans önskan.`,
+                mouth: `$ACTOR, ge $TARGET den våtaste orala njutning du kan frambringa. Växla mellan att låta saliv droppa ner över könet från din mun och intensiv oral stimulans. Kräv oavbruten ögonkontakt med $TARGET så att du ser varje reaktion.`,
+                breasts_male: `$ACTOR, be $TARGET ta på sig en ögonbindel och lägga sig ner. Använd dina händer och en vibrator för att reta hennes bröstvårtor. Kan du få dem att styvna innan klockan ringer?`,
+                breasts_female: `$ACTOR, be $TARGET ta på sig en ögonbindel och lägga sig ner. Använd dina händer och en vibrator för att reta hans bröstvårtor. Kan du få dem att styvna innan klockan ringer?`,
+                butt: `$ACTOR, be $TARGET böja sig fram över sängen. Inled med lätta smisk som gradvis ökar i intensitet. Växla mellan att massera huden du smiskat och att retsamt cirkulera ett finger runt den bakre öppningen.`
+            },
+            b: {
+                hands_male: `$ACTOR, använd glidmedel och dina fingrar för att utforska $TARGETs innersta från en ny vinkel. Be henne stå på alla fyra i sängen och sära ordentligt – låt dina fingrar vandra retsamt mellan hennes öppningar.`,
+                hands_female: `$ACTOR, använd glidmedel och dina fingrar och händer för att utforska $TARGETs känsligaste delar från en ny vinkel. Be honom stå på alla fyra i sängen – låt dina fingrar vandra retsamt från hans lem och bakåt.`,
+                mouth: `$ACTOR, ge $TARGET en intensiv oral upplevelse. Ge ditt allt med kyssar, slick, sug och nafs – men se till att $TARGET stannar precis vid gränsen utan att nå klimax.`,
+                breasts_male: `$ACTOR, fixera $TARGETs händer över hennes huvud med din ena hand. Nyp i hennes bröstvårtor och dra lätt i dem med andra handen medan ni har ögonkontakt. Börja försiktig och öka intensiteten allt eftersom.`,
+                breasts_female: `$ACTOR, fixera $TARGETs händer över hans huvud med din ena hand. Använd dina naglar och fingrar för att nypa och dra i hans bröstvårtor medan ni har intensiv ögonkontakt. Öka intensiteten i takt med hans tunga andhämtning.`,
+                butt: `$ACTOR, be $TARGET stå på alla fyra. Använd en leksak för att massera den bakre öppningen och låt den glida retsamt mellan skinkorna, utan penetration. Samtidigt drar du lätt i $TARGETs hår eller placerar handen under hakan för att luta hens huvud bakåt.`
+            }
+        };
+        const gameContentIntensity4 = {
+            a: {
+                hands_male: `$ACTOR, använd dina händer för att leda $TARGET så nära gränsen till klimax du bara kan, utan att låta henne gå över den. Lek med hennes frustration och njutning.`,
+                hands_female: `$ACTOR, använd dina händer för att leda $TARGET så nära gränsen till klimax du bara kan, utan att låta honom gå över den. Lek med hans frustration och njutning.`,
+                mouth: `$ACTOR, använd en leksak på $TARGET samtidigt som du ger oralsex. Välj själv om leksaken ska reta eller penetrera, i den ställning du anser ger mest njutning.`,
+                breasts_male: `$ACTOR, använd en dildo eller vibrator där nere på $TARGET medan du ligger bredvid henne i sängen och samtidigt suger, slickar och nafsar på hennes bröst.`,
+                breasts_female: `$ACTOR, använd en dildo eller vibrator för att smeka $TARGETs lem medan du ligger tätt intill honom i sängen. Sug, slicka och nafsa samtidigt intensivt på hans bröstvårtor.`,
+                butt: `$TARGET väljer ställning. $ACTOR, massera den bakre öppningen och arbeta långsamt in ett finger med hjälp av rikligt med glidmedel. För ut det långsamt och upprepa rörelsen rytmiskt tills klockan ringer.`
+            },
+            b: {
+                hands_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet vid kanten och ögonbindel på. Ställ dig vid hennes huvud och massera hennes bröst med en generös mängd massageolja och lyssna på hennes andhämtning.`,
+                hands_female: `$ACTOR, be $TARGET lägga sig på rygg med ögonbindel. Ställ dig på golvet vid hans huvud och massera honom från bröstkorg ner mot hans lem med en generös mängd olja. Låt dina bröst nudda hans ansikte och reta hans mun medan du lyssnar på hans tunga andhämtning.`,
+                mouth: `$ACTOR, ta total kontroll. Ge oralsex men växla med att försiktigt nafsa och dra i $TARGETs kön med dina tänder och händer. Lyssna på flämtningarna för att veta om du ska öka eller sänka intensiteten.`,
+                breasts_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet nära kanten. Ställ dig vid hennes huvud och be henne pressa ihop brösten med sina händer. Använd en dildo och rikligt med glidmedel för att simulera ett intensivt bröstknull.`,
+                breasts_female: `$ACTOR, massera $TARGETs lem med dina bröst. Smörj in dem med rikligt med olja eller saliv och kläm hans lem hårt mellan dem. För dina bröst rytmiskt upp och ner utan att han tappar kontrollen.`,
+                butt: `$ACTOR, använd rikligt med glidmedel. För in ett finger eller en dildo i $TARGETs bakre öppning och penetrera långsamt. Samtidigt ska du lätt och retsamt smiska över könet med din hand eller en flogger.`
+            }
+        };
+        const gameContentByIntensity = [
+            gameContentIntensity1,
+            gameContentIntensity2,
+            gameContentIntensity3,
+            gameContentIntensity4
+        ];
+        const levelIntroContent = {
+            0: {
+                title: "Nivå 1 av 4",
+                text: "En romantisk introduktion med fokus på beröring, smekningar och massage. Lättklätt med underkläderna på som minst. Här bygger vi förväntan..."
+            },
+            1: {
+                title: "Nivå 2 av 4",
+                text: "Intensiteten ökar och beröringen blir djupare. Här är det okej att låta kläderna falla när ni själva känner att de är i vägen för njutningen."
+            },
+            2: {
+                title: "Nivå 3 av 4",
+                text: "Det är dags att låta hud möta hud. Vi tar steget till total nakenhet och öppnar dörren för djupare utforskande av dolda fantasier och maktspel. Finns det klädesplagg kvar så tar ni av dem innan ni startar omgången."
+            },
+            3: {
+                title: "Nivå 4 av 4",
+                text: "Allt fokus ligger på fullständig njutning. Släpp alla spärrar och njut. Det är dags att ge vika för lusten, hängivelsen och mötet mellan Er."
+            }
+        };
+
+        function loadStoredPlayers() {
+            try {
+                const stored = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY) || "{}");
+                if (stored.player1?.name) p1.name = stored.player1.name.trim() || p1.name;
+                if (stored.player1?.gender) p1.gender = stored.player1.gender;
+                if (stored.player2?.name) p2.name = stored.player2.name.trim() || p2.name;
+                if (stored.player2?.gender) p2.gender = stored.player2.gender;
+            } catch {}
+        }
+
+        function playUiSound(audio, { restart = true } = {}) {
+            if (!audio) return;
+            try {
+                if (restart) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+                audio.play().catch(() => {});
+            } catch {}
+        }
+
+        function stopUiSound(audio) {
+            if (!audio) return;
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+            } catch {}
+        }
+
+        async function requestWakeLock() {
+            if (!('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+            try {
+                wakeLockSentinel = await navigator.wakeLock.request('screen');
+                wakeLockSentinel.addEventListener('release', () => {
+                    wakeLockSentinel = null;
+                });
+            } catch {}
+        }
+
+        function createEmptyVisitedTileLabels() {
             return {
-                player1: { name: "", gender: "male" },
-                player2: { name: "", gender: "female" }
+                1: { a: [], b: [] },
+                2: { a: [], b: [] }
             };
         }
 
-        function loadPlayers() {
+        function persistGameState(overlay = null) {
+            const effectiveOverlay = overlay
+                ?? (document.getElementById('challengeModal').classList.contains('active') ? 'challenge'
+                : document.getElementById('slotModal').classList.contains('active') ? 'slot'
+                : document.getElementById('roundEndModal').classList.contains('active') ? 'roundEnd'
+                : document.getElementById('gearModal').classList.contains('active') ? 'gearIntro'
+                : document.getElementById('levelIntroModal').classList.contains('active') ? 'levelIntro'
+                : 'none');
+
+            const state = {
+                turn,
+                round,
+                p1: { name: p1.name, gender: p1.gender, pos: p1.pos },
+                p2: { name: p2.name, gender: p2.gender, pos: p2.pos },
+                pendingChallengePlayerId: pendingChallengePlayer?.id ?? null,
+                pendingDicePlayerId: pendingDicePlayer?.id ?? null,
+                timerHasStarted,
+                timerExtraUsed,
+                firstFinisherId,
+                currentChallengeState,
+                gearIntroSeen,
+                slotMachineState,
+                visitedTileLabelsByPlayer,
+                overlay: effectiveOverlay
+            };
+
+            sessionStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function clearPersistedGameState() {
+            sessionStorage.removeItem(GAME_STATE_STORAGE_KEY);
+        }
+
+        function restoreGameState() {
             try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (!stored) return getDefaultPlayers();
-                return { ...getDefaultPlayers(), ...JSON.parse(stored) };
+                const raw = sessionStorage.getItem(GAME_STATE_STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
             } catch {
-                return getDefaultPlayers();
+                return null;
             }
         }
 
-        function savePlayers(players) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+        function getMysteryTileIndex() {
+            return tilesData.findIndex(tile => tile.type === 'mystery');
         }
 
-        function clearPlayers() {
-            playersState = getDefaultPlayers();
-            localStorage.removeItem(STORAGE_KEY);
-            populateModal(playersState);
-            rerender();
+        function getTileHalf(tile) {
+            if (!tile || (tile.variant !== 'a' && tile.variant !== 'b')) return null;
+            return tile.variant;
         }
 
-        function trimName(value) {
-            return value.trim().replace(/\s+/g, " ");
+        function shouldTrackTileLabel(tile) {
+            return Boolean(tile && tile.type !== 'mystery' && tile.type !== 'finish' && getTileHalf(tile));
         }
 
-        function isPlayersComplete(players) {
-            return Boolean(
-                trimName(players.player1.name) &&
-                trimName(players.player2.name) &&
-                players.player1.gender &&
-                players.player2.gender
-            );
+        function hasVisitedTileLabel(player, pos) {
+            const tile = tilesData[pos];
+            const half = getTileHalf(tile);
+            if (!shouldTrackTileLabel(tile) || !half || !visitedTileLabelsByPlayer?.[player.id]?.[half]) return false;
+            return visitedTileLabelsByPlayer[player.id][half].includes(tile.label);
         }
 
-        function renderSummary(players) {
-            const summary = document.getElementById("playerSummary");
-            const p1Name = trimName(players.player1.name);
-            const p2Name = trimName(players.player2.name);
-
-            summary.innerHTML = `
-                <span class="player-chip"><span class="player-dot cyan"></span>${p1Name || "Spelare 1 saknas"}${p1Name ? ` • ${players.player1.gender === "male" ? "Han" : "Hon"}` : ""}</span>
-                <span class="player-chip"><span class="player-dot pink"></span>${p2Name || "Spelare 2 saknas"}${p2Name ? ` • ${players.player2.gender === "male" ? "Han" : "Hon"}` : ""}</span>
-            `;
+        function markVisitedTileLabel(player, pos) {
+            const tile = tilesData[pos];
+            const half = getTileHalf(tile);
+            if (!shouldTrackTileLabel(tile) || !half) return;
+            const labels = visitedTileLabelsByPlayer[player.id][half];
+            if (!labels.includes(tile.label)) {
+                labels.push(tile.label);
+            }
         }
 
-        function renderGames(players) {
-            const ready = isPlayersComplete(players);
-            const cards = document.querySelectorAll(".game-card");
-            const boardBtn = document.getElementById("boardGameBtn");
+        function getAdjustedMove(player, steps) {
+            const maxPos = tilesData.length - 1;
+            const intendedPos = Math.min(player.pos + steps, maxPos);
+            const intendedTile = tilesData[intendedPos];
+            const intendedSteps = intendedPos - player.pos;
 
-            cards.forEach((card) => {
-                const game = card.dataset.game;
-                const btn = card.querySelector(".card-btn");
-                if (game === "board") {
-                    card.classList.toggle("locked", !ready);
-                    if (!ready) {
-                        btn.disabled = true;
-                        btn.textContent = "Mata in spelarnamn";
-                        btn.classList.remove("active");
+            if (!shouldTrackTileLabel(intendedTile) || !hasVisitedTileLabel(player, intendedPos)) {
+                return { steps: intendedSteps, targetPos: intendedPos };
+            }
+
+            for (let delta = 1; delta <= 6; delta++) {
+                const backwardPos = Math.max(player.pos + steps - delta, player.pos + 1);
+                if (backwardPos > player.pos) {
+                    const backwardTile = tilesData[backwardPos];
+                    if (!shouldTrackTileLabel(backwardTile) || !hasVisitedTileLabel(player, backwardPos)) {
+                        return { steps: backwardPos - player.pos, targetPos: backwardPos };
                     }
+                }
+
+                const forwardPos = Math.min(player.pos + steps + delta, maxPos);
+                if (forwardPos > player.pos) {
+                    const forwardTile = tilesData[forwardPos];
+                    if (!shouldTrackTileLabel(forwardTile) || !hasVisitedTileLabel(player, forwardPos)) {
+                        return { steps: forwardPos - player.pos, targetPos: forwardPos };
+                    }
+                }
+            }
+
+            return { steps: intendedSteps, targetPos: intendedPos };
+        }
+
+        function getSlotDebugConfig() {
+            const params = new URLSearchParams(window.location.search);
+            const wantsSlot = window.location.hash === '#slot' || params.get('slot') === '1';
+            if (!wantsSlot) return null;
+
+            const requestedLevel = Number(params.get('level'));
+            const requestedRound = Number(params.get('round'));
+            const levelBasedRound = Number.isInteger(requestedLevel) ? requestedLevel - 1 : NaN;
+            const roundCandidate = Number.isInteger(levelBasedRound) ? levelBasedRound : requestedRound;
+            const safeRound = Number.isInteger(roundCandidate) ? Math.max(0, Math.min(roundCandidate, maxRound)) : 0;
+            const requestedPlayer = Number(params.get('player'));
+            const playerId = requestedPlayer === 2 ? 2 : 1;
+
+            return {
+                round: safeRound,
+                playerId,
+                mysteryPos: getMysteryTileIndex()
+            };
+        }
+
+        function applyRestoredGameState(state) {
+            if (!state) return false;
+
+            turn = state.turn === 2 ? 2 : 1;
+            round = Number.isInteger(state.round) ? Math.max(0, Math.min(state.round, maxRound)) : 0;
+            p1.name = state.p1?.name || p1.name;
+            p1.gender = state.p1?.gender || p1.gender;
+            p1.pos = Number.isInteger(state.p1?.pos) ? state.p1.pos : -1;
+            p2.name = state.p2?.name || p2.name;
+            p2.gender = state.p2?.gender || p2.gender;
+            p2.pos = Number.isInteger(state.p2?.pos) ? state.p2.pos : -1;
+            pendingChallengePlayer = state.pendingChallengePlayerId === 1 ? p1 : state.pendingChallengePlayerId === 2 ? p2 : null;
+            pendingDicePlayer = state.pendingDicePlayerId === 1 ? p1 : state.pendingDicePlayerId === 2 ? p2 : null;
+            timerHasStarted = Boolean(state.timerHasStarted);
+            timerExtraUsed = Boolean(state.timerExtraUsed);
+            firstFinisherId = state.firstFinisherId === 1 || state.firstFinisherId === 2 ? state.firstFinisherId : null;
+            currentChallengeState = state.currentChallengeState || null;
+            gearIntroSeen = Boolean(state.gearIntroSeen);
+            slotMachineState = state.slotMachineState || null;
+            visitedTileLabelsByPlayer = state.visitedTileLabelsByPlayer || createEmptyVisitedTileLabels();
+            return true;
+        }
+
+        function initVisitorCounter() {
+            if (!VISITOR_COUNTER_SITE) return;
+
+            window.goatcounter = {
+                path: () => VISITOR_COUNTER_PATH || window.location.pathname
+            };
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://gc.zgo.at/count.js';
+            script.dataset.goatcounter = `https://${VISITOR_COUNTER_SITE}.goatcounter.com/count`;
+            script.onload = () => {
+                if (!window.goatcounter?.visit_count) return;
+                window.goatcounter.visit_count({
+                    append: '#visitorCounter',
+                    path: VISITOR_COUNTER_PATH || window.location.pathname,
+                    no_branding: true,
+                    attr: {
+                        class: 'visitor-counter-badge',
+                        title: 'Besok totalt for appen'
+                    },
+                    style: `
+                        div {
+                            border: 0;
+                            background: transparent;
+                            color: inherit;
+                            box-shadow: none;
+                            padding: 0;
+                            margin: 0;
+                            font: inherit;
+                        }
+                    `
+                });
+            };
+            document.head.appendChild(script);
+        }
+
+        function init() {
+            visitedTileLabelsByPlayer = createEmptyVisitedTileLabels();
+            initVisitorCounter();
+            requestWakeLock();
+            loadStoredPlayers();
+            const board = document.getElementById('board');
+            board.innerHTML = '<div class="board-stage" id="board-stage"></div>';
+            const stage = document.getElementById('board-stage');
+            tilesData.forEach((tile, i) => {
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.style.left = `${(tile.x / 1536) * 100}%`;
+                row.style.top = `${(tile.y / 2752) * 100}%`;
+                row.innerHTML = `
+                    <div class="tile-container">
+                        <div id="tile-${i}" class="tile" aria-label="${tile.label}"></div>
+                        <div class="tile-label">${tile.label}</div>
+                    </div>`;
+                stage.appendChild(row);
+            });
+            createToken(p1); createToken(p2);
+            updateStatus();
+            const slotDebugConfig = getSlotDebugConfig();
+            if (slotDebugConfig) {
+                round = slotDebugConfig.round;
+                p1.pos = slotDebugConfig.playerId === 1 ? slotDebugConfig.mysteryPos : -1;
+                p2.pos = slotDebugConfig.playerId === 2 ? slotDebugConfig.mysteryPos : -1;
+                pendingChallengePlayer = slotDebugConfig.playerId === 2 ? p2 : p1;
+                pendingDicePlayer = null;
+                currentChallengeState = null;
+                slotMachineState = null;
+                setTimeout(() => {
+                    updatePos(p1);
+                    updatePos(p2);
+                    openSlotMachine(pendingChallengePlayer);
+                }, 600);
+                return;
+            }
+            const restoredState = restoreGameState();
+            const hasRestoredGame = applyRestoredGameState(restoredState);
+            setTimeout(() => {
+                updatePos(p1);
+                updatePos(p2);
+                if (!hasRestoredGame) {
+                    openWelcomeModal();
                     return;
                 }
 
-                card.classList.add("locked");
-                btn.disabled = true;
-                btn.textContent = "Kommer snart";
-                btn.classList.remove("active");
-            });
+                updateStatus();
+                if (restoredState.overlay === 'challenge' && pendingChallengePlayer) {
+                    showChallenge(pendingChallengePlayer);
+                    return;
+                }
+                if (restoredState.overlay === 'slot' && pendingChallengePlayer) {
+                    openSlotMachine(pendingChallengePlayer, true);
+                    return;
+                }
+                if (restoredState.overlay === 'roundEnd') {
+                    openRoundEndModal();
+                    return;
+                }
+                if (restoredState.overlay === 'gearIntro') {
+                    openGearModal();
+                    return;
+                }
+                if (restoredState.overlay === 'levelIntro') {
+                    openLevelIntroModal();
+                    return;
+                }
+                if (pendingChallengePlayer) {
+                    showChallengeTrigger(pendingChallengePlayer);
+                    return;
+                }
+                if (pendingDicePlayer) {
+                    showTurnTrigger(pendingDicePlayer);
+                    return;
+                }
+                openWelcomeModal();
+            }, 600);
+        }
 
-            if (ready) {
-                boardBtn.disabled = false;
-                boardBtn.textContent = "Starta Lust Loops";
-                boardBtn.classList.add("active");
+        function createToken(p) {
+            const t = document.createElement('div');
+            t.id = `token-${p.id}`;
+            t.className = `player-token p-${p.color}`;
+            document.body.appendChild(t);
+        }
+
+        function hideChallengeTrigger() {
+            document.getElementById('challengeTrigger').classList.add('hidden');
+        }
+
+        function hideTurnTrigger() {
+            document.getElementById('turnTriggerBoard').classList.add('hidden');
+        }
+
+        function showTurnTrigger(player) {
+            const token = document.getElementById(`token-${player.id}`);
+            const btn = document.getElementById('turnTriggerBoard');
+            const rect = token.getBoundingClientRect();
+            const accent = player.id === 1 ? '#00e5ff' : '#ff007f';
+            const accentSoft = player.id === 1 ? 'rgba(0,229,255,0.30)' : 'rgba(255,0,127,0.30)';
+            const accentGlow = player.id === 1 ? 'rgba(0,229,255,0.42)' : 'rgba(255,0,127,0.42)';
+            btn.innerHTML = `<span class="trigger-player" style="color:${accent}">${player.name}</span><span class="trigger-name" style="color:transparent">.</span><span class="trigger-core"><span class="trigger-action">Rulla tärning</span></span>`;
+            btn.style.setProperty('--trigger-accent', accentSoft);
+            btn.style.setProperty('--trigger-glow', accentGlow);
+            positionFloatingButton(btn, rect);
+            btn.classList.remove('hidden');
+        }
+
+        function showChallengeTrigger(player) {
+            const token = document.getElementById(`token-${player.id}`);
+            const btn = document.getElementById('challengeTrigger');
+            const rect = token.getBoundingClientRect();
+            const tileLabel = tilesData[player.pos]?.label || 'Utmaning';
+            const accent = player.id === 1 ? '#00e5ff' : '#ff007f';
+            const accentSoft = player.id === 1 ? 'rgba(0,229,255,0.30)' : 'rgba(255,0,127,0.30)';
+            const accentGlow = player.id === 1 ? 'rgba(0,229,255,0.42)' : 'rgba(255,0,127,0.42)';
+            btn.innerHTML = `<span class="trigger-player" style="color:${accent}">${player.name}</span><span class="trigger-name" style="color:${accent}">${tileLabel}</span><span class="trigger-core"><span class="trigger-action">Visa utmaning</span></span>`;
+            btn.style.setProperty('--trigger-accent', accentSoft);
+            btn.style.setProperty('--trigger-glow', accentGlow);
+            positionFloatingButton(btn, rect);
+            btn.classList.remove('hidden');
+        }
+
+        function positionFloatingButton(btn, rect) {
+            const headerBottom = document.getElementById('boardHeader')?.getBoundingClientRect().bottom || 0;
+            const centerX = window.scrollX + (window.innerWidth / 2);
+            const minTop = window.scrollY + headerBottom + 96;
+            const preferredTop = window.scrollY + (window.innerHeight * 0.52);
+            const top = Math.max(preferredTop, minTop);
+
+            btn.style.transform = 'translate(-50%, -50%)';
+            btn.style.left = `${centerX}px`;
+            btn.style.top = `${top}px`;
+        }
+
+        function updatePos(player) {
+            const token = document.getElementById(`token-${player.id}`);
+            const tile = player.pos >= 0 ? document.getElementById(`tile-${player.pos}`) : null;
+            const stage = document.getElementById('board-stage');
+            const stageRect = stage.getBoundingClientRect();
+            const tokenHalf = token.offsetWidth ? token.offsetWidth / 2 : 11;
+            if (!tile) {
+                token.style.left = `${stageRect.left + window.scrollX + (stageRect.width * startAnchor.x / 1536) - tokenHalf + player.side}px`;
+                token.style.top = `${stageRect.top + window.scrollY + (stageRect.height * startAnchor.y / 2752) - tokenHalf}px`;
+                return;
+            }
+            const rect = tile.getBoundingClientRect();
+            token.style.left = `${rect.left + window.scrollX + (rect.width/2) - tokenHalf + player.side}px`;
+            token.style.top = `${rect.top + window.scrollY + (rect.height/2) - tokenHalf}px`;
+            if (pendingChallengePlayer && pendingChallengePlayer.id === player.id) showChallengeTrigger(player);
+            if (pendingDicePlayer && pendingDicePlayer.id === player.id) showTurnTrigger(player);
+        }
+
+        function setDiceFace(el, value) {
+            el.dataset.face = String(value);
+        }
+
+        function isPlayerAtFinish(player) {
+            return player.pos === tilesData.length - 1;
+        }
+
+        function getOtherPlayer(player) {
+            return player.id === 1 ? p2 : p1;
+        }
+
+        function getRemainingPlayer() {
+            if (!isPlayerAtFinish(p1)) return p1;
+            if (!isPlayerAtFinish(p2)) return p2;
+            return null;
+        }
+
+        function resetBoardForRound() {
+            hideChallengeTrigger();
+            hideTurnTrigger();
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerEndsAt = 0;
+            timerHasStarted = false;
+            timerExtraUsed = false;
+            pendingChallengePlayer = null;
+            pendingDicePlayer = null;
+            isMoving = false;
+            firstFinisherId = null;
+            slotMachineState = null;
+            visitedTileLabelsByPlayer = createEmptyVisitedTileLabels();
+            p1.pos = -1;
+            p2.pos = -1;
+            updatePos(p1);
+            updatePos(p2);
+            persistGameState('none');
+        }
+
+        function beginRound(startingPlayerId = 1) {
+            turn = startingPlayerId;
+            pendingDicePlayer = turn === 1 ? p1 : p2;
+            updateStatus();
+            if (levelIntroContent[round]) {
+                openLevelIntroModal();
+                return;
+            }
+            persistGameState('none');
+            setTimeout(() => showTurnTrigger(pendingDicePlayer), 300);
+        }
+
+        function openLevelIntroModal() {
+            const intro = levelIntroContent[round];
+            if (!intro) {
+                persistGameState('none');
+                setTimeout(() => showTurnTrigger(pendingDicePlayer), 300);
+                return;
+            }
+            document.getElementById('levelIntroTitle').innerText = intro.title;
+            document.getElementById('levelIntroText').innerText = intro.text;
+            document.getElementById('levelIntroModal').classList.add('active');
+            persistGameState('levelIntro');
+        }
+
+        function closeLevelIntroModal() {
+            document.getElementById('levelIntroModal').classList.remove('active');
+            persistGameState('none');
+            if (pendingDicePlayer) {
+                setTimeout(() => showTurnTrigger(pendingDicePlayer), 220);
             }
         }
 
-        function populateModal(players) {
-            document.getElementById("player1Name").value = players.player1.name || "";
-            document.getElementById("player2Name").value = players.player2.name || "";
-            document.getElementById(players.player1.gender === "female" ? "player1Female" : "player1Male").checked = true;
-            document.getElementById(players.player2.gender === "female" ? "player2Female" : "player2Male").checked = true;
+        function openRoundEndModal() {
+            const nextRoundBtn = document.getElementById('nextRoundBtn');
+            const nextRoundCopy = document.getElementById('nextRoundCopy');
+            const hasHotterRound = round < maxRound;
+
+            nextRoundBtn.disabled = !hasHotterRound;
+            nextRoundCopy.innerText = hasHotterRound
+                ? "Gå vidare till nästa runda och få vassare utmaningar."
+                : "Ni är redan på högsta nivån, så härifrån blir det omspel på samma hetta.";
+            document.getElementById('roundEndModal').classList.add('active');
+            persistGameState('roundEnd');
         }
 
-        function collectPlayersFromModal() {
+        function openChallengeContent(activeP, category, text) {
+            const timerPanel = document.querySelector('.timer-panel');
+            const timerBtn = document.getElementById('timerBtn');
+            const boardViewBtn = document.getElementById('boardViewBtn');
+            const doneBtn = document.getElementById('doneBtn');
+            const targetP = turn === 1 ? p2 : p1;
+
+            clearInterval(timerInterval);
+            timerHasStarted = false;
+            timerExtraUsed = false;
+            applyChallengeAccent(activeP);
+            document.getElementById('challengeLevel').innerText = `Nivå ${Math.min(round + 1, maxRound + 1)} av ${maxRound + 1}`;
+            document.getElementById('timer-display').innerText = "--:--";
+            document.getElementById('timer-display').classList.add('timer-inactive');
+            setTimerButtonState({ text: "Starta njutningen", disabled: false });
+            document.querySelector('.timer-panel').classList.remove('timer-panel-active');
+            timerPanel.style.display = '';
+            timerBtn.style.display = '';
+            boardViewBtn.style.display = '';
+            doneBtn.style.width = '';
+            doneBtn.innerText = "Vi är klara";
+            document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">${category}</span>`;
+            applyChallengeTextSizing(text);
+            document.getElementById('modalText').innerHTML = decorateChallengeText(text, activeP, targetP);
+            currentChallengeState = { playerId: activeP.id, pos: activeP.pos, category, text };
+            document.getElementById('challengeModal').classList.add('active');
+            persistGameState('challenge');
+        }
+
+        function restartCurrentRound() {
+            document.getElementById('roundEndModal').classList.remove('active');
+            resetBoardForRound();
+            beginRound(1);
+        }
+
+        function advanceToNextRound() {
+            if (round < maxRound) round++;
+            document.getElementById('roundEndModal').classList.remove('active');
+            resetBoardForRound();
+            beginRound(1);
+        }
+
+        function escapeRegExp(value) {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function getChallengePlayerMarkup(player, suffix = '') {
+            return `<span class="challenge-player-name" style="--player-accent:${player.id === 1 ? '#00e5ff' : '#ff007f'};">${player.name}${suffix}</span>`;
+        }
+
+        function decorateChallengeText(text, actor, target) {
+            const actorPossessiveMarkup = getChallengePlayerMarkup(actor, 's');
+            const targetPossessiveMarkup = getChallengePlayerMarkup(target, 's');
+            const actorMarkup = getChallengePlayerMarkup(actor);
+            const targetMarkup = getChallengePlayerMarkup(target);
+
+            return text
+                .replace(/\$ACTOR_POSSESSIVE/g, actorPossessiveMarkup)
+                .replace(/\$TARGET_POSSESSIVE/g, targetPossessiveMarkup)
+                .replace(/\$ACTORs/g, actorPossessiveMarkup)
+                .replace(/\$TARGETs/g, targetPossessiveMarkup)
+                .replace(new RegExp(`${escapeRegExp(actor.name)}s`, 'g'), actorPossessiveMarkup)
+                .replace(new RegExp(`${escapeRegExp(target.name)}s`, 'g'), targetPossessiveMarkup)
+                .replace(/\$ACTOR/g, actorMarkup)
+                .replace(/\$TARGET/g, targetMarkup)
+                .replace(new RegExp(escapeRegExp(actor.name), 'g'), actorMarkup)
+                .replace(new RegExp(escapeRegExp(target.name), 'g'), targetMarkup);
+        }
+
+        function applyChallengeTextSizing(text) {
+            const modalText = document.getElementById('modalText');
+            const length = text.replace(/\s+/g, ' ').trim().length;
+            modalText.classList.remove('size-medium', 'size-small', 'size-xsmall');
+
+            if (length >= 210) {
+                modalText.classList.add('size-xsmall');
+                return;
+            }
+            if (length >= 160) {
+                modalText.classList.add('size-small');
+                return;
+            }
+            if (length >= 105) {
+                modalText.classList.add('size-medium');
+            }
+        }
+
+        function normalizeMysteryChallenge(entry, roundIndex, challengeIndex) {
+            if (typeof entry === 'string') {
+                const fallbackLabel = `${roundIndex + 1}${String.fromCharCode(65 + challengeIndex)}`;
+                return { label: fallbackLabel, text: entry };
+            }
             return {
-                player1: {
-                    name: trimName(document.getElementById("player1Name").value),
-                    gender: document.querySelector('input[name="player1Gender"]:checked')?.value || "male"
-                },
-                player2: {
-                    name: trimName(document.getElementById("player2Name").value),
-                    gender: document.querySelector('input[name="player2Gender"]:checked')?.value || "female"
-                }
+                label: entry?.label || `${roundIndex + 1}${String.fromCharCode(65 + challengeIndex)}`,
+                text: entry?.text || entry?.label || ''
             };
         }
 
-        function setModalOpen(isOpen) {
-            document.getElementById("playersModal").classList.toggle("active", isOpen);
+        function renderMysteryReel(challenges, selectedIndex) {
+            const track = document.getElementById('slotTrack');
+            const total = challenges.length;
+            const previousIndex = (selectedIndex - 1 + total) % total;
+            const nextIndex = (selectedIndex + 1) % total;
+            const previous = normalizeMysteryChallenge(challenges[previousIndex], round, previousIndex);
+            const current = normalizeMysteryChallenge(challenges[selectedIndex], round, selectedIndex);
+            const next = normalizeMysteryChallenge(challenges[nextIndex], round, nextIndex);
+            track.innerHTML = `
+                <div class="slot-reel-item">${previous.label}</div>
+                <div class="slot-reel-item active">${current.label}</div>
+                <div class="slot-reel-item">${next.label}</div>
+            `;
         }
 
-        function setInstallGuideOpen(isOpen) {
-            document.getElementById("installGuideModal").classList.toggle("active", isOpen);
+        function renderSlotResultText(text) {
+            const actor = pendingChallengePlayer || (turn === 1 ? p1 : p2);
+            const target = actor.id === 1 ? p2 : p1;
+            document.getElementById('slotResultText').innerHTML = decorateChallengeText(text, actor, target);
+            document.getElementById('slotResult').classList.add('active');
         }
 
-        function setAboutOpen(isOpen) {
-            document.getElementById("aboutModal").classList.toggle("active", isOpen);
+        function getAvailableMysteryIndexes(challenges, usedIndexes = []) {
+            return challenges.map((_, index) => index).filter(index => !usedIndexes.includes(index));
         }
 
-        let playersState = loadPlayers();
-
-        function rerender() {
-            renderSummary(playersState);
-            renderGames(playersState);
+        function updateSlotAttemptsText(attemptsUsed, attemptsMax, canSpin) {
+            const attemptsEl = document.getElementById('slotAttempts');
+            const attemptsLeft = Math.max(0, attemptsMax - attemptsUsed);
+            attemptsEl.innerText = canSpin
+                ? `${attemptsLeft} försök kvar`
+                : `Alla ${attemptsMax} försök använda`;
         }
 
-        document.getElementById("openPlayersBtn").addEventListener("click", () => {
-            populateModal(playersState);
-            setModalOpen(true);
-        });
+        function setSlotButtonState({ spinning, ready, attemptsUsed = 0, attemptsMax = SLOT_MACHINE_MAX_SPINS, canSpin = true }) {
+            const spinBtn = document.getElementById('slotSpinBtn');
+            const revealBtn = document.getElementById('slotRevealBtn');
+            spinBtn.disabled = spinning || !canSpin;
+            spinBtn.innerText = spinning ? "Slumpar..." : canSpin ? "Slumpa utmaning" : "Inga försök kvar";
+            revealBtn.disabled = !ready;
+            revealBtn.classList.toggle('ready', ready);
+            updateSlotAttemptsText(attemptsUsed, attemptsMax, canSpin);
+        }
 
-        document.getElementById("closePlayersBtn").addEventListener("click", () => {
-            setModalOpen(false);
-        });
+        function randomChoice(options) {
+            return options[Math.floor(Math.random() * options.length)];
+        }
 
-        document.getElementById("clearPlayersBtn").addEventListener("click", () => {
-            clearPlayers();
-        });
+        function openSlotMachine(activeP, restore = false) {
+            const challenges = mysteryChallengesByRound[round] || mysteryChallengesByRound[0];
+            const targetP = activeP.id === 1 ? p2 : p1;
+            const matchingSavedState = slotMachineState && slotMachineState.playerId === activeP.id && slotMachineState.pos === activeP.pos && slotMachineState.round === round;
+            const hasSavedResult = matchingSavedState && slotMachineState.challengeText;
+            const selectedIndex = hasSavedResult ? slotMachineState.challengeIndex : 0;
+            const usedChallengeIndexes = matchingSavedState && Array.isArray(slotMachineState.usedChallengeIndexes)
+                ? slotMachineState.usedChallengeIndexes
+                : [];
+            const canSpin = usedChallengeIndexes.length < SLOT_MACHINE_MAX_SPINS
+                && getAvailableMysteryIndexes(challenges, usedChallengeIndexes).length > 0;
 
-        document.getElementById("openInstallGuideBtn").addEventListener("click", () => {
-            setInstallGuideOpen(true);
-        });
+            document.getElementById('slotReel').classList.remove('is-spinning');
+            renderMysteryReel(challenges, selectedIndex);
+            document.getElementById('slotResult').classList.remove('active');
 
-        document.getElementById("openAboutBtn").addEventListener("click", () => {
-            setAboutOpen(true);
-        });
+            slotMachineState = {
+                playerId: activeP.id,
+                pos: activeP.pos,
+                round,
+                targetId: targetP.id,
+                challengeLabel: hasSavedResult ? slotMachineState.challengeLabel : null,
+                challengeText: hasSavedResult ? slotMachineState.challengeText : null,
+                challengeIndex: hasSavedResult ? slotMachineState.challengeIndex : null,
+                usedChallengeIndexes
+            };
 
-        document.getElementById("closeInstallGuideBtn").addEventListener("click", () => {
-            setInstallGuideOpen(false);
-        });
+            if (hasSavedResult) {
+                renderSlotResultText(slotMachineState.challengeText);
+                setSlotButtonState({ spinning: false, ready: true, attemptsUsed: usedChallengeIndexes.length, canSpin });
+            } else {
+                setSlotButtonState({ spinning: false, ready: false, attemptsUsed: usedChallengeIndexes.length, canSpin });
+            }
 
-        document.getElementById("installGuideDoneBtn").addEventListener("click", () => {
-            setInstallGuideOpen(false);
-        });
+            document.getElementById('slotModal').classList.add('active');
+            persistGameState('slot');
+        }
 
-        document.getElementById("closeAboutBtn").addEventListener("click", () => {
-            setAboutOpen(false);
-        });
+        function spinSlotMachine() {
+            if (!pendingChallengePlayer || !slotMachineState) return;
+            requestWakeLock();
+            const challenges = mysteryChallengesByRound[round] || mysteryChallengesByRound[0];
+            const reelEl = document.getElementById('slotReel');
+            const usedChallengeIndexes = Array.isArray(slotMachineState.usedChallengeIndexes) ? slotMachineState.usedChallengeIndexes : [];
+            const availableIndexes = getAvailableMysteryIndexes(challenges, usedChallengeIndexes);
 
-        document.getElementById("aboutDoneBtn").addEventListener("click", () => {
-            setAboutOpen(false);
-        });
-
-        document.getElementById("savePlayersBtn").addEventListener("click", () => {
-            const nextPlayers = collectPlayersFromModal();
-            if (!isPlayersComplete(nextPlayers)) {
-                alert("Fyll i namn och välj pronomen för båda spelarna.");
+            if (usedChallengeIndexes.length >= SLOT_MACHINE_MAX_SPINS || availableIndexes.length === 0) {
+                setSlotButtonState({ spinning: false, ready: Boolean(slotMachineState.challengeText), attemptsUsed: usedChallengeIndexes.length, canSpin: false });
                 return;
             }
-            playersState = nextPlayers;
-            savePlayers(playersState);
-            rerender();
-            setModalOpen(false);
+
+            document.getElementById('slotResult').classList.remove('active');
+            setSlotButtonState({ spinning: true, ready: false, attemptsUsed: usedChallengeIndexes.length, canSpin: true });
+            playUiSound(slotSpinStartAudio);
+
+            reelEl.classList.add('is-spinning');
+            const intervalId = setInterval(() => {
+                const previewIndex = randomChoice(availableIndexes);
+                renderMysteryReel(challenges, previewIndex);
+            }, 90);
+            reelEl.dataset.intervalId = String(intervalId);
+
+            setTimeout(() => {
+                clearInterval(Number(reelEl.dataset.intervalId));
+                reelEl.classList.remove('is-spinning');
+                playUiSound(slotSpinStopAudio);
+                const selectedIndex = randomChoice(availableIndexes);
+                const selectedChallenge = normalizeMysteryChallenge(challenges[selectedIndex], round, selectedIndex);
+                const nextUsedChallengeIndexes = [...usedChallengeIndexes, selectedIndex];
+                const canSpinAgain = nextUsedChallengeIndexes.length < SLOT_MACHINE_MAX_SPINS
+                    && getAvailableMysteryIndexes(challenges, nextUsedChallengeIndexes).length > 0;
+                slotMachineState.challengeIndex = selectedIndex;
+                slotMachineState.challengeLabel = selectedChallenge.label;
+                slotMachineState.challengeText = selectedChallenge.text;
+                slotMachineState.usedChallengeIndexes = nextUsedChallengeIndexes;
+                renderMysteryReel(challenges, selectedIndex);
+                renderSlotResultText(slotMachineState.challengeText);
+                setSlotButtonState({ spinning: false, ready: true, attemptsUsed: nextUsedChallengeIndexes.length, canSpin: canSpinAgain });
+                persistGameState('slot');
+            }, 2000);
+        }
+
+        function revealSlotChallenge() {
+            if (!pendingChallengePlayer || !slotMachineState?.challengeText) return;
+            const text = slotMachineState.challengeText;
+            document.getElementById('slotModal').classList.remove('active');
+            openChallengeContent(pendingChallengePlayer, slotMachineState.challengeLabel || "Överraskning", text);
+        }
+
+        function showBoardFromSlot() {
+            if (!pendingChallengePlayer) return;
+            document.getElementById('slotModal').classList.remove('active');
+            persistGameState('none');
+            setTimeout(() => showChallengeTrigger(pendingChallengePlayer), 180);
+        }
+
+        function applyChallengeAccent(player) {
+            const accent = player.id === 1 ? "#00e5ff" : "#ff007f";
+            const accentSoft = player.id === 1 ? "rgba(0,229,255,0.38)" : "rgba(255,0,127,0.38)";
+            const accentGlow = player.id === 1 ? "rgba(0,229,255,0.34)" : "rgba(255,0,127,0.34)";
+            const timerDisplay = document.getElementById('timer-display');
+            const timerPanel = document.querySelector('.timer-panel');
+            const timerBtn = document.getElementById('timerBtn');
+            const doneBtn = document.getElementById('doneBtn');
+            const challengeCard = document.querySelector('.challenge-modal-content');
+
+            timerDisplay.style.color = accent;
+            timerDisplay.style.textShadow = `0 0 18px ${accentGlow}`;
+            timerPanel.style.setProperty('--timer-accent-soft', accentSoft);
+            timerBtn.style.borderColor = accentSoft;
+            timerBtn.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.02), 0 18px 32px -18px ${accentGlow}`;
+            doneBtn.style.borderColor = accentSoft;
+            challengeCard.style.setProperty('--challenge-accent', accentSoft);
+            challengeCard.style.setProperty('--challenge-accent-glow', accentGlow);
+        }
+
+        function setTimerButtonState({ text, disabled }) {
+            const timerBtn = document.getElementById('timerBtn');
+            timerBtn.innerText = text;
+            timerBtn.disabled = disabled;
+        }
+
+        function openDiceModal() {
+            if (isMoving) return;
+            const activeP = turn === 1 ? p1 : p2;
+            const nameEl = document.getElementById('dice-player-name');
+            nameEl.innerText = activeP.name;
+            nameEl.className = `text-2xl font-black uppercase tracking-widest mb-6 ${activeP.class}`;
+            const diceDisplay = document.getElementById('dice-modal-display');
+            const diceResult = document.getElementById('dice-modal-result');
+            diceDisplay.classList.remove('hidden', 'dice-rolling');
+            diceDisplay.style.transform = 'none';
+            diceDisplay.classList.remove('result-win');
+            diceDisplay.style.removeProperty('--dice-accent');
+            setDiceFace(diceDisplay, 1);
+            diceResult.classList.add('hidden');
+            diceResult.style.transform = 'none';
+            diceResult.classList.remove('result-win');
+            diceResult.style.removeProperty('--dice-accent');
+            setDiceFace(diceResult, 1);
+            document.getElementById('diceModal').classList.add('active');
+            setTimeout(executeRoll, 450);
+        }
+
+        function openWelcomeModal() {
+            document.getElementById('welcomePlayers').innerHTML = `<span class="${p1.class}">${p1.name}</span> & <span class="${p2.class}">${p2.name}</span>`;
+            document.getElementById('welcomeModal').classList.add('active');
+        }
+
+        function openGearModal() {
+            document.getElementById('gearModal').classList.add('active');
+            persistGameState('gearIntro');
+        }
+
+        function closeGearModalAndStartRound() {
+            gearIntroSeen = true;
+            document.getElementById('gearModal').classList.remove('active');
+            beginRound(1);
+        }
+
+        function getSelectedStartRound() {
+            const selected = document.querySelector('input[name="startLevel"]:checked');
+            return selected ? Number(selected.value) || 0 : 0;
+        }
+
+        function startGame() {
+            requestWakeLock();
+            document.getElementById('welcomeModal').classList.remove('active');
+            round = Math.max(0, Math.min(getSelectedStartRound(), maxRound));
+            resetBoardForRound();
+            gearIntroSeen = false;
+            openGearModal();
+        }
+
+        function goBack() {
+            clearPersistedGameState();
+            window.location.href = '../index.html';
+        }
+
+        function openDiceFromBoard() {
+            if (!pendingDicePlayer || isMoving || pendingChallengePlayer) return;
+            requestWakeLock();
+            hideTurnTrigger();
+            playUiSound(diceDropAudio);
+            openDiceModal();
+        }
+
+        async function executeRoll() {
+            hideChallengeTrigger();
+            hideTurnTrigger();
+            pendingChallengePlayer = null;
+            pendingDicePlayer = null;
+            const diceDisplay = document.getElementById('dice-modal-display');
+            const diceResult = document.getElementById('dice-modal-result');
+            diceDisplay.classList.remove('hidden');
+            diceResult.classList.add('hidden');
+            void diceDisplay.offsetWidth;
+            diceDisplay.classList.add('dice-rolling');
+            for(let i=0; i<12; i++) {
+                setDiceFace(diceDisplay, Math.floor(Math.random()*6)+1);
+                await new Promise(r => setTimeout(r, 110));
+            }
+            const active = turn === 1 ? p1 : p2;
+            const rawVal = Math.floor(Math.random()*6)+1;
+            const adjustedMove = getAdjustedMove(active, rawVal);
+            const val = adjustedMove.steps;
+            diceDisplay.classList.remove('dice-rolling');
+            stopUiSound(diceDropAudio);
+            diceDisplay.classList.add('hidden');
+            diceDisplay.style.transform = 'none';
+            setDiceFace(diceResult, val);
+            diceResult.style.setProperty('--dice-accent', turn === 1 ? 'rgba(0,229,255,0.2)' : 'rgba(255,0,127,0.2)');
+            diceResult.classList.add('result-win');
+            diceResult.classList.remove('hidden');
+            await new Promise(r => setTimeout(r, 2200));
+            document.getElementById('diceModal').classList.remove('active');
+            setTimeout(() => { isMoving = true; move(val); }, 700);
+        }
+
+        async function move(steps) {
+            const active = turn === 1 ? p1 : p2;
+            const { targetPos: target } = getAdjustedMove(active, steps);
+            for(let i = active.pos + 1; i <= target; i++) {
+                active.pos = i;
+                updatePos(active);
+                document.getElementById(`token-${active.id}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                await new Promise(r => setTimeout(r, 550));
+            }
+            isMoving = false;
+            markVisitedTileLabel(active, active.pos);
+            pendingChallengePlayer = active;
+            updateStatus();
+            persistGameState('none');
+            setTimeout(() => showChallengeTrigger(active), 300);
+        }
+
+        function openChallengeFromBoard() {
+            if (!pendingChallengePlayer || isMoving) return;
+            hideChallengeTrigger();
+            if (currentChallengeState && currentChallengeState.playerId === pendingChallengePlayer.id && currentChallengeState.pos === pendingChallengePlayer.pos) {
+                document.getElementById('challengeModal').classList.add('active');
+                persistGameState('challenge');
+                return;
+            }
+            showChallenge(pendingChallengePlayer);
+        }
+
+        function showBoardFromChallenge() {
+            if (!pendingChallengePlayer) return;
+            document.getElementById('challengeModal').classList.remove('active');
+            persistGameState('none');
+            setTimeout(() => showChallengeTrigger(pendingChallengePlayer), 180);
+        }
+
+        function showChallenge(activeP) {
+            const tile = tilesData[activeP.pos];
+            const type = tile.type;
+            const variant = tile.variant || "a";
+            let cat = "", key = "";
+            const targetP = turn === 1 ? p2 : p1;
+            const timerPanel = document.querySelector('.timer-panel');
+            const timerBtn = document.getElementById('timerBtn');
+            const boardViewBtn = document.getElementById('boardViewBtn');
+            const doneBtn = document.getElementById('doneBtn');
+            document.getElementById('challengeLevel').innerText = `Nivå ${Math.min(round + 1, maxRound + 1)} av ${maxRound + 1}`;
+
+            if (type === "finish" && isPlayerAtFinish(getOtherPlayer(activeP))) {
+                pendingChallengePlayer = null;
+                currentChallengeState = null;
+                persistGameState('roundEnd');
+                openRoundEndModal();
+                return;
+            }
+
+            if (
+                currentChallengeState
+                && currentChallengeState.playerId === activeP.id
+                && currentChallengeState.pos === activeP.pos
+                && currentChallengeState.text
+            ) {
+                openChallengeContent(activeP, currentChallengeState.category || "Överraskning", currentChallengeState.text);
+                return;
+            }
+
+            if (type === "finish") {
+                clearInterval(timerInterval);
+                timerHasStarted = false;
+                timerExtraUsed = false;
+                applyChallengeAccent(activeP);
+                document.getElementById('timer-display').innerText = "--:--";
+                document.getElementById('timer-display').classList.add('timer-inactive');
+                setTimerButtonState({ text: "Starta njutningen", disabled: false });
+                document.querySelector('.timer-panel').classList.remove('timer-panel-active');
+                timerPanel.style.display = '';
+                timerBtn.style.display = '';
+                boardViewBtn.style.display = '';
+                doneBtn.style.width = '';
+                doneBtn.innerText = "Vi är klara";
+                const finishText = `Grattis - Du är först i mål! Luta dig tillbaka och njut av att ${targetP.name} kämpar sig fram till dig genom resterande utmaningar.`;
+                document.getElementById('modalLead').innerHTML = `<span class="challenge-lead-name" style="--player-accent:${activeP.id === 1 ? '#00e5ff' : '#ff007f'};">${activeP.name}</span><span class="challenge-lead-separator">-</span><span class="challenge-lead-label">Mål</span>`;
+                applyChallengeTextSizing(finishText);
+                document.getElementById('modalText').innerHTML = decorateChallengeText(finishText, activeP, targetP);
+                timerPanel.style.display = 'none';
+                timerBtn.style.display = 'none';
+                boardViewBtn.style.display = 'none';
+                doneBtn.style.width = '100%';
+                doneBtn.innerText = "Njut...";
+            } else {
+                if (type === "mystery") {
+                    openSlotMachine(activeP);
+                    return;
+                }
+                const resolvedType = type;
+                if (resolvedType === "hands") { cat = type === "mystery" ? "Överraskning: Händer" : "Händer"; key = activeP.gender === "male" ? "hands_male" : "hands_female"; }
+                if (resolvedType === "mouth") { cat = type === "mystery" ? "Överraskning: Mun" : "Mun"; key = "mouth"; }
+                if (resolvedType === "breasts") { cat = type === "mystery" ? "Överraskning: Bröst" : "Bröst"; key = activeP.gender === "male" ? "breasts_male" : "breasts_female"; }
+                if (resolvedType === "butt") { cat = type === "mystery" ? "Överraskning: Rumpa" : "Rumpa"; key = "butt"; }
+                const intensityContent = gameContentByIntensity[round] || gameContentIntensity4;
+                const variantContent = intensityContent[variant] || intensityContent.a;
+                let text = (variantContent[key] || intensityContent.a[key]).replace("$ACTOR", activeP.name).replace("$TARGET", targetP.name);
+                openChallengeContent(activeP, cat, text);
+                return;
+            }
+            currentChallengeState = { playerId: activeP.id, pos: activeP.pos };
+            document.getElementById('challengeModal').classList.add('active');
+            persistGameState('challenge');
+        }
+
+        function randomizeTimer() {
+            requestWakeLock();
+            if (!timerHasStarted) {
+                timerHasStarted = true;
+            } else {
+                if (timeLeft > 0 || timerExtraUsed) return;
+                timerExtraUsed = true;
+            }
+
+            const newSeconds = 3;
+            document.getElementById('timer-display').classList.remove('timer-inactive');
+            document.querySelector('.timer-panel').classList.add('timer-panel-active');
+            setTimerButtonState({ text: "Vi vill fortsätta lite till...", disabled: true });
+            startTimer(newSeconds);
+        }
+
+        function finishTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerEndsAt = 0;
+            timeLeft = 0;
+            updateTimerDisplay();
+            if (!timerExtraUsed) {
+                setTimerButtonState({ text: "Vi vill fortsätta lite till...", disabled: false });
+            }
+            playUiSound(timerStopAudio);
+        }
+
+        function syncTimerState() {
+            if (!timerEndsAt) return;
+            const remainingSeconds = Math.max(0, Math.ceil((timerEndsAt - Date.now()) / 1000));
+            timeLeft = remainingSeconds;
+            updateTimerDisplay();
+            if (remainingSeconds <= 0) {
+                finishTimer();
+            }
+        }
+
+        function startTimer(seconds) {
+            clearInterval(timerInterval);
+            timerEndsAt = Date.now() + (seconds * 1000);
+            timeLeft = seconds;
+            updateTimerDisplay();
+            timerInterval = setInterval(syncTimerState, 250);
+        }
+
+        function updateTimerDisplay() {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function closeModal() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerEndsAt = 0;
+            timerHasStarted = false;
+            timerExtraUsed = false;
+            const closingPlayer = pendingChallengePlayer;
+            slotMachineState = null;
+            currentChallengeState = null;
+            document.getElementById('challengeModal').classList.remove('active');
+            hideChallengeTrigger();
+            pendingChallengePlayer = null;
+            if (!closingPlayer) return;
+
+            if (isPlayerAtFinish(closingPlayer)) {
+                if (!firstFinisherId) firstFinisherId = closingPlayer.id;
+                const remainingPlayer = getRemainingPlayer();
+                if (remainingPlayer) {
+                    turn = remainingPlayer.id;
+                    pendingDicePlayer = remainingPlayer;
+                    updateStatus();
+                    persistGameState('none');
+                    setTimeout(() => showTurnTrigger(pendingDicePlayer), 500);
+                    return;
+                }
+
+                updateStatus();
+                persistGameState('roundEnd');
+                setTimeout(openRoundEndModal, 350);
+                return;
+            }
+
+            const preferredNext = getOtherPlayer(closingPlayer);
+            const nextPlayer = isPlayerAtFinish(preferredNext) ? closingPlayer : preferredNext;
+            turn = nextPlayer.id;
+            pendingDicePlayer = nextPlayer;
+            updateStatus();
+            persistGameState('none');
+            setTimeout(() => showTurnTrigger(pendingDicePlayer), 500);
+        }
+
+        function updateStatus() {
+            return;
+        }
+
+        window.onload = init;
+        window.onresize = () => { updatePos(p1); updatePos(p2); if (pendingChallengePlayer) showChallengeTrigger(pendingChallengePlayer); };
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+                syncTimerState();
+            }
         });
 
-        document.getElementById("boardGameBtn").addEventListener("click", () => {
-            if (!isPlayersComplete(playersState)) return;
-            window.location.href = "./lulo/index.html";
-        });
-
-        window.addEventListener("load", () => {
-            rerender();
-        });
-
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../service-worker.js').catch(() => {});
             });
         }
     </script>
