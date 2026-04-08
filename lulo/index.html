@@ -1063,6 +1063,9 @@
         const slotSpinStartAudio = new Audio('./spinwheelstart.wav');
         const slotSpinStopAudio = new Audio('./spinwheelstop.wav');
         const timerStopAudio = new Audio('./timerstop.wav');
+        [diceDropAudio, slotSpinStartAudio, slotSpinStopAudio, timerStopAudio].forEach(audio => {
+            audio.preload = 'auto';
+        });
         
         let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, timerEndsAt = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null, visitedTileLabelsByPlayer = null, wakeLockSentinel = null;
         const SLOT_MACHINE_MAX_SPINS = 3;
@@ -1250,6 +1253,22 @@
             try {
                 audio.pause();
                 audio.currentTime = 0;
+            } catch {}
+        }
+
+        function prepareUiSound(audio) {
+            if (!audio) return;
+            try {
+                audio.load();
+                const previousVolume = audio.volume;
+                audio.volume = 0;
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.volume = previousVolume;
+                }).catch(() => {
+                    audio.volume = previousVolume;
+                });
             } catch {}
         }
 
@@ -2170,6 +2189,7 @@
 
         function randomizeTimer() {
             requestWakeLock();
+            prepareUiSound(timerStopAudio);
             if (!timerHasStarted) {
                 timerHasStarted = true;
             } else {
@@ -2194,6 +2214,9 @@
                 setTimerButtonState({ text: "Vi vill fortsätta lite till...", disabled: false });
             }
             playUiSound(timerStopAudio);
+            if (navigator.vibrate) {
+                navigator.vibrate([220, 120, 220]);
+            }
         }
 
         function syncTimerState() {
