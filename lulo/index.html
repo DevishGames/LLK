@@ -2177,7 +2177,7 @@
                 timerExtraUsed = true;
             }
 
-            const newSeconds = 3;
+            const newSeconds = Math.floor(Math.random() * (300 - 120 + 1)) + 120;
             document.getElementById('timer-display').classList.remove('timer-inactive');
             document.querySelector('.timer-panel').classList.add('timer-panel-active');
             setTimerButtonState({ text: "Vi vill fortsätta lite till...", disabled: true });
