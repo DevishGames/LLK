@@ -972,31 +972,40 @@
         const maxRound = 3;
         const startAnchor = { x: 220, y: 40 };
         const mysteryChallengesByRound = {
-            0: [
-                { label: " 1A ", text: "Mystery 1A" },
-                { label: " 1B ", text: "Mystery 1B" },
-                { label: " 1C ", text: "Mystery 1C" },
-                { label: " 1D ", text: "Mystery 1D" }
-            ],
-            1: [
-                { label: "2A", text: "Mystery 2A" },
-                { label: "2B", text: "Mystery 2B" },
-                { label: "2C", text: "Mystery 2C" },
-                { label: "2D", text: "Mystery 2D" }
-            ],
-            2: [
-                { label: "3A", text: "Mystery 3A" },
-                { label: "3B", text: "Mystery 3B" },
-                { label: "3C", text: "Mystery 3C" },
-                { label: "3D", text: "Mystery 3D" }
-            ],
-            3: [
-                { label: "4A", text: "Mystery 4A" },
-                { label: "4B", text: "Mystery 4B" },
-                { label: "4C", text: "Mystery 4C" },
-                { label: "4D", text: "Mystery 4D" }
-            ]
-        };
+    0: [ // Nivå 1: Mjuk Start
+        { label: "Spegling", text: "$ACTOR, be $TARGET utföra en smekning dig där hen behagar. Efter 30 sekunder ska du spegla rörelsen exakt på $TARGET." },
+        { label: "Värmevåg", text: "$ACTOR, gnugga dina händer mot varandra tills de blir riktigt varma. Placera dem sedan på valfri bar hud på $TARGET och håll dem kvar tills klockan ringer." },
+        { label: "Viskningen", text: "$ACTOR, ställ dig bakom $TARGET och viska tre saker du vill göra ikväll. Avsluta med att kyssa $TARGET bakom örat eller på halsen efter varje viskning." },
+        { label: "Lätt beröring", text: "$ACTOR, använd dina fingertoppar eller ett lätt klädesplagg för att smeka $TARGET över hela ryggen. Rörelsen ska vara så lätt att det nästan kittlas." },
+        { label: "Värme och närhet", text: "$ACTOR, ställ dig tätt bakom $TARGET så att ni känner varandras kroppsvärme. Massera nacke och axlar med dina händer utan att säga ett ord förrän klockan ringer." },
+        { label: "Vibration", text: "$ACTOR, använd en vibrator mot $TARGETs kön utanpå underkläderna. Öka intensiteten gradvis och be $TARGET beskriva hur det känns." },
+        { label: "Fjäderlätt", text: "$ACTOR, använd dina läppar för att vandra från $TARGETs axel, längs med halsen och upp mot örat - Ingen kyss, bara smekande läppar mot bar hud." }
+    ],
+    1: [ // Nivå 2: Värmen Stiger
+        { label: "Sammetsmjukt", text: "$ACTOR, smek $TARGETs kön och insida lår med ett mjukt tygstycke eller en flogger som du drar fram och tillbaka. Visa att du har kontrollen genom att då och då stanna upp helt och bara låta tyget vila lätt mot huden." },
+        { label: "Utlämnad", text: "$TARGET ska blunda och hålla händerna bakom ryggen. $ACTOR, utforska $TARGETs ansikte och hals med dina fingertoppar och din mun medan $TARGET är helt passiv." },
+        { label: "Fingertoppar", text: "$ACTOR, smörj in dina fingertoppar med massageolja. Massera $TARGETs bröstvårtor i cirklar medan du ser hen djupt i ögonen utan att säga ett ord." },
+        { label: "Vibration", text: "$ACTOR, använd en vibrator på och runt $TARGETs kön. Öka intensiteten gradvis och be $TARGET beskriva hur det känns." },
+        { label: "Baksak", text: "$ACTOR, massera $TARGETs bakdel med massageolja. Be $TARGET uppmärksamma om något i massagen känns extra skönt." },
+        { label: "Oljelek", text: "$ACTOR, häll en sträng olja på $TARGETs lår. Använd din egen underarm för att sprida ut den med långa, tryckande drag som rör sig närmare könet för varje gång." }
+    ],
+    2: [ // Nivå 3: Djup Hängivelse
+        { label: "Tystnad!", text: "$ACTOR tar kontrollen - Lägg dig mellan $TARGETs särade lår. Med dina läppar och dina andetag smeker du varsamt där du själv önskar. Varje gång $TARGET ger ifrån sig ett ljud, ger du ett lätt nyp i bröstvårtan." },
+        { label: "Se på mig", text: "Ligg på sidan i en öppen 69:a. Håll ett lätt avstånd mellan er, så ni ser varandras härlighet perfekt. Ge er själva njutning medan ni tar in synen av vad er partner gör." },
+        { label: "Bunden Lust", text: "$ACTOR, ställ $TARGET vänd mot väggen, nära utan att nudda. håll $TARGETs händer bakom ryggen eller över huvudet samtidigt som du delar ut lekfulla smisk på bakdelen." },
+        { label: "Onanera mera", text: "Ligg på sidan i en öppen 69:a. Håll ett lätt avstånd mellan er, så ni ser varandras härlighet perfekt. Ge varandra njutning med händerna eller en valfri leksak." },
+        { label: "Smakprov", text: "$ACTOR, smörj in ditt finger med glidmedel, ätbar massageolja, ditt eget saliv eller något annat smakfullt från din eller $ACTORS kropp. Låt $TARGET smaka, slicka och suga på fingret och berätta hur det smakar." },
+        { label: "Se men inte röra...", text: "$TARGET ligger på rygg med händerna under sig, $ACTOR smek $TARGET över ansikte och kropp med valfria delar av din egen kropp, förutom dina händer." }
+    ],
+    3: [ // Nivå 4: Extatisk Final
+        { label: "Ansiktslek", text: "$ACTOR, sätt dig grensle över, eller brevid $TARGETs ansikte. Använd en vibrator på dig själv precis framför hens ögon. Låt $TARGET smaka på dig men jämna mellanrum." },
+        { label: "Gemensam massage", text: "$ACTOR, massera $TARGETs kön med ditt eget, utan att penetrera. I en ställning du själv bestämmer." },
+        { label: "Heta droppar", text: "$ACTOR, fyll munnen med dricka eller använd din egen saliv och låt det rinna från din tunga ner över $TARGETs bröst för att sen leka med mun och tunga över det blöta. " },
+        { label: "Het mun", text: "$ACTOR, smek $TARGETs läppar med ditt kön, munnen förblir stängd tills du ger tillåtelse. Använd korta meningar som - Öppna munnen, tunga ut, tunga in, stäng munnen, slicka, sug - för att styra din egen njutning." },
+        { label: "Tyst massage", text: "$ACTOR, använd valfri kroppsdel eller sexleksak för att massera $TARGET mellan skinkorna och reta den bakre öppningen. I en ställning du väljer. Om $TARGET ger ifrån sig ljud påminner du med ett lekfullt rapp på skinkan." },
+        { label: "Glid, Glid, Glid", text: "$ACTOR, använd rikligt med glidmedel och en dildo eller dina fingrar i $TARGETs bakre öppning. Samtidigt smeker du $TARGETs kön mot dina läppar och delar ut ömma kyssar samtidigt som du långsamt arbetar dig in och ut där bak." }
+    ]
+};
         const tilesData = [
             { type: "hands", label: "Händer", variant: "a", x: 270, y: 330 },
             { type: "mouth", label: "Mun", variant: "a", x: 600, y: 330 },
@@ -1170,14 +1179,28 @@
             }
         }
 
+        function getMysteryTileIndex() {
+            return tilesData.findIndex(tile => tile.type === 'mystery');
+        }
+
         function getSlotDebugConfig() {
             const params = new URLSearchParams(window.location.search);
             const wantsSlot = window.location.hash === '#slot' || params.get('slot') === '1';
             if (!wantsSlot) return null;
 
+            const requestedLevel = Number(params.get('level'));
             const requestedRound = Number(params.get('round'));
-            const safeRound = Number.isInteger(requestedRound) ? Math.max(0, Math.min(requestedRound, maxRound)) : 0;
-            return { round: safeRound };
+            const levelBasedRound = Number.isInteger(requestedLevel) ? requestedLevel - 1 : NaN;
+            const roundCandidate = Number.isInteger(levelBasedRound) ? levelBasedRound : requestedRound;
+            const safeRound = Number.isInteger(roundCandidate) ? Math.max(0, Math.min(roundCandidate, maxRound)) : 0;
+            const requestedPlayer = Number(params.get('player'));
+            const playerId = requestedPlayer === 2 ? 2 : 1;
+
+            return {
+                round: safeRound,
+                playerId,
+                mysteryPos: getMysteryTileIndex()
+            };
         }
 
         function applyRestoredGameState(state) {
@@ -1224,14 +1247,16 @@
             const slotDebugConfig = getSlotDebugConfig();
             if (slotDebugConfig) {
                 round = slotDebugConfig.round;
-                pendingChallengePlayer = p1;
+                p1.pos = slotDebugConfig.playerId === 1 ? slotDebugConfig.mysteryPos : -1;
+                p2.pos = slotDebugConfig.playerId === 2 ? slotDebugConfig.mysteryPos : -1;
+                pendingChallengePlayer = slotDebugConfig.playerId === 2 ? p2 : p1;
                 pendingDicePlayer = null;
                 currentChallengeState = null;
                 slotMachineState = null;
                 setTimeout(() => {
                     updatePos(p1);
                     updatePos(p2);
-                    openSlotMachine(p1);
+                    openSlotMachine(pendingChallengePlayer);
                 }, 600);
                 return;
             }
@@ -1485,10 +1510,20 @@
             return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
+        function getChallengePlayerMarkup(player, suffix = '') {
+            return `<span class="challenge-player-name" style="--player-accent:${player.id === 1 ? '#00e5ff' : '#ff007f'};">${player.name}${suffix}</span>`;
+        }
+
         function decorateChallengeText(text, actor, target) {
             return text
-                .replace(new RegExp(escapeRegExp(actor.name), 'g'), `<span class="challenge-player-name" style="--player-accent:${actor.id === 1 ? '#00e5ff' : '#ff007f'};">${actor.name}</span>`)
-                .replace(new RegExp(escapeRegExp(target.name), 'g'), `<span class="challenge-player-name" style="--player-accent:${target.id === 1 ? '#00e5ff' : '#ff007f'};">${target.name}</span>`);
+                .replace(/\$ACTOR_POSSESSIVE/g, getChallengePlayerMarkup(actor, 's'))
+                .replace(/\$TARGET_POSSESSIVE/g, getChallengePlayerMarkup(target, 's'))
+                .replace(/\$ACTORs/g, getChallengePlayerMarkup(actor, 's'))
+                .replace(/\$TARGETs/g, getChallengePlayerMarkup(target, 's'))
+                .replace(/\$ACTOR/g, getChallengePlayerMarkup(actor))
+                .replace(/\$TARGET/g, getChallengePlayerMarkup(target))
+                .replace(new RegExp(escapeRegExp(actor.name), 'g'), getChallengePlayerMarkup(actor))
+                .replace(new RegExp(escapeRegExp(target.name), 'g'), getChallengePlayerMarkup(target));
         }
 
         function applyChallengeTextSizing(text) {
