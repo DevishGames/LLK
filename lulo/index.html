@@ -1062,8 +1062,9 @@
         const diceDropAudio = new Audio('./dicedrop.wav');
         const slotSpinStartAudio = new Audio('./spinwheelstart.wav');
         const slotSpinStopAudio = new Audio('./spinwheelstop.wav');
+        const timerStopAudio = new Audio('./timerstop.wav');
         
-        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null, visitedTileLabelsByPlayer = null;
+        let turn = 1, round = 0, isMoving = false, timerInterval = null, timeLeft = 0, pendingChallengePlayer = null, pendingDicePlayer = null, timerHasStarted = false, timerExtraUsed = false, firstFinisherId = null, currentChallengeState = null, gearIntroSeen = false, slotMachineState = null, visitedTileLabelsByPlayer = null, wakeLockSentinel = null;
         const SLOT_MACHINE_MAX_SPINS = 3;
         const maxRound = 3;
         const startAnchor = { x: 220, y: 40 };
@@ -1249,6 +1250,16 @@
             try {
                 audio.pause();
                 audio.currentTime = 0;
+            } catch {}
+        }
+
+        async function requestWakeLock() {
+            if (!('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+            try {
+                wakeLockSentinel = await navigator.wakeLock.request('screen');
+                wakeLockSentinel.addEventListener('release', () => {
+                    wakeLockSentinel = null;
+                });
             } catch {}
         }
 
@@ -1446,6 +1457,7 @@
         function init() {
             visitedTileLabelsByPlayer = createEmptyVisitedTileLabels();
             initVisitorCounter();
+            requestWakeLock();
             loadStoredPlayers();
             const board = document.getElementById('board');
             board.innerHTML = '<div class="board-stage" id="board-stage"></div>';
@@ -2178,7 +2190,7 @@
                     if (!timerExtraUsed) {
                         setTimerButtonState({ text: "Vi vill fortsätta lite till...", disabled: false });
                     }
-                    new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
+                    playUiSound(timerStopAudio);
                 }
             }, 1000);
         }
@@ -2234,6 +2246,11 @@
 
         window.onload = init;
         window.onresize = () => { updatePos(p1); updatePos(p2); if (pendingChallengePlayer) showChallengeTrigger(pendingChallengePlayer); };
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
