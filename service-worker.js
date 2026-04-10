@@ -1,9 +1,13 @@
-const CACHE_NAME = 'llk-cache-v1';
+const CACHE_NAME = 'llk-cache-v4';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './app_icon_LLK_512x512px.png',
+  './l-l_applogo.png',
+  './l-l_background.png',
+  './l-l_startup_image.png',
+  './VIBE/content.js',
+  './VIBE/index.html',
   './lulo/index.html',
   './lulo/LuLo_board.png'
 ];

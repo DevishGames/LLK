@@ -6,18 +6,30 @@
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Lust, Love & Kinky encounters">
+    <meta name="apple-mobile-web-app-title" content="L-L">
     <link rel="manifest" href="../manifest.json">
-    <link rel="apple-touch-icon" href="../app_icon_LLK_512x512px.png">
-    <link rel="icon" type="image/png" href="../app_icon_LLK_512x512px.png">
-    <title>Lust Loops - Lust, Love & Kinky encounters</title>
+    <link rel="apple-touch-icon" href="../l-l_applogo.png">
+    <link rel="icon" type="image/png" href="../l-l_applogo.png">
+    <title>LUST LOOPS: Brädspel</title>
+    <link rel="preload" as="image" href="../l-l_background.png">
+    <link rel="preload" as="image" href="../l-l_startup_image.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
         
         html, body { min-height: 100%; overscroll-behavior-y: none; }
-        body { background-color: #0a0a0a; color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        
+        body {
+            background:
+                linear-gradient(180deg, rgba(6,6,6,0.68), rgba(6,6,6,0.86)),
+                url('../l-l_background.png') center / cover no-repeat fixed,
+                #0a0a0a;
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
         /* --- SPELPLANEN --- */
         .board-header {
             position: fixed;
@@ -549,10 +561,15 @@
             color: rgba(27,13,5,0.62);
         }
         .slot-pick-btn.ready {
-            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
-            color: #f0fdf4;
-            border-color: rgba(187,247,208,0.34);
-            box-shadow: 0 18px 34px rgba(21,128,61,0.26);
+            background:
+                radial-gradient(circle at 50% 0%, rgba(255,236,188,0.24), transparent 44%),
+                linear-gradient(180deg, #cb9c2f 0%, #8b6117 100%);
+            color: #fff7dd;
+            border-color: rgba(255,226,158,0.24);
+            box-shadow:
+                inset 0 1px 0 rgba(255,248,220,0.2),
+                0 16px 30px rgba(127,84,16,0.3),
+                0 0 30px rgba(255,214,130,0.18);
         }
         .round-choice-grid {
             display: grid;
@@ -618,9 +635,17 @@
             line-height: 1.45;
         }
         .level-option input:checked + label {
-            border-color: rgba(128,0,32,0.5);
-            background: linear-gradient(180deg, rgba(143,20,56,0.22), rgba(255,255,255,0.03));
-            box-shadow: 0 18px 32px rgba(128,0,32,0.16);
+            border-color: rgba(255,255,255,0.22);
+            background:
+                radial-gradient(circle at top left, rgba(0,229,255,0.34), transparent 46%),
+                radial-gradient(circle at bottom right, rgba(255,0,127,0.36), transparent 48%),
+                linear-gradient(135deg, rgba(0,229,255,0.2), rgba(255,255,255,0.04) 44%, rgba(255,0,127,0.22)),
+                rgba(14,14,14,0.96);
+            box-shadow:
+                0 18px 32px rgba(0,0,0,0.24),
+                0 0 0 1px rgba(255,255,255,0.05),
+                0 0 34px rgba(0,229,255,0.22),
+                0 0 38px rgba(255,0,127,0.24);
         }
         .welcome-note {
             margin: 0 0 22px;
@@ -850,9 +875,8 @@
     </style>
 </head>
 <body>
-
     <div class="board-header" id="boardHeader">
-        <div class="board-title">Lust Loops</div>
+        <div class="board-title">LUST LOOPS: Brädspel</div>
         <button class="board-nav-btn" onclick="goBack()">Tillbaka</button>
     </div>
     <div class="game-wrapper" id="board"></div>
@@ -1197,7 +1221,7 @@
                 hands_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet vid kanten och ögonbindel på. Ställ dig vid hennes huvud och massera hennes bröst med en generös mängd massageolja och lyssna på hennes andhämtning.`,
                 hands_female: `$ACTOR, be $TARGET lägga sig på rygg med ögonbindel. Ställ dig på golvet vid hans huvud och massera honom från bröstkorg ner mot hans lem med en generös mängd olja. Låt dina bröst nudda hans ansikte och reta hans mun medan du lyssnar på hans tunga andhämtning.`,
                 mouth: `$ACTOR, ta total kontroll. Ge oralsex men växla med att försiktigt nafsa och dra i $TARGETs kön med dina tänder och händer. Lyssna på flämtningarna för att veta om du ska öka eller sänka intensiteten.`,
-                breasts_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet nära kanten. Ställ dig vid hennes huvud och be henne pressa ihop brösten med sina händer. Använd en dildo och rikligt med glidmedel för att simulera ett intensivt bröstknull.`,
+                breasts_male: `$ACTOR, be $TARGET lägga sig på sängen med huvudet nära kanten. Ställ dig vid hennes huvud och be henne pressa ihop brösten med sina händer. Använd en dildo och rikligt med glidmedel för att simulera ett intensivt bröstknull samtidigt som du ger hennes bröst uppmärksamhet så som du själv behagar.`,
                 breasts_female: `$ACTOR, massera $TARGETs lem med dina bröst. Smörj in dem med rikligt med olja eller saliv och kläm hans lem hårt mellan dem. För dina bröst rytmiskt upp och ner utan att han tappar kontrollen.`,
                 butt: `$ACTOR, använd rikligt med glidmedel. För in ett finger eller en dildo i $TARGETs bakre öppning och penetrera långsamt. Samtidigt ska du lätt och retsamt smiska över könet med din hand eller en flogger.`
             }
@@ -2035,7 +2059,7 @@
 
         function goBack() {
             clearPersistedGameState();
-            window.location.href = '../index.html';
+            window.location.href = '../index.html?fade=1';
         }
 
         function openDiceFromBoard() {
@@ -2288,7 +2312,9 @@
             return;
         }
 
-        window.onload = init;
+        window.onload = () => {
+            init();
+        };
         window.onresize = () => { updatePos(p1); updatePos(p2); if (pendingChallengePlayer) showChallengeTrigger(pendingChallengePlayer); };
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {

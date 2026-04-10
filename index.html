@@ -6,11 +6,19 @@
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Lust, Love & Kinky encounters">
+    <meta name="apple-mobile-web-app-title" content="L-L">
     <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="./app_icon_LLK_512x512px.png">
-    <link rel="icon" type="image/png" href="./app_icon_LLK_512x512px.png">
-    <title>Lust, Love & Kinky encounters - A Lovers game...</title>
+    <link rel="apple-touch-icon" href="./l-l_applogo.png">
+    <link rel="icon" type="image/png" href="./l-l_applogo.png">
+    <title>LUST LOOPS</title>
+    <link rel="preload" as="image" href="./l-l_background.png">
+    <link rel="preload" as="image" href="./l-l_startup_image.png">
+    <script>
+        window.__SHOW_RETURN_FADE__ = new URLSearchParams(window.location.search).get("fade") === "1";
+        if (window.__SHOW_RETURN_FADE__) {
+            document.documentElement.classList.add("show-return-fade");
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
 
@@ -32,10 +40,96 @@
             font-family: 'Inter', sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at top, rgba(143,20,56,0.2), transparent 30%),
-                radial-gradient(circle at bottom, rgba(143,20,56,0.12), transparent 28%),
+                url('./l-l_background.png') center / cover no-repeat fixed,
                 #080808;
             padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+        }
+        body.splash-active { overflow: hidden; }
+        .page-fade {
+            position: fixed;
+            inset: 0;
+            z-index: 130;
+            background: #000;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        html.show-return-fade .page-fade {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        .page-fade.is-fading-out {
+            animation: pageFadeOut 0.38s ease-out forwards;
+        }
+        .startup-splash {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+            background:
+                linear-gradient(180deg, rgba(0,0,0,0.14), rgba(0,0,0,0.42)),
+                #050505;
+            opacity: 1;
+            visibility: visible;
+            backdrop-filter: blur(0px);
+            animation: none;
+            pointer-events: auto;
+        }
+        .startup-splash.is-fading {
+            animation: startupSplashFadeOut 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            pointer-events: none;
+        }
+        .startup-splash.is-hidden {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .startup-splash img {
+            width: min(100%, 560px);
+            max-height: min(100dvh, 920px);
+            object-fit: contain;
+            border-radius: 28px;
+            box-shadow: 0 28px 80px rgba(0,0,0,0.46);
+            animation: none;
+            filter: blur(0px);
+            transform: scale(1);
+        }
+        .startup-splash.is-fading img {
+            animation: startupSplashImageOut 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes pageFadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        @keyframes startupSplashFadeOut {
+            0% {
+                opacity: 1;
+                backdrop-filter: blur(0px);
+            }
+            100% {
+                opacity: 0;
+                backdrop-filter: blur(8px);
+            }
+        }
+        @keyframes startupSplashImageOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+                filter: blur(30px);
+            }
         }
 
         .app {
@@ -51,8 +145,8 @@
             border-radius: 32px;
             border: 1px solid var(--border);
             background:
-                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 22%),
-                linear-gradient(180deg, rgba(24,24,24,0.96), rgba(14,14,14,0.96));
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0) 18%),
+                linear-gradient(180deg, rgba(10,10,10,0.98), rgba(10,10,10,0.98));
             box-shadow: 0 28px 60px rgba(0,0,0,0.42);
         }
 
@@ -107,7 +201,7 @@
             padding: 20px 22px;
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            background: linear-gradient(180deg, rgba(12,12,12,0.98), rgba(12,12,12,0.98));
         }
         .safety-title {
             margin: 0 0 10px;
@@ -130,7 +224,7 @@
             padding: 10px 12px;
             border-radius: 999px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03);
+            background: rgba(8,8,8,0.96);
             color: rgba(255,255,255,0.82);
             font-size: 11px;
             font-weight: 700;
@@ -157,7 +251,7 @@
             padding: 18px 20px;
             border-radius: 24px;
             border: 1px solid var(--border);
-            background: rgba(255,255,255,0.03);
+            background: rgba(8,8,8,0.96);
         }
 
         .summary-text {
@@ -179,7 +273,7 @@
             gap: 8px;
             padding: 9px 12px;
             border-radius: 999px;
-            background: rgba(255,255,255,0.04);
+            background: rgba(10,10,10,0.98);
             border: 1px solid rgba(255,255,255,0.08);
             font-size: 12px;
             font-weight: 700;
@@ -223,7 +317,7 @@
 
         .ghost-btn {
             color: #fff;
-            background: rgba(255,255,255,0.04);
+            background: rgba(10,10,10,0.96);
             border: 1px solid rgba(255,255,255,0.1);
         }
 
@@ -239,8 +333,8 @@
             border-radius: 28px;
             border: 1px solid var(--border);
             background:
-                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
-                rgba(18,18,18,0.96);
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)),
+                rgba(10,10,10,0.97);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -251,6 +345,9 @@
         .game-card.locked {
             opacity: 0.38;
             filter: grayscale(1);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+                rgba(18,18,18,0.32);
         }
 
         .game-card h2 {
@@ -317,8 +414,8 @@
             border-radius: 32px;
             border: 1px solid var(--border);
             background:
-                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0)),
-                rgba(20,20,20,0.98);
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)),
+                rgba(10,10,10,0.98);
             box-shadow: 0 28px 60px rgba(0,0,0,0.48);
             max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
             overflow-y: auto;
@@ -349,7 +446,7 @@
             padding: 18px;
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03);
+            background: rgba(8,8,8,0.96);
         }
 
         .player-card h3 {
@@ -374,7 +471,7 @@
             padding: 14px 15px;
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.28);
+            background: rgba(4,4,4,0.98);
             color: #fff;
             font: inherit;
             margin-bottom: 14px;
@@ -392,7 +489,7 @@
             padding: 12px 14px;
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.04);
+            background: rgba(10,10,10,0.96);
             color: rgba(255,255,255,0.72);
             text-align: center;
             font-size: 12px;
@@ -437,7 +534,7 @@
             padding: 18px 20px;
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.025);
+            background: rgba(8,8,8,0.96);
         }
 
         .install-copy {
@@ -470,12 +567,17 @@
     </style>
 </head>
 <body>
+    <div id="pageFade" class="page-fade" aria-hidden="true"></div>
+    <div id="startupSplash" class="startup-splash" aria-hidden="true">
+        <img src="./l-l_startup_image.png" alt="LUST LOOPS">
+    </div>
+
     <div class="app">
         <section class="hero">
-            <p class="kicker">Lust, Love & Kinky encounters</p>
+            <p class="kicker">LUST LOOPS</p>
             <h1>Lekfullt.<br>Intimt.<br>Ofiltrerat.</h1>
             <div class="hero-copy-fade">
-                <p class="hero-copy">Ett lekfullt universum för par som vill väcka lust, utforska nya roller och låta kvällen glida från mjuk närhet till vågade kontraster och samtal. <br>Fyll i spelarnas namn och välj ett spel här nedan när ni är redo.<br><br>Lust, Love & Kink – A Lovers' Game är skapat för par med öppna sinnen som vill få.....</p>
+                <p class="hero-copy">Ett lekfullt universum för par som vill väcka lust, utforska nya roller och låta kvällen glida från mjuk närhet till vågade kontraster och samtal. <br>Fyll i spelarnas namn och välj ett spel här nedan när ni är redo.<br><br>LUST LOOPS samlar flera spel i samma app, från brädspel till heta tärningar och frågor med utmaningar.</p>
             </div>
             <div class="hero-actions">
                 <button class="ghost-btn" id="openAboutBtn" type="button">Läs mer</button>
@@ -495,15 +597,23 @@
         <section class="games" id="gamesGrid">
             <article class="game-card locked" data-game="qa">
                 <div>
-                    <h2>Frågor & Utmaningar</h2>
+                    <h2>LUST LOOPS: Frågor och Utmaningar</h2>
                     <p>Ett rakare upplägg med frågor, val och snabba utmaningar utan spelplan.</p>
                 </div>
                 <button class="card-btn" type="button" disabled>Kommer snart</button>
             </article>
 
+            <article class="game-card locked" data-game="hotnot">
+                <div>
+                    <h2>LUST LOOPS: VIBE</h2>
+                    <p>Den smarta delen av Lust Loops. Appen läser av er puls, låser upp stigar och guidar er genom påståenden där era begär möts.</p>
+                </div>
+                <button class="card-btn" id="hotNotGameBtn" type="button" disabled>Mata in spelarnamn</button>
+            </article>
+
             <article class="game-card locked" data-game="board">
                 <div>
-                    <h2>Lust Loops</h2>
+                    <h2>LUST LOOPS: Brädspel</h2>
                     <p>Ett lyxigt brädspel i fyra intensiva nivåer. Slå tärningen och vandra längs den gyllene stigen där varje stopp bjuder på utmaningar för Er att erövra. Inga frågor, inga diskussioner, ingen snack – bara ren, passionerad handling som tar er steg för steg, närmare varandra.</p>
                 </div>
                 <button class="card-btn" id="boardGameBtn" type="button" disabled>Mata in spelarnamn</button>
@@ -511,7 +621,7 @@
 
             <article class="game-card locked" data-game="dice">
                 <div>
-                    <h2>Vågade tärningar</h2>
+                    <h2>LUST LOOPS: Heta Tärningar</h2>
                     <p>Kortare, snabbare och mer direkt. Slå tärningen och kasta er rakt in.</p>
                 </div>
                 <button class="card-btn" type="button" disabled>Kommer snart</button>
@@ -519,7 +629,7 @@
         </section>
 
         <section class="install-banner">
-            <p class="install-copy"><strong>Bäst i mobilen:</strong> lägg Lust, Love & Kinky encounters på hemskärmen så känns det mer som en app och störs mindre av Safaris menyer.</p>
+            <p class="install-copy"><strong>Bäst i mobilen:</strong> lägg LUST LOOPS på hemskärmen så känns det mer som en app och störs mindre av Safaris menyer.</p>
             <button class="ghost-btn" id="openInstallGuideBtn" type="button">Installera som app</button>
         </section>
     </div>
@@ -571,14 +681,14 @@
         <div class="modal-card">
             <p class="kicker">Installera</p>
             <h2 class="modal-title">Lägg till på hemskärmen</h2>
-            <p class="modal-copy">Om ni öppnar Lust, Love & Kinky encounters från hemskärmen får ni en renare, mer applikt känsla i mobilen och mindre strul med Safaris menyer.</p>
+            <p class="modal-copy">Om ni öppnar LUST LOOPS från hemskärmen får ni en renare, mer applikt känsla i mobilen och mindre strul med Safaris menyer.</p>
             <div class="player-card" style="margin-bottom:18px; text-align:left;">
                 <h3 style="margin-bottom:10px;">iPhone / iPad</h3>
                 <p class="modal-copy" style="margin:0; font-size:0.95rem;">
                     1. Öppna sidan i Safari.<br>
                     2. Tryck på dela-knappen.<br>
                     3. Välj <strong>Lägg till på hemskärmen</strong>.<br>
-                    4. Starta sedan Lust, Love & Kinky encounters från ikonen på hemskärmen.
+                    4. Starta sedan LUST LOOPS från ikonen på hemskärmen.
                 </p>
             </div>
             <div class="modal-actions">
@@ -591,8 +701,8 @@
     <div class="modal" id="aboutModal">
         <div class="modal-card">
             <p class="kicker">Om Appen</p>
-            <h2 class="modal-title">Lust, Love & Kinky encounters</h2>
-            <p class="modal-copy">Lust, Love & Kink – A Lovers' Game är skapat för par med öppna sinnen som vill få inspiration till sängkammaren, eller för de som vill fördjupa sin kontakt med varandra genom lekfullhet och passion mellan lakanen. Vi guidar er genom en natt ni sent kommer att glömma, från den mjukaste massage till pirrande kontraster där fasta grepp möter total hängivelse och upphetsning.</p>
+            <h2 class="modal-title">LUST LOOPS</h2>
+            <p class="modal-copy">LUST LOOPS är skapat för par med öppna sinnen som vill få inspiration till sängkammaren, eller för de som vill fördjupa sin kontakt med varandra genom lekfullhet och passion mellan lakanen. Här samlas flera spelupplägg i samma app, från brädspel till kortare och mer direkta format.</p>
             <p class="modal-copy">Appen ger utrymme att utforska dolda fantasier och utmana invanda roller. Vi bjuder in till en värld där attraktion inte har några gränser och där alla får uppskatta alla, oavsett han, hon eller hen, där nyfikenheten på varandras oslipade sidor får stå i centrum. Oavsett om ni söker öm bekräftelse eller vill känna adrenalinet stiga i ett balanserat maktspel, är detta er plats för en spännande upptäcktsfärd.</p>
             <div class="safety-panel" style="margin-top:0;">
                 <p class="safety-title">Säkerhet & Samtycke</p>
@@ -670,11 +780,12 @@
             const ready = isPlayersComplete(players);
             const cards = document.querySelectorAll(".game-card");
             const boardBtn = document.getElementById("boardGameBtn");
+            const hotNotBtn = document.getElementById("hotNotGameBtn");
 
             cards.forEach((card) => {
                 const game = card.dataset.game;
                 const btn = card.querySelector(".card-btn");
-                if (game === "board") {
+                if (game === "board" || game === "hotnot") {
                     card.classList.toggle("locked", !ready);
                     if (!ready) {
                         btn.disabled = true;
@@ -692,8 +803,11 @@
 
             if (ready) {
                 boardBtn.disabled = false;
-                boardBtn.textContent = "Starta Lust Loops";
+                boardBtn.textContent = "Starta LUST LOOPS: Brädspel";
                 boardBtn.classList.add("active");
+                hotNotBtn.disabled = false;
+                hotNotBtn.textContent = "Starta LUST LOOPS: VIBE";
+                hotNotBtn.classList.add("active");
             }
         }
 
@@ -727,6 +841,29 @@
 
         function setAboutOpen(isOpen) {
             document.getElementById("aboutModal").classList.toggle("active", isOpen);
+        }
+
+        function hideStartupSplash() {
+            const splash = document.getElementById("startupSplash");
+            if (!splash) return;
+            if (splash.classList.contains("is-fading") || splash.classList.contains("is-hidden")) return;
+            splash.classList.add("is-fading");
+            document.body.classList.remove("splash-active");
+            splash.addEventListener("animationend", () => {
+                splash.classList.add("is-hidden");
+            }, { once: true });
+        }
+
+        function hideReturnFade() {
+            const fade = document.getElementById("pageFade");
+            if (!fade || !window.__SHOW_RETURN_FADE__) return;
+            fade.classList.add("is-fading-out");
+            fade.addEventListener("animationend", () => {
+                document.documentElement.classList.remove("show-return-fade");
+                const cleanUrl = `${window.location.pathname}${window.location.hash}`;
+                window.history.replaceState({}, "", cleanUrl);
+                window.__SHOW_RETURN_FADE__ = false;
+            }, { once: true });
         }
 
         let playersState = loadPlayers();
@@ -790,8 +927,21 @@
             window.location.href = "./lulo/index.html";
         });
 
+        document.getElementById("hotNotGameBtn").addEventListener("click", () => {
+            if (!isPlayersComplete(playersState)) return;
+            window.location.href = "./VIBE/index.html";
+        });
+
         window.addEventListener("load", () => {
+            document.body.classList.add("splash-active");
             rerender();
+            if (window.__SHOW_RETURN_FADE__) {
+                hideReturnFade();
+                document.getElementById("startupSplash").classList.add("is-hidden");
+                document.body.classList.remove("splash-active");
+                return;
+            }
+            setTimeout(hideStartupSplash, 2000);
         });
 
         if ("serviceWorker" in navigator) {
